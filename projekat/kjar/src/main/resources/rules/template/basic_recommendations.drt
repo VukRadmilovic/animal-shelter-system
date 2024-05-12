@@ -1,0 +1,129 @@
+template header
+ruleName
+questionId
+choice
+recommendations
+
+package template;
+import com.ftn.sbnz.model.enums.AnimalType;
+import java.util.List;
+import com.ftn.sbnz.model.enums.AnimalBreed;
+import java.util.Arrays;
+import com.ftn.sbnz.model.models.Recommendation;
+import com.ftn.sbnz.model.models.RecommendationsMap;
+import com.ftn.sbnz.model.events.UserRecommendationCountChanged;
+import com.ftn.sbnz.model.events.QuestionnaireFilled;
+import com.ftn.sbnz.model.models.Response;
+import com.ftn.sbnz.model.models.FinalistsForUsers;
+import com.ftn.sbnz.model.events.FinalistsChangedForUser;
+import com.ftn.sbnz.model.models.GlobalChart;
+import com.ftn.sbnz.model.models.GlobalRecommendation;
+import com.ftn.sbnz.model.models.Shelter;
+import com.ftn.sbnz.model.models.Animal;
+import com.ftn.sbnz.model.events.Notification;
+import com.ftn.sbnz.model.events.GlobalChartTop5Update;
+import java.util.stream.Collectors;
+import java.util.HashMap
+import java.util.Map
+import java.util.ArrayList
+import java.util.Comparator;
+import java.util.Collections;
+import java.util.stream.Collectors;
+import java.util.EnumSet;
+
+template "Pet recommendation rules"
+
+rule "@{ruleName}"
+when
+    Response($userId: userId, questionId==@{questionId}, choice==@{choice})
+then
+    insert(new Recommendation($userId, "@{recommendations}"));
+end
+
+end template
+
+
+rule "Breed recommendation update"
+    no-loop
+    when
+        $recommendation : Recommendation($userId: userId, $breeds: animalBreeds)
+        $recommendationsMap: RecommendationsMap($map : map)
+    then
+        System.out.println("inside recommendation update");
+        Map<Long, Map<AnimalBreed, Integer>> newMap = (HashMap<Long, Map<AnimalBreed, Integer>>)$map;
+        newMap.putIfAbsent($userId, new HashMap<AnimalBreed,Integer>());
+        for(Object breed : $breeds) {
+            AnimalBreed breedEnum = (AnimalBreed)breed;
+            if(newMap.get($userId).get(breedEnum) == null)
+                newMap.get($userId).put(breedEnum,1);
+            else
+                newMap.get($userId).put(breedEnum, newMap.get($userId).get(breedEnum) + 20);
+        }
+        modify($recommendationsMap){setMap(newMap)};
+        insert(new UserRecommendationCountChanged($userId));
+end
+
+rule "Breed recommendation for user insertion"
+    when
+        $recommendation : Recommendation($userId: userId)
+        $recommendationsMap : RecommendationsMap($map : map)
+        $finalists : FinalistsForUsers($final : finalists)
+        $event : UserRecommendationCountChanged(userId == $userId)
+    then
+         System.out.println("inside user insertion");
+         Map<Long, List<AnimalBreed>> newMap = (HashMap<Long, List<AnimalBreed>>)$final;
+         newMap.putIfAbsent($userId, new ArrayList<AnimalBreed>());
+         for (Map.Entry<AnimalBreed, Integer> entry : ((HashMap<AnimalBreed, Integer>)$map.get($userId)).entrySet()) {
+             if(entry.getValue() >= 10) {
+                newMap.get($userId).add(entry.getKey());
+             }
+         }
+         modify($finalists){setFinalists(newMap)};
+         delete($recommendation);
+         delete($event);
+end
+
+rule "Global charts update"
+    when
+        FinalistsForUsers($final : finalists)
+        $globalChart: GlobalChart($list : recommendations)
+        $event : QuestionnaireFilled($userId: userId)
+    then
+         System.out.println("inside global charts update");
+         List<GlobalRecommendation> newList = new ArrayList();
+         for(Object gr : $list) {
+            GlobalRecommendation grc = (GlobalRecommendation)gr;
+             newList.add(grc.clone());
+         }
+         for(Object breed : ((HashMap<Long,List<AnimalBreed>>)$final).get($userId)) {
+            AnimalBreed breedEnum = (AnimalBreed)breed;
+            newList.stream().filter(recommendation -> recommendation.getAnimalBreed() == breedEnum).forEach(res -> res.setRecommendationCount(res.getRecommendationCount() + 1));
+         }
+         newList.sort(Comparator.comparingInt(GlobalRecommendation::getRecommendationCount).reversed());
+         List<GlobalRecommendation> top5 = $globalChart.getTop5Differences(newList.stream().limit(5).collect(Collectors.toList()));
+         insert(new GlobalChartTop5Update(top5, newList));
+         delete($event);
+end
+
+
+rule "Adoption promotion after global chart update"
+    when
+        $update: GlobalChartTop5Update($newList: newGlobalChart, $diffs : getNewAnimalBreeds(), $diffs.size() > 0)
+        $globalChart: GlobalChart()
+        $shelter: Shelter($animals: animals)
+        $matches : List(size > 0) from accumulate(
+                Animal($breed: animalBreed, $breed memberOf $diffs) from $animals,
+                collectList($breed)
+        )
+    then
+        System.out.println("Inside adoption promotion after global chart update");
+        List<String> breeds = new ArrayList<>();
+        for(Object breed : $matches) {
+            AnimalBreed breedCast = (AnimalBreed) breed;
+            String str = breedCast.toString().replace("_"," ").toLowerCase();
+            breeds.add(str.substring(0, 1).toUpperCase() + str.substring(1));
+        }
+        insert(new Notification($shelter,String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended."));
+        modify($globalChart){setRecommendations($newList)};
+        delete($update);
+end

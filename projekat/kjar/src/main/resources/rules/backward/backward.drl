@@ -1,0 +1,96 @@
+package backward;
+
+//WOMEN
+/*rule "all whamen"
+    when
+        $women : List() from collect(Woman())
+    then
+        System.out.println($women);
+end*/
+
+
+
+//MEN
+/* "all men"
+    when
+        $men : List() from collect(Man())
+    then
+        System.out.println($men);
+end
+
+
+
+//FATHERS
+query father(String fathersName, String childNameVar)
+    Man(name == fathersName) and
+    Parent(fathersName, childNameVar;)
+end
+
+/*rule "fathers"
+    when
+        String(this == "fathers")
+        father(dad, child; )
+    then
+        System.out.println(dad  + "," + child);
+end
+
+
+
+//MOTHERS
+query mother(String mothersName, String childNameVar)
+    Woman(name == mothersName) and
+    Parent(mothersName, childNameVar;)
+end
+
+/*rule "mothers"
+    when
+        String(this == "mothers")
+        mother(mom, child; )
+    then
+        System.out.println(mom  + "," + child);
+end
+
+
+
+//SONS
+/*query son(String parentName, String sonName)
+    Man(name == sonName) and
+    Parent(parentName, sonName;)
+end
+
+rule "sons"
+    when
+        String(this == "sons")
+        son(parent, sonVar; )
+    then
+        System.out.println(sonVar  + "," + parent);
+end*/
+
+
+//DAUGTHERS
+/*query daughter(String parentName, String daughterName)
+    Woman(name == daughterName) and
+    Parent(parentName, daughterName;)
+end
+
+rule "daughters"
+    when
+        String(this == "daughters")
+        daughter(parent, daughterVar; )
+    then
+        System.out.println(daughterVar  + "," + parent);
+end*/
+
+
+//SIBLINGS
+/*query sibling(String parentName, String childName)
+
+end
+
+rule "siblings"
+    when
+        String(this == "siblings")
+        sibling(first, second; )
+    then
+        System.out.println(first  + "," + second);
+end*/
