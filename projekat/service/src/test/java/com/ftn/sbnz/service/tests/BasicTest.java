@@ -2,7 +2,10 @@ package com.ftn.sbnz.service.tests;
 
 import com.ftn.sbnz.model.enums.AnimalBreed;
 import com.ftn.sbnz.model.enums.AnimalType;
+import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
+import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.QuestionnaireFilled;
+import com.ftn.sbnz.model.events.Resettlement;
 import com.ftn.sbnz.model.models.*;
 import org.drools.template.ObjectDataCompiler;
 import org.junit.BeforeClass;
@@ -10,27 +13,37 @@ import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
-import org.kie.api.definition.KiePackage;
 import org.kie.api.io.ResourceType;
 import org.kie.api.io.Resource;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.conf.ClockTypeOption;
+import org.kie.api.time.SessionPseudoClock;
+import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class BasicTest {
 
-    private static String droolCompiled;
+    private static String basicTemplateCompiled;
+    private static String cepTemplateCompiled;
     @BeforeClass
-    public static void initializeTemplates() {
+    public static void initializeAllTemplates() {
+       initializeBasicTemplate();
+       initializeCepTemplate();
+    }
+
+    private static void initializeBasicTemplate() {
         InputStream template = BasicTest.class.getResourceAsStream("/rules/template/basic_recommendations.drt");
         List<QuestionResponseWithRecommendation> petRecommendationRules = new ArrayList<>();
 
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Lives with kids", 1, 1,
-                "LABRADOR_RETRIEVER,GERMAN_SHEPARD,GOLDEN_RETRIEVER,DALMATIAN,BUNNY,DUTCH_DWARF," +
+                "LABRADOR_RETRIEVER,GERMAN_SHEPARD,GOLDEN_RETRIEVER,DALMATIAN,BUNNY,DUTCH_DWARF_RABBIT," +
                         "LIONHEAD,BIG_FISH,SMALL_FISH,HAMSTER,GUINEA_PIG,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,CANARY," +
                         "PIGEON,AFRICAN_GRAY_PARROT,COCKATIEL,BUDGERIGAR"));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Does not live with kids", 1, 2,
@@ -104,16 +117,25 @@ public class BasicTest {
                 "DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,SIAMESE_CAT,PERSIAN_CAT,SPHYNX,HAMSTER,BIG_FISH," +
                         "SMALL_FISH,BUNNY,DUTCH_DWARF_RABBIT,LIONHEAD,TURTLE,TARANTULA,GECKO,BALL_PYTHON,BEARDED_DRAGON,ROTTWEILER"));
         ObjectDataCompiler converter = new ObjectDataCompiler();
-        droolCompiled = converter.compile(petRecommendationRules, template);
-        //System.out.println(droolCompiled);
+        basicTemplateCompiled = converter.compile(petRecommendationRules, template);
+        //System.out.println(basicTemplateCompiled);
     }
 
-    private static KieSession createKieSessionFromDRL(String drl){
+    private static void initializeCepTemplate(){
+        InputStream template = BasicTest.class.getResourceAsStream("/rules/template/cep_rules.drt");
+        List<PromotionTermination> terminations = new ArrayList<>();
+        terminations.add(new PromotionTermination(PromotionOrResettlementType.SHELTERING, PromotionOrResettlementType.ADOPTION));
+        terminations.add(new PromotionTermination(PromotionOrResettlementType.ADOPTION, PromotionOrResettlementType.SHELTERING));
+        ObjectDataCompiler converter = new ObjectDataCompiler();
+        cepTemplateCompiled = converter.compile(terminations, template);
+        //System.out.println(cepTemplateCompiled);
+    }
+
+    private static KieSession createKieSession(){
         KieHelper kieHelper = new KieHelper();
-        kieHelper.addContent(drl, ResourceType.DRL);
-
+        kieHelper.addContent(basicTemplateCompiled, ResourceType.DRL);
+        kieHelper.addContent(cepTemplateCompiled, ResourceType.DRL);
         Results results = kieHelper.verify();
-
         if (results.hasMessages(Message.Level.WARNING, Message.Level.ERROR)){
             List<Message> messages = results.getMessages(Message.Level.WARNING, Message.Level.ERROR);
             for (Message message : messages) {
@@ -121,12 +143,17 @@ public class BasicTest {
             }
             throw new IllegalStateException("Compilation errors were found. Check the logs.");
         }
-        return kieHelper.build().newKieSession();
+        InputStream basicRules = BasicTest.class.getResourceAsStream("/rules/basic/basic.drl");
+        Resource ruleResource = ResourceFactory.newInputStreamResource(basicRules);
+        kieHelper.addResource(ruleResource, ResourceType.DRL);
+        KieSessionConfiguration config = KieServices.Factory.get().newKieSessionConfiguration();
+        config.setOption(ClockTypeOption.get("pseudo"));
+        return kieHelper.build().newKieSession(config,null);
     }
 
     @Test
     public void testBasicRules() {
-        KieSession session = createKieSessionFromDRL(droolCompiled);
+        KieSession session = createKieSession();
         session.insert(new RecommendationsMap());
         session.insert(new FinalistsForUsers());
         session.insert(new GlobalChart());
@@ -140,6 +167,32 @@ public class BasicTest {
         session.insert(new Response(123L, 2, 1));
         session.fireAllRules();
         session.insert(new QuestionnaireFilled(123L));
+        session.fireAllRules();
+    }
+
+    @Test
+    public void TestCepRules() {
+        KieSession session = createKieSession();
+        Shelter shelter = new Shelter("Test name", "Test address",
+                200000.0, 10,null,null,null);
+        session.insert(shelter);
+        session.insert(new Promotion(shelter,PromotionOrResettlementType.ADOPTION, null));
+        SessionPseudoClock clock = session.getSessionClock();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
+        session.fireAllRules();
+
+        /*clock.advanceTime(1, TimeUnit.DAYS);
+        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.SHELTERING,null));
+        session.fireAllRules();*/
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
     }
 }

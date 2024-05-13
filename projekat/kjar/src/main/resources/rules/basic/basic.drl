@@ -15,6 +15,7 @@ import com.ftn.sbnz.model.models.GlobalRecommendation;
 import com.ftn.sbnz.model.models.Shelter;
 import com.ftn.sbnz.model.models.Animal;
 import com.ftn.sbnz.model.events.Notification;
+import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.GlobalChartTop5Update;
 import java.util.HashMap
 import java.util.Map
@@ -68,7 +69,6 @@ rule "Global charts update"
     when
         FinalistsForUsers($final : finalists)
         $globalChart: GlobalChart($list : recommendations)
-        RecommendationsMap($map : map)
         $event : QuestionnaireFilled($userId: userId)
     then
          System.out.println("inside global charts update");
@@ -85,8 +85,6 @@ rule "Global charts update"
          List<GlobalRecommendation> top5 = $globalChart.getTop5Differences(newList.stream().limit(5).collect(Collectors.toList()));
          insert(new GlobalChartTop5Update(top5, newList));
          delete($event);
-         $final.values().remove($userId);
-         $map.values().remove($userId);
 end
 
 
@@ -100,9 +98,7 @@ rule "Adoption promotion after global chart update"
                 collectList($breed)
         )
     then
-        System.out.println($diffs);
         System.out.println("Inside adoption promotion after global chart update");
-        System.out.println($matches);
         List<String> breeds = new ArrayList<>();
         for(Object breed : $matches) {
             AnimalBreed breedCast = (AnimalBreed) breed;
@@ -110,7 +106,6 @@ rule "Adoption promotion after global chart update"
             breeds.add(str.substring(0, 1).toUpperCase() + str.substring(1));
         }
         insert(new Notification($shelter,String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended."));
-        System.out.println(String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended");
         modify($globalChart){setRecommendations($newList)};
         delete($update);
 end

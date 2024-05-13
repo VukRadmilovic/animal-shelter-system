@@ -1,0 +1,37 @@
+template header
+promotionType
+lessThanAction
+
+package template;
+
+import com.ftn.sbnz.model.events.Promotion;
+import com.ftn.sbnz.model.events.Resettlement;
+import com.ftn.sbnz.model.models.Shelter;
+import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
+import java.time.LocalDateTime;
+
+template "Adoption/sheltering termination"
+
+rule "@{promotionType} Termination"
+when
+    Shelter($capacity: capacity)
+    $promo: Promotion(type == PromotionOrResettlementType.@{promotionType}, isActive == true)
+    Number(doubleValue > $capacity * 0.2) from accumulate (
+    $resettlementLikePromo: Resettlement(resettlementType == PromotionOrResettlementType.@{promotionType},
+                 this after[0s,7d] $promo),
+    count($resettlementLikePromo)
+    )
+    Number(doubleValue < $capacity * 0.1) from accumulate (
+        $oppositeResettlement: Resettlement(resettlementType == PromotionOrResettlementType.@{lessThanAction},
+                     this after[0s,7d] $promo),
+        count($oppositeResettlement)
+    )
+then
+    System.out.println("Inside @{promotionType} termination");
+    modify($promo){
+        setEndDate(LocalDateTime.now()),
+        setIsActive(false)
+    };
+end
+
+end template

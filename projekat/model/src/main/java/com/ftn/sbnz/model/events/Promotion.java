@@ -9,21 +9,16 @@ import java.time.LocalDateTime;
 @Role(Role.Type.EVENT)
 public class Promotion extends Event{
     private PromotionOrResettlementType type;
-    private LocalDateTime startDate;
     private LocalDateTime endDate;
     private boolean isActive;
 
-    public Promotion(LocalDateTime timestamp,
-                     Shelter shelter,
+    public Promotion(Shelter shelter,
                      PromotionOrResettlementType type,
-                     LocalDateTime startDate,
-                     LocalDateTime endDate,
-                     boolean isActive) {
-        super(timestamp, shelter);
+                     LocalDateTime endDate) {
+        super(LocalDateTime.now(), shelter);
         this.type = type;
-        this.startDate = startDate;
         this.endDate = endDate;
-        this.isActive = isActive;
+        this.isActive = true;
     }
 
 
@@ -35,14 +30,6 @@ public class Promotion extends Event{
         this.type = type;
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(LocalDateTime startDate) {
-        this.startDate = startDate;
-    }
-
     public LocalDateTime getEndDate() {
         return endDate;
     }
@@ -51,11 +38,11 @@ public class Promotion extends Event{
         this.endDate = endDate;
     }
 
-    public boolean isActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
+    public void setIsActive(boolean active) {
         isActive = active;
     }
 }

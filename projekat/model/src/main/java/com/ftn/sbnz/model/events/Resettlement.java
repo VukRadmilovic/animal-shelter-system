@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Role(Role.Type.EVENT)
 public class Resettlement extends Event {
 
-
     public Resettlement(LocalDateTime timestamp,
                         Shelter shelter,
                         PromotionOrResettlementType resettlementType,
