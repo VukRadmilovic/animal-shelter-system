@@ -19,7 +19,7 @@ when
     Response($userId: userId, questionId==@{questionId}, $choice: choice, choice < @{lowLimit})
 then
     insert(new Recommendation($userId, "@{recommendationsLow}"));
-    System.out.println("LOW");
+//    System.out.println("LOW");
 end
 
 rule "@{ruleName} >=l, <=h"
@@ -27,7 +27,7 @@ when
     Response($userId: userId, questionId==@{questionId}, $choice: choice, choice >= @{lowLimit}, choice <= @{highLimit})
 then
     insert(new Recommendation($userId, "@{recommendationsMid}"));
-    System.out.println("MID");
+//    System.out.println("MID");
 end
 
 rule "@{ruleName} >h"
@@ -35,7 +35,7 @@ when
     Response($userId: userId, questionId==@{questionId}, $choice: choice, choice > @{highLimit})
 then
     insert(new Recommendation($userId, "@{recommendationsHigh}"));
-    System.out.println("HIGH");
+//    System.out.println("HIGH");
 end
 
 

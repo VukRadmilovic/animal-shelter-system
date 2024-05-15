@@ -3,18 +3,20 @@ package com.ftn.sbnz.service.tests;
 import com.ftn.sbnz.model.enums.AnimalBreed;
 import com.ftn.sbnz.model.enums.AnimalType;
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
+import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.QuestionnaireFilled;
 import com.ftn.sbnz.model.events.Resettlement;
 import com.ftn.sbnz.model.models.*;
+import org.drools.core.ClassObjectFilter;
 import org.drools.template.ObjectDataCompiler;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.kie.api.KieServices;
 import org.kie.api.builder.Message;
 import org.kie.api.builder.Results;
-import org.kie.api.io.ResourceType;
 import org.kie.api.io.Resource;
+import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
@@ -22,9 +24,13 @@ import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 
+import static org.junit.Assert.*;
+import java.util.Collection;
+
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -93,7 +99,7 @@ public class BasicTest {
 
         ObjectDataCompiler converter = new ObjectDataCompiler();
         continuousTemplateCompiled = converter.compile(petRecommendationRules, template);
-        System.out.println(continuousTemplateCompiled);
+//        System.out.println(continuousTemplateCompiled);
     }
 
     private static void initializeBasicTemplate() {
@@ -237,6 +243,37 @@ public class BasicTest {
         session.fireAllRules();
         session.insert(new Response(123L, 15, 0.5));
         session.fireAllRules();
+    }
+
+    @Test
+    public void testShelterForwardChaining() {
+        KieSession session = createKieSession();
+        session.insert(new RecommendationsMap());
+        session.insert(new FinalistsForUsers());
+        session.insert(new GlobalChart());
+        List<Animal> animals = new ArrayList<>();
+        animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
+        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
+        List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
+                new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
+                new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
+                new Price(AnimalType.REPTILE, 15), new Price(AnimalType.RODENT, 10),
+                new Price(AnimalType.SPIDER, 20)));
+        Shelter shelter = new Shelter("Test name", "Test address",
+                60.0 * 9, 60, animals,null, prices);
+
+        session.insert(shelter);
+        int numOfRulesFired = session.fireAllRules();
+
+        assertEquals(1, numOfRulesFired); // only 1 rule set off, calculate money needed for upkeep for new shelter
+
+        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING,
+                new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
+        numOfRulesFired = session.fireAllRules();
+        assertEquals(3, numOfRulesFired); // 3 rules set off: shelter animal, recalculate money needed, ask for more money
+
+        Collection<?> notifications = session.getObjects(new ClassObjectFilter(Notification.class));
+        assertEquals(1, notifications.size()); // ask for money notification sent
     }
 
     @Test

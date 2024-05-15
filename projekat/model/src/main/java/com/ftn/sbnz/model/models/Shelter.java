@@ -9,9 +9,34 @@ public class Shelter {
     private String name;
     private String address;
     private double moneyAvailable;
+    private double moneyNeededForUpkeep;
     private int capacity;
     private List<Animal> animals;
     private List<Price> prices;
+
+    public Shelter(String name,
+                   String address,
+                   double moneyAvailable,
+                   int capacity,
+                   List<Animal> animals,
+                   List<FoodAvailableForAnimal> foodAvailableForAnimals,
+                   List<Price> prices) {
+        this.name = name;
+        this.address = address;
+        this.moneyAvailable = moneyAvailable;
+        this.capacity = capacity;
+        this.animals = animals;
+        this.foodAvailableForAnimals = foodAvailableForAnimals;
+        this.prices = prices;
+    }
+
+    public double getMoneyNeededForUpkeep() {
+        return moneyNeededForUpkeep;
+    }
+
+    public void setMoneyNeededForUpkeep(double moneyNeededForUpkeep) {
+        this.moneyNeededForUpkeep = moneyNeededForUpkeep;
+    }
 
     public List<Price> getPrices() {
         return prices;
@@ -30,22 +55,6 @@ public class Shelter {
     }
 
     private List<FoodAvailableForAnimal> foodAvailableForAnimals;
-
-    public Shelter(String name,
-                   String address,
-                   double moneyAvailable,
-                   int capacity,
-                   List<Animal> animals,
-                   List<FoodAvailableForAnimal> foodAvailableForAnimals,
-                   List<Price> prices) {
-        this.name = name;
-        this.address = address;
-        this.moneyAvailable = moneyAvailable;
-        this.capacity = capacity;
-        this.animals = animals;
-        this.foodAvailableForAnimals = foodAvailableForAnimals;
-        this.prices = prices;
-    }
 
     public String getName() {
         return name;

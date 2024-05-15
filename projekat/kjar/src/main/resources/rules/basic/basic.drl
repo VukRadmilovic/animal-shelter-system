@@ -17,13 +17,16 @@ import com.ftn.sbnz.model.models.Animal;
 import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.GlobalChartTop5Update;
+import com.ftn.sbnz.model.events.Resettlement;
+import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
 import java.util.HashMap
 import java.util.Map
 import java.util.ArrayList
 import java.util.Comparator
 import java.util.Collections
 import java.util.stream.Collectors
-import java.util.EnumSet;
+import java.util.EnumSet
+import com.ftn.sbnz.model.models.Price;
 
 rule "Breed recommendation update"
     no-loop
@@ -108,4 +111,42 @@ rule "Adoption promotion after global chart update"
         insert(new Notification($shelter,String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended."));
         modify($globalChart){setRecommendations($newList)};
         delete($update);
+end
+
+rule "New animal sheltered, update shelter"
+    when
+        $resettlement: Resettlement(resettlementType == resettlementType.SHELTERING, $shelter: shelter, $animal: animal)
+    then
+        List<Animal> newAnimalList = $shelter.getAnimals();
+        newAnimalList.add($animal);
+        modify($shelter){setAnimals(newAnimalList)};
+//        System.out.println("New animal added");
+end
+
+rule "If amount of sheltered animals changes, recalculate money needed for upkeep"
+    when
+        $shelter: Shelter($animals: animals, $prices: prices)
+    then
+        double moneyNeeded = 0.0;
+        for (Object priceO : $prices) {
+            Price price = (Price) priceO;
+            for (Object animalO : $animals) {
+                Animal animal = (Animal) animalO;
+                if (price.getAnimalType().equals(animal.getAnimalType())) {
+                    moneyNeeded += price.getPricePerPortion() * 9;
+                }
+            }
+        }
+        modify($shelter){setMoneyNeededForUpkeep(moneyNeeded)};
+//        System.out.println("Money for upkeep set");
+end
+
+rule "If more funds are needed, send notification"
+    when
+        $shelter: Shelter($moneyNeeded: moneyNeededForUpkeep, $moneyAvailable: moneyAvailable, moneyAvailable < moneyNeededForUpkeep)
+    then
+        Notification notification = new Notification($shelter, "Money available (" + $moneyAvailable + ") is less than money needed for upkeep (" + $moneyNeeded + "). Seek funds!");
+        insert(notification);
+//        System.out.println(notification);
+//        System.out.println("More funds needed!");
 end

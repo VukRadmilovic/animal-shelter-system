@@ -3,7 +3,6 @@ package com.ftn.sbnz.model.models;
 import com.ftn.sbnz.model.enums.AnimalType;
 
 public class Price {
-
     private AnimalType animalType;
     private double pricePerPortion;
 
