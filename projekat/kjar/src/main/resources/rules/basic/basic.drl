@@ -39,7 +39,7 @@ rule "Breed recommendation update"
             if(newMap.get($userId).get(breedEnum) == null)
                 newMap.get($userId).put(breedEnum,1);
             else
-                newMap.get($userId).put(breedEnum, newMap.get($userId).get(breedEnum) + 20);
+                newMap.get($userId).put(breedEnum, newMap.get($userId).get(breedEnum) + 1);
         }
         modify($recommendationsMap){setMap(newMap)};
         insert(new UserRecommendationCountChanged($userId));
@@ -99,6 +99,7 @@ rule "Adoption promotion after global chart update"
         )
     then
         System.out.println("Inside adoption promotion after global chart update");
+        System.out.println($diffs);
         List<String> breeds = new ArrayList<>();
         for(Object breed : $matches) {
             AnimalBreed breedCast = (AnimalBreed) breed;

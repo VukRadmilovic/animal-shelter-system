@@ -54,7 +54,7 @@ public class BasicTest {
                         "PERSIAN_CAT,GECKO,BALL_PYTHON,BEARDED_DRAGON,HAMSTER,BUNNY,DUTCH_DWARF_RABBIT,LIONHEAD,BIG_FISH,SMALL_FISH"));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Lives in a house", 2, 2,
                 "LABRADOR_RETRIEVER,GERMAN_SHEPARD,GOLDEN_RETRIEVER,BULLDOG,POODLE,BEAGLE,CHIHUAHUA,ROTTWEILER," +
-                        "DALMATIAN,PUG,HUSKY,SIAMESE_CAT,SPHYNX,PERSIAN,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,CANARIAN,PIGEON," +
+                        "DALMATIAN,PUG,HUSKY,SIAMESE_CAT,SPHYNX,PERSIAN_CAT,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,CANARY,PIGEON," +
                         "AFRICAN_GRAY_PARROT,BUDGERIGAR,COCKATIEL,GUINEA_PIG,HAMSTER"));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Has access to the yard", 3, 1,
                 "LABRADOR_RETRIEVER,GERMAN_SHEPARD,GOLDEN_RETRIEVER,BULLDOG,POODLE,BEAGLE,CHIHUAHUA,ROTTWEILER," +
@@ -89,7 +89,7 @@ public class BasicTest {
                 ""));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Has feather allergy", 7, 2,
                 "LABRADOR_RETRIEVER,GERMAN_SHEPARD,GOLDEN_RETRIEVER,BULLDOG,POODLE,BEAGLE,CHIHUAHUA,ROTTWEILER," +
-                        "DALMATIAN,PUG,HUSKY,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHOTHAIR_CAT,SIAMESE_CAT,PERSIAN_CAT,SPHYNX,TURTLE,GECKO,BALL_PYTHON," +
+                        "DALMATIAN,PUG,HUSKY,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,SIAMESE_CAT,PERSIAN_CAT,SPHYNX,TURTLE,GECKO,BALL_PYTHON," +
                         "BEARDED_DRAGON,GUINEA_PIG,HAMSTER,BIG_FISH,SMALL_FISH,BUNNY,DUTCH_DWARF_RABBIT,LIONHEAD"));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Has hair allergy", 7, 3,
                 "TURTLE,GECKO,BALL_PYTHON,BEARDED_DRAGON,SPHYNX,CANARY,AFRICAN_GRAY_PARROT,COCKATIEL," +
@@ -159,12 +159,29 @@ public class BasicTest {
         session.insert(new GlobalChart());
         List<Animal> animals = new ArrayList<>();
         animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
-        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
+        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
+        animals.add(new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
         session.insert(new Shelter("Test name", "Test address",
                 200000.0, 60,animals,null,null));
         session.insert(new Response(123L, 1, 1));
         session.fireAllRules();
-        session.insert(new Response(123L, 2, 1));
+        session.insert(new Response(123L, 2, 2));
+        session.fireAllRules();
+        session.insert(new Response(123L, 3, 1));
+        session.fireAllRules();
+        session.insert(new Response(123L, 4, 1));
+        session.fireAllRules();
+        session.insert(new Response(123L, 5, 2));
+        session.fireAllRules();
+        session.insert(new Response(123L, 6, 1));
+        session.fireAllRules();
+        session.insert(new Response(123L, 7, 2));
+        session.fireAllRules();
+        session.insert(new Response(123L, 8, 1));
+        session.fireAllRules();
+        session.insert(new Response(123L, 9, 1));
+        session.fireAllRules();
+        session.insert(new Response(123L, 10, 1));
         session.fireAllRules();
         session.insert(new QuestionnaireFilled(123L));
         session.fireAllRules();
