@@ -21,6 +21,14 @@ public class Promotion extends Event{
         this.isActive = true;
     }
 
+    public Promotion(Shelter shelter,
+                     PromotionOrResettlementType type) {
+        super(LocalDateTime.now(), shelter);
+        this.type = type;
+        this.endDate = null;
+        this.isActive = true;
+    }
+
 
     public PromotionOrResettlementType getType() {
         return type;
@@ -44,5 +52,15 @@ public class Promotion extends Event{
 
     public void setIsActive(boolean active) {
         isActive = active;
+    }
+
+    @Override
+    public String toString() {
+        return "Promotion{" +
+                "type=" + type +
+                ", timestamp=" + super.getTimestamp() +
+                ", endDate=" + endDate +
+                ", isActive=" + isActive +
+                '}';
     }
 }
