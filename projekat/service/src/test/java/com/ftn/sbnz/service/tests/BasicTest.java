@@ -346,7 +346,6 @@ public class BasicTest {
         session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a6));
         numOfRulesFired = session.fireAllRules();
         assertEquals(9, numOfRulesFired); // 1 per new animal sheltered, 1 for recalculate money needed, 1 to stop sheltering promotion, 1 to check if enough food
-        System.out.println(numOfRulesFired);
 
         Collection<?> notifications = session.getObjects(new ClassObjectFilter(Notification.class));
         assertEquals(1, notifications.size()); // need more food notification sent
@@ -367,9 +366,7 @@ public class BasicTest {
 
         session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.ADOPTION, a5));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(4, numOfRulesFired); //animal removed, money recalculated, sheltering promotion started, 1 for food check
-        promotions = session.getObjects(new ClassObjectFilter(Promotion.class));
-        assertEquals(3, promotions.size()); // new sheltering promotion started
+        assertEquals(3, numOfRulesFired); //animal removed, money recalculated, 1 for food check
 
         session.insert(new MoneyDeposit(LocalDateTime.now(), shelter, 150));
         numOfRulesFired = session.fireAllRules();

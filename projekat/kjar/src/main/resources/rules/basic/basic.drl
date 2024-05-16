@@ -163,6 +163,7 @@ rule "If shelter 90%+ full, start adoption promotion"
             Animal() from $animals,
             count()
         )
+        not Promotion(shelter == $shelter, isActive == true)
     then
         Promotion promotion = new Promotion($shelter, PromotionOrResettlementType.ADOPTION);
         insert(promotion);
