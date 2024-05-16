@@ -114,7 +114,7 @@ public class BasicTest {
                 "PUG,POODLE,CHIHUAHUA,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,TARANTULA,SIAMESE_CAT,SPHYNX," +
                         "PERSIAN_CAT,GECKO,BALL_PYTHON,BEARDED_DRAGON,HAMSTER,BUNNY,DUTCH_DWARF_RABBIT,LIONHEAD,BIG_FISH,SMALL_FISH"));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Lives in a house", 2, 2,
-                "LABRADOR_RETRIEVER,GERMAN_SHEPARD,GOLDEN_RETRIEVER,BULLDOG,POODLE,BEAGLE,CHIHUAHUA,ROTTWEILER," +
+                "LABRADOR_RETRIEVER,GERMAN_SHEPHERD,GOLDEN_RETRIEVER,BULLDOG,POODLE,BEAGLE,CHIHUAHUA,ROTTWEILER," +
                         "DALMATIAN,PUG,HUSKY,SIAMESE_CAT,SPHYNX,PERSIAN_CAT,DOMESTIC_SHORTHAIR_CAT,BRITISH_SHORTHAIR_CAT,CANARY,PIGEON," +
                         "AFRICAN_GRAY_PARROT,BUDGERIGAR,COCKATIEL,GUINEA_PIG,HAMSTER"));
         petRecommendationRules.add(new QuestionResponseWithRecommendation("Has access to the yard", 3, 1,
@@ -223,8 +223,21 @@ public class BasicTest {
         animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
         animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
         animals.add(new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
+
+        List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
+                new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
+                new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
+                new Price(AnimalType.REPTILE, 15), new Price(AnimalType.RODENT, 10),
+                new Price(AnimalType.SPIDER, 20)));
+
+        List<FoodAvailableForAnimal> foodAvailableForAnimals = new ArrayList<>(Arrays.asList(
+                new FoodAvailableForAnimal(1, AnimalType.RABBIT), new FoodAvailableForAnimal(3, AnimalType.FISH),
+                new FoodAvailableForAnimal(1, AnimalType.CAT), new FoodAvailableForAnimal(0, AnimalType.DOG),
+                new FoodAvailableForAnimal(0, AnimalType.BIRD), new FoodAvailableForAnimal(0, AnimalType.REPTILE),
+                new FoodAvailableForAnimal(0, AnimalType.RODENT), new FoodAvailableForAnimal(0, AnimalType.SPIDER)));
+
         session.insert(new Shelter("Test name", "Test address",
-                200000.0, 60,animals,null,null));
+                200000.0, 60,animals,foodAvailableForAnimals,prices));
         session.insert(new Response(123L, 1, 1));
         session.fireAllRules();
         session.insert(new Response(123L, 2, 2));
@@ -245,8 +258,6 @@ public class BasicTest {
         session.fireAllRules();
         session.insert(new Response(123L, 10, 1));
         session.fireAllRules();
-        session.insert(new QuestionnaireFilled(123L));
-        session.fireAllRules();
         session.insert(new Response(123L, 11, 5));
         session.fireAllRules();
         session.insert(new Response(123L, 12, 50));
@@ -256,6 +267,8 @@ public class BasicTest {
         session.insert(new Response(123L, 14, 11));
         session.fireAllRules();
         session.insert(new Response(123L, 15, 0.5));
+        session.fireAllRules();
+        session.insert(new QuestionnaireFilled(123L));
         session.fireAllRules();
     }
 
@@ -401,8 +414,24 @@ public class BasicTest {
     @Test
     public void TestCepRules() {
         KieSession session = createKieSession();
+        List<Animal> animals = new ArrayList<>();
+        animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
+        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
+        animals.add(new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
+
+        List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
+                new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
+                new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
+                new Price(AnimalType.REPTILE, 15), new Price(AnimalType.RODENT, 10),
+                new Price(AnimalType.SPIDER, 20)));
+
+        List<FoodAvailableForAnimal> foodAvailableForAnimals = new ArrayList<>(Arrays.asList(
+                new FoodAvailableForAnimal(1, AnimalType.RABBIT), new FoodAvailableForAnimal(3, AnimalType.FISH),
+                new FoodAvailableForAnimal(1, AnimalType.CAT), new FoodAvailableForAnimal(5, AnimalType.DOG),
+                new FoodAvailableForAnimal(0, AnimalType.BIRD), new FoodAvailableForAnimal(0, AnimalType.REPTILE),
+                new FoodAvailableForAnimal(0, AnimalType.RODENT), new FoodAvailableForAnimal(0, AnimalType.SPIDER)));
         Shelter shelter = new Shelter("Test name", "Test address",
-                200000.0, 10,null,null,null);
+                200000.0, 10,animals,foodAvailableForAnimals,prices);
         session.insert(shelter);
         session.insert(new Promotion(shelter,PromotionOrResettlementType.ADOPTION, null));
         SessionPseudoClock clock = session.getSessionClock();
@@ -411,7 +440,7 @@ public class BasicTest {
         session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
 
-        clock.advanceTime(1, TimeUnit.DAYS);
+        //clock.advanceTime(1, TimeUnit.DAYS);
         session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
 
@@ -419,7 +448,7 @@ public class BasicTest {
         session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.SHELTERING,null));
         session.fireAllRules();*/
 
-        clock.advanceTime(1, TimeUnit.DAYS);
+        //clock.advanceTime(1, TimeUnit.DAYS);
         session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
     }

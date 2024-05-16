@@ -187,6 +187,7 @@ rule "If shelter less than 50% full, start sheltering promotion"
             Animal() from $animals,
             count()
         )
+        not Promotion(shelter == $shelter, isActive == true)
     then
         Promotion promotion = new Promotion($shelter, PromotionOrResettlementType.SHELTERING);
         insert(promotion);
