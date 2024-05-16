@@ -253,18 +253,23 @@ public class BasicTest {
                 new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
                 new Price(AnimalType.REPTILE, 15), new Price(AnimalType.RODENT, 10),
                 new Price(AnimalType.SPIDER, 20)));
+        List<FoodAvailableForAnimal> foodAvailableForAnimals = new ArrayList<>(Arrays.asList(
+                new FoodAvailableForAnimal(1, AnimalType.RABBIT), new FoodAvailableForAnimal(3, AnimalType.FISH),
+                new FoodAvailableForAnimal(1, AnimalType.CAT), new FoodAvailableForAnimal(0, AnimalType.DOG),
+                new FoodAvailableForAnimal(0, AnimalType.BIRD), new FoodAvailableForAnimal(0, AnimalType.REPTILE),
+                new FoodAvailableForAnimal(0, AnimalType.RODENT), new FoodAvailableForAnimal(0, AnimalType.SPIDER)));
         Shelter shelter = new Shelter("Test name", "Test address",
-                60.0 * 9, 60, animals,null, prices);
+                60.0 * 9, 4, animals, foodAvailableForAnimals, prices);
 
         session.insert(shelter);
         int numOfRulesFired = session.fireAllRules();
 
-        assertEquals(1, numOfRulesFired); // only 1 rule set off, calculate money needed for upkeep for new shelter
+        assertEquals(2, numOfRulesFired); // calculate money needed for upkeep for new shelter, check if enough food
 
         session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING,
                 new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(3, numOfRulesFired); // 3 rules set off: shelter animal, recalculate money needed, ask for more money
+        assertEquals(4, numOfRulesFired); // shelter animal, recalculate money needed, ask for more money, food check
 
         Collection<?> notifications = session.getObjects(new ClassObjectFilter(Notification.class));
         assertEquals(1, notifications.size()); // ask for money notification sent

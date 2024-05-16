@@ -257,6 +257,7 @@ rule "When the amount of sheltered animals changes or someone is fed, check if e
     when
         $shelter: Shelter($animal: animals) or $feedingEvent: Feeding($shelter: shelter)
     then
+        System.out.println("Food check");
         for (Object foodAvailableForAnimalO : $shelter.getFoodAvailableForAnimals()) {
             FoodAvailableForAnimal foodAvailableForAnimal = (FoodAvailableForAnimal) foodAvailableForAnimalO;
             int numOfAnimalsOfSuchType = 0;
