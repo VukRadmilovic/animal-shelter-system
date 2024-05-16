@@ -24,4 +24,11 @@ public class MoneyDeposit extends Event{
     public void setAmount(double amount) {
         this.amount = amount;
     }
+
+    @Override
+    public String toString() {
+        return "MoneyDeposit{" +
+                "amount=" + amount +
+                '}';
+    }
 }

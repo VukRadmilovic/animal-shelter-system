@@ -34,4 +34,12 @@ public class Notification extends Event{
     public void setRead(boolean read) {
         isRead = read;
     }
+
+    @Override
+    public String toString() {
+        return "Notification{" +
+                "text='" + text + '\'' +
+                ", isRead=" + isRead +
+                '}';
+    }
 }

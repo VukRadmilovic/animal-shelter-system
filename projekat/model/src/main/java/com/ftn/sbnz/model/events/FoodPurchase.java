@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Role(Role.Type.EVENT)
 public class FoodPurchase extends Event{
     private AnimalType animalType;
-    private double quantity;
+    private int quantity;
 
     public FoodPurchase(LocalDateTime timestamp,
                         Shelter shelter,
                         AnimalType animalType,
-                        double quantity) {
+                        int quantity) {
         super(timestamp, shelter);
         this.animalType = animalType;
         this.quantity = quantity;
@@ -29,11 +29,11 @@ public class FoodPurchase extends Event{
         this.animalType = animalType;
     }
 
-    public double getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(double quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
 }

@@ -3,11 +3,11 @@ package com.ftn.sbnz.model.models;
 public class Response {
     private Long userId;
     private int questionId;
-    private int choice;
+    private double choice;
 
     public Response(Long userId,
                     int questionId,
-                    int choice) {
+                    double choice) {
         this.userId = userId;
         this.questionId = questionId;
         this.choice = choice;
@@ -30,11 +30,11 @@ public class Response {
         this.questionId = questionId;
     }
 
-    public int getChoice() {
+    public double getChoice() {
         return choice;
     }
 
-    public void setChoice(int choice) {
+    public void setChoice(double choice) {
         this.choice = choice;
     }
 }
