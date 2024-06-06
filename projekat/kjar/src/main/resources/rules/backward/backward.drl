@@ -1,96 +1,154 @@
 package backward;
+import com.ftn.sbnz.model.models.Shelter;
+import org.kie.api.time.SessionClock;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.Instant
+import com.ftn.sbnz.model.models.Report
+import com.ftn.sbnz.model.enums.ReportType
+import com.ftn.sbnz.model.events.Resettlement;
+import java.util.List
+import java.util.ArrayList;
 
-//WOMEN
-/*rule "all whamen"
+
+query isContainedIn(String x, String y, Report r)
+  r:= Report( x, y; )
+  or
+  (Report( z, y; ) and isContainedIn( x, z, r; ) )
+end
+
+query isContainedInForLeaf(String x, String y, Report r)
+  r:= Report( x, y; )
+  or
+  (r:= Report( z, y; ) and isContainedIn( x, z, r; ) )
+end
+
+query findLeaf(String x)
+  isContainedInForLeaf(x, y, $r; )
+end
+
+query isContainedInNonLeaf(String y)
+  isContainedIn(x, y, $r; )
+end
+
+
+rule "Create this month's remaining reports on startup"
     when
-        $women : List() from collect(Woman())
+        $clock: SessionClock()
+        $shelter: Shelter()
     then
-        System.out.println($women);
-end*/
+        System.out.println("Creating this month's remaining reports on startup");
+        LocalDateTime clockTime = LocalDateTime.ofInstant(Instant.ofEpochMilli($clock.getCurrentTime()), ZoneId.systemDefault());
+        System.out.println("Current time: " + clockTime);
+        String monthName = clockTime.getMonth().name();
+        LocalDateTime firstDay = clockTime;
+        LocalDateTime lastDay = clockTime.withDayOfMonth(clockTime.getMonth().length(clockTime.toLocalDate().isLeapYear()));
+
+        // generate report
+        System.out.println("Generating reports for " + monthName + " from " + firstDay + " to " + lastDay);
+
+        List<Report> reports = new ArrayList<>();
+        // generate report for month
+        String monthReportName = clockTime.getMonthValue() + "." + clockTime.getYear() + ".";
+        reports.add(new Report(monthReportName, "", ReportType.MONTHLY, $shelter));
+
+        // generate reports for each week
+        LocalDateTime weekStart = firstDay;
+        while (weekStart.isBefore(lastDay)) {
+            LocalDateTime weekEnd = weekStart.plusDays(6);
+            if (weekEnd.isAfter(lastDay)) {
+                weekEnd = lastDay;
+            }
+            String weekReportName = weekStart.getDayOfMonth() + "." + weekStart.getMonthValue() + "." + weekStart.getYear() + "." + " - " + weekEnd.getDayOfMonth() + "." + weekEnd.getMonthValue() + "." + weekEnd.getYear() + ".";
+            reports.add(new Report(weekReportName, monthReportName, ReportType.WEEKLY, $shelter));
+
+            // generate reports for each day
+            LocalDateTime dayStart = weekStart;
+            while (dayStart.isBefore(weekEnd) || dayStart.isEqual(weekEnd)) {
+                String dayReportName = dayStart.getDayOfMonth() + "." + dayStart.getMonthValue() + "." + dayStart.getYear() + ".";
+                reports.add(new Report(dayReportName, weekReportName, ReportType.DAILY, $shelter));
+                dayStart = dayStart.plusDays(1);
+            }
+            weekStart = weekEnd.plusDays(1);
+        }
+
+        // insert reports
+        for (Report r : reports) {
+            System.out.println(r);
+            insert(r);
+        }
+end
 
 
-
-//MEN
-/* "all men"
+rule "Create reports every month"
+    timer( cron: 0 0 0 1 * ? )
     when
-        $men : List() from collect(Man())
+        $clock : SessionClock()
+        $shelter: Shelter()
     then
-        System.out.println($men);
+        LocalDateTime clockTime = LocalDateTime.ofInstant(Instant.ofEpochMilli($clock.getCurrentTime()), ZoneId.systemDefault());
+        System.out.println("Current time: " + clockTime);
+        String monthName = clockTime.getMonth().name();
+        LocalDateTime firstDay = clockTime.withDayOfMonth(1);
+        LocalDateTime lastDay = clockTime.withDayOfMonth(clockTime.getMonth().length(clockTime.toLocalDate().isLeapYear()));
+
+        // generate report
+        System.out.println("Generating reports for " + monthName + " from " + firstDay + " to " + lastDay);
+
+        List<Report> reports = new ArrayList<>();
+        // generate report for month
+        String monthReportName = clockTime.getMonthValue() + "." + clockTime.getYear() + ".";
+        reports.add(new Report(monthReportName, "", ReportType.MONTHLY, $shelter));
+
+        // generate reports for each week
+        LocalDateTime weekStart = firstDay;
+        while (weekStart.isBefore(lastDay)) {
+            LocalDateTime weekEnd = weekStart.plusDays(6);
+            if (weekEnd.isAfter(lastDay)) {
+                weekEnd = lastDay;
+            }
+            String weekReportName = weekStart.getDayOfMonth() + "." + weekStart.getMonthValue() + "." + weekStart.getYear() + "." + " - " + weekEnd.getDayOfMonth() + "." + weekEnd.getMonthValue() + "." + weekEnd.getYear() + ".";
+            reports.add(new Report(weekReportName, monthReportName, ReportType.WEEKLY, $shelter));
+
+            // generate reports for each day
+            LocalDateTime dayStart = weekStart;
+            while (dayStart.isBefore(weekEnd) || dayStart.isEqual(weekEnd)) {
+                String dayReportName = dayStart.getDayOfMonth() + "." + dayStart.getMonthValue() + "." + dayStart.getYear() + ".";
+                reports.add(new Report(dayReportName, weekReportName, ReportType.DAILY, $shelter));
+                dayStart = dayStart.plusDays(1);
+            }
+            weekStart = weekEnd.plusDays(1);
+        }
+
+        // insert reports
+        for (Report r : reports) {
+            System.out.println(r);
+            insert(r);
+        }
 end
 
-
-
-//FATHERS
-query father(String fathersName, String childNameVar)
-    Man(name == fathersName) and
-    Parent(fathersName, childNameVar;)
-end
-
-/*rule "fathers"
+rule "If animal adopted, update report for that day"
+    lock-on-active true
     when
-        String(this == "fathers")
-        father(dad, child; )
+        $clock : SessionClock()
+        $resettlement: Resettlement(resettlementType == resettlementType.ADOPTION, $shelter: shelter)
+        $report: Report(name == $resettlement.getReportName())
     then
-        System.out.println(dad  + "," + child);
+        System.out.println("[A] Updating report for " + $resettlement.getReportName());
+        System.out.println("Before update: " + $report);
+        modify($report){incrementAdoptionCount()};
+        System.out.println("After update: " + $report);
 end
 
-
-
-//MOTHERS
-query mother(String mothersName, String childNameVar)
-    Woman(name == mothersName) and
-    Parent(mothersName, childNameVar;)
-end
-
-/*rule "mothers"
+rule "If animal sheltered, update report for that day"
+    lock-on-active true
     when
-        String(this == "mothers")
-        mother(mom, child; )
+        $clock : SessionClock()
+        $resettlement: Resettlement(resettlementType == resettlementType.SHELTERING, $shelter: shelter)
+        $report: Report(name == $resettlement.getReportName())
     then
-        System.out.println(mom  + "," + child);
+        System.out.println("[S] Updating report for " + $resettlement.getReportName());
+        System.out.println("Before update: " + $report);
+        modify($report){incrementShelteringCount()};
+        System.out.println("After update: " + $report);
 end
-
-
-
-//SONS
-/*query son(String parentName, String sonName)
-    Man(name == sonName) and
-    Parent(parentName, sonName;)
-end
-
-rule "sons"
-    when
-        String(this == "sons")
-        son(parent, sonVar; )
-    then
-        System.out.println(sonVar  + "," + parent);
-end*/
-
-
-//DAUGTHERS
-/*query daughter(String parentName, String daughterName)
-    Woman(name == daughterName) and
-    Parent(parentName, daughterName;)
-end
-
-rule "daughters"
-    when
-        String(this == "daughters")
-        daughter(parent, daughterVar; )
-    then
-        System.out.println(daughterVar  + "," + parent);
-end*/
-
-
-//SIBLINGS
-/*query sibling(String parentName, String childName)
-
-end
-
-rule "siblings"
-    when
-        String(this == "siblings")
-        sibling(first, second; )
-    then
-        System.out.println(first  + "," + second);
-end*/
