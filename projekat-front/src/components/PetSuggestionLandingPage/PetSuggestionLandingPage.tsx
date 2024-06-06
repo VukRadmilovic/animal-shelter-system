@@ -62,7 +62,7 @@ export function PetSuggestionLandingPage({suggestionService} : PetSuggestionLand
             setErrorPopupOpen(true);
         });
         if(activeStep == questions!.questions.length - 1) {
-            suggestionService.getSuggestions(sessionStorage.getItem('userId')).then((suggestions) => {
+            suggestionService.getSuggestions(sessionStorage.getItem('userId')!).then((suggestions) => {
                 console.log(suggestions);
                 setValue(-1);
                 setSuggestions(suggestions);
@@ -98,7 +98,6 @@ export function PetSuggestionLandingPage({suggestionService} : PetSuggestionLand
                 <Grid container item xs={12} sm={12} md={10} lg={8} xl={8}
                       minHeight={'70vh'}
                       padding={2}
-
                       className="container rounded-container">
                     <Grid item container xs={12} sm={12} md={12} lg={12} xl={12} justifyContent={'center'}
                           alignSelf={'flex-start'} mb={3}>

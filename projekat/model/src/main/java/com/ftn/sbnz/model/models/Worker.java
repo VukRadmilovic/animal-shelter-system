@@ -1,15 +1,27 @@
 package com.ftn.sbnz.model.models;
 
 public class Worker {
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    private String fullName;
     private String username;
     private String password;
     private Shelter shelter;
 
-    public Worker(String username, String password, Shelter shelter) {
+    public Worker(String username, String fullName, String password, Shelter shelter) {
         this.username = username;
+        this.fullName = fullName;
         this.password = password;
         this.shelter = shelter;
     }
+
 
     public String getUsername() {
         return username;
