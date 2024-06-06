@@ -3,6 +3,7 @@ package com.ftn.sbnz.service.tests;
 import com.ftn.sbnz.model.enums.AnimalBreed;
 import com.ftn.sbnz.model.enums.AnimalType;
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
+import com.ftn.sbnz.model.enums.ReportType;
 import com.ftn.sbnz.model.events.*;
 import com.ftn.sbnz.model.models.*;
 import org.drools.core.ClassObjectFilter;
@@ -17,11 +18,16 @@ import org.kie.api.io.ResourceType;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
 import org.kie.api.time.SessionPseudoClock;
 import org.kie.internal.io.ResourceFactory;
 import org.kie.internal.utils.KieHelper;
 
 import static org.junit.Assert.*;
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 
 import java.io.InputStream;
@@ -208,6 +214,11 @@ public class BasicTest {
         InputStream basicRules = BasicTest.class.getResourceAsStream("/rules/basic/basic.drl");
         Resource ruleResource = ResourceFactory.newInputStreamResource(basicRules);
         kieHelper.addResource(ruleResource, ResourceType.DRL);
+
+        InputStream backwardRules = BasicTest.class.getResourceAsStream("/rules/backward/backward.drl");
+        Resource backwardResource = ResourceFactory.newInputStreamResource(backwardRules);
+        kieHelper.addResource(backwardResource, ResourceType.DRL);
+
         KieSessionConfiguration config = KieServices.Factory.get().newKieSessionConfiguration();
         config.setOption(ClockTypeOption.get("pseudo"));
         return kieHelper.build().newKieSession(config,null);
@@ -448,5 +459,151 @@ public class BasicTest {
         //clock.advanceTime(1, TimeUnit.DAYS);
         session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
+    }
+
+    @Test
+    public void testBackward() {
+        KieSession session = createKieSession();
+        List<Animal> animals = new ArrayList<>();
+        Animal a = new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena");
+        animals.add(a);
+        Animal b = new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober");
+        animals.add(b);
+        Animal c = new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober");
+        animals.add(c);
+
+        List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
+                new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
+                new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
+                new Price(AnimalType.REPTILE, 15), new Price(AnimalType.RODENT, 10),
+                new Price(AnimalType.SPIDER, 20)));
+
+        List<FoodAvailableForAnimal> foodAvailableForAnimals = new ArrayList<>(Arrays.asList(
+                new FoodAvailableForAnimal(1, AnimalType.RABBIT), new FoodAvailableForAnimal(3, AnimalType.FISH),
+                new FoodAvailableForAnimal(1, AnimalType.CAT), new FoodAvailableForAnimal(5, AnimalType.DOG),
+                new FoodAvailableForAnimal(0, AnimalType.BIRD), new FoodAvailableForAnimal(0, AnimalType.REPTILE),
+                new FoodAvailableForAnimal(0, AnimalType.RODENT), new FoodAvailableForAnimal(0, AnimalType.SPIDER)));
+        Shelter shelter = new Shelter("Test name", "Test address",
+                200000.0, 10,animals,foodAvailableForAnimals,prices);
+        session.insert(shelter);
+
+        SessionPseudoClock clock = session.getSessionClock();
+        session.insert(clock);
+
+//        LocalDate startDate = LocalDate.of(1970, 1, 1); // start date
+//        LocalDate today = LocalDate.now().withDayOfMonth(1); // today's date
+//
+//        long daysBetween = ChronoUnit.DAYS.between(startDate, today); // calculate number of days between start date and today
+//        clock.advanceTime(daysBetween - 30, TimeUnit.DAYS);
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 1 day");
+        session.fireAllRules();
+
+        clock.advanceTime(27, TimeUnit.DAYS);
+        System.out.println("After 28 days");
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 29 day");
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 30 days");
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 31 days");
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.HOURS);
+        System.out.println("After 31 days and 1 hour");
+        session.fireAllRules();
+
+        clock.advanceTime(27, TimeUnit.DAYS);
+        System.out.println("After 58 days");
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 59 days");
+        session.fireAllRules();
+
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, b));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 60 days");
+        session.fireAllRules();
+
+        clock.advanceTime(1, TimeUnit.DAYS);
+        System.out.println("After 61 days");
+        session.fireAllRules();
+
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, b));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.fireAllRules();
+
+        clock.advanceTime(8, TimeUnit.DAYS);
+        System.out.println("After 69 days");
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.fireAllRules();
+
+        clock.advanceTime(7, TimeUnit.DAYS);
+        System.out.println("After 76 days");
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.fireAllRules();
+
+        clock.advanceTime(7, TimeUnit.DAYS);
+        System.out.println("After 83 days");
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.fireAllRules();
+
+        clock.advanceTime(7, TimeUnit.DAYS);
+        System.out.println("After 90 days");
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.fireAllRules();
+
+        clock.advanceTime(7, TimeUnit.DAYS);
+        System.out.println("After 97 days");
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a));
+        session.fireAllRules();
+
+        System.out.println("Get report from 1.3.1970.");
+        QueryResults results = session.getQueryResults("findLeaf", "1.3.1970.");
+        for (QueryResultsRow row : results) {
+            System.out.println(row.get("$r"));
+        }
+
+        System.out.println("Get all reports from 1.3.1970. to 7.3.1970.");
+        results = session.getQueryResults("isContainedInNonLeaf", "1.3.1970. - 7.3.1970.");
+        for (QueryResultsRow row : results) {
+            System.out.println(row.get("$r"));
+        }
+
+        System.out.println("Get all reports from 3.1970.");
+        Report monthlyReport = getMonthlyReport(session, shelter, "3.1970.");
+        System.out.println(monthlyReport);
+    }
+
+    private static Report getMonthlyReport(KieSession session, Shelter shelter, String month) {
+        QueryResults results;
+        results = session.getQueryResults("isContainedInNonLeaf", month);
+        Report monthlyReport = new Report(month, "", ReportType.MONTHLY, shelter);
+        for (QueryResultsRow row : results) {
+            Report r = (Report) row.get("$r");
+            monthlyReport.incrementAdoptionCount(r.getAdoptionCount());
+            monthlyReport.incrementShelteringCount(r.getShelteringCount());
+        }
+        return monthlyReport;
     }
 }

@@ -1,31 +1,55 @@
 package com.ftn.sbnz.model.models;
 
 import com.ftn.sbnz.model.enums.ReportType;
+import org.kie.api.definition.type.Position;
 
 import java.time.LocalDateTime;
 
 public class Report {
-
+    @Position(0)
+    private String name;
+    @Position(1)
+    private String parent;
     private ReportType type;
     private int adoptionCount;
     private int shelteringCount;
-    private LocalDateTime fromDate;
-    private LocalDateTime toDate;
     private Shelter shelter;
 
+    public Report() {
+    }
 
-    public Report(ReportType type,
-                  int adoptionCount,
-                  int shelteringCount,
-                  LocalDateTime fromDate,
-                  LocalDateTime toDate,
-                  Shelter shelter) {
+    public Report(String name, String parent, ReportType type, int adoptionCount, int shelteringCount, Shelter shelter) {
+        this.name = name;
+        this.parent = parent;
         this.type = type;
         this.adoptionCount = adoptionCount;
         this.shelteringCount = shelteringCount;
-        this.fromDate = fromDate;
-        this.toDate = toDate;
         this.shelter = shelter;
+    }
+
+    public Report(String name, String parent, ReportType type, Shelter shelter) {
+        this.name = name;
+        this.parent = parent;
+        this.type = type;
+        this.shelter = shelter;
+        this.adoptionCount = 0;
+        this.shelteringCount = 0;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
     public ReportType getType() {
@@ -52,27 +76,39 @@ public class Report {
         this.shelteringCount = shelteringCount;
     }
 
-    public LocalDateTime getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(LocalDateTime fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public LocalDateTime getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(LocalDateTime toDate) {
-        this.toDate = toDate;
-    }
-
     public Shelter getShelter() {
         return shelter;
     }
 
     public void setShelter(Shelter shelter) {
         this.shelter = shelter;
+    }
+
+    public void incrementAdoptionCount() {
+        this.adoptionCount++;
+    }
+
+    public void incrementShelteringCount() {
+        this.shelteringCount++;
+    }
+
+    public void incrementAdoptionCount(int count) {
+        this.adoptionCount += count;
+    }
+
+    public void incrementShelteringCount(int count) {
+        this.shelteringCount += count;
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "name='" + name + '\'' +
+                ", parent='" + parent + '\'' +
+                ", type=" + type +
+                ", adoptionCount=" + adoptionCount +
+                ", shelteringCount=" + shelteringCount +
+                ", shelter=" + shelter +
+                '}';
     }
 }
