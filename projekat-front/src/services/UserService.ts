@@ -12,8 +12,7 @@ export class UserService {
             url: `${this.api_host}/api/user/login`,
             data: userCredentials
         }).then((response) => {
-            const user: User = response.data;
-            sessionStorage.setItem("full_name", user.name + " " + user.surname);
+            sessionStorage.setItem("full_name", response.data);
         }).catch((err) => {
             console.log(err);
             throw err;

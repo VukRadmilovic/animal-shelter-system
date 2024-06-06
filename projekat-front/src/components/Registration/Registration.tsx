@@ -19,7 +19,7 @@ export function Registration({userService} : RegistrationProps) {
     const [errorMessage, setErrorMessage] = React.useState('');
     const [errorPopupOpen, setErrorPopupOpen] = React.useState(false);
     const [isSuccess, setIsSuccess] = React.useState(true);
-    const {register, getValues, handleSubmit, formState: {errors}} = useForm<RegistrationForm>({
+    const {register, getValues, handleSubmit, formState: {errors}, reset} = useForm<RegistrationForm>({
         defaultValues: {
             fullName: "",
             username: "",
@@ -40,7 +40,12 @@ export function Registration({userService} : RegistrationProps) {
             setErrorMessage("User successfully registered!");
             setIsSuccess(true);
             setErrorPopupOpen(true);
-            window.location.reload();
+            reset({
+                fullName: "",
+                username: "",
+                password: "",
+                passwordConfirmation: ""
+            });
         }).catch((error) => {
             setErrorMessage(error.response.data);
             setIsSuccess(false);
@@ -60,12 +65,12 @@ export function Registration({userService} : RegistrationProps) {
                       direction={'row'}
                       justifyContent={"center"}>
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mb={3}>
-                        <Typography variant="h2" mb={7} fontWeight={400}>Sign-up</Typography>
+                        <Typography variant="h2" mb={6} fontWeight={400}>Sign-up</Typography>
                     </Grid>
                     <Grid item container xs={12} sm={12} md={12} lg={12} xl={12} rowSpacing={3}>
                         <Grid item container xs={12} sm={12} md={12} lg={12} xl={12} justifyContent={'center'}>
                             <Grid item xs={10} sm={10} md={6} lg={6} xl={6} pl={2} pr={2}>
-                                <Grid item container spacing={1}>
+                                <Grid item container spacing={2} xs={12} sm={6} md={12} lg={12} xl={12}>
                                     <Grid item xs={12} sm={6} md={12} lg={12} xl={12}>
                                         <TextField id="name" label="Full Name"
                                                    type="text"
@@ -87,6 +92,7 @@ export function Registration({userService} : RegistrationProps) {
                                 </Grid>
                             </Grid>
                             <Grid item xs={10} sm={10} md={6} lg={6} xl={6} pl={2} pr={2}>
+                            <Grid item container  spacing={2} xs={12} sm={6} md={12} lg={12} xl={12}>
                                 <Grid item xs={12} sm={6} md={12} lg={12} xl={12}>
                                     <TextField id="password" label="Password"
                                                type="password"
@@ -112,6 +118,7 @@ export function Registration({userService} : RegistrationProps) {
                                                helperText={errors.passwordConfirmation ? errors.passwordConfirmation?.message : "Required, must be the same as the password above"}
                                                variant="outlined" fullWidth={true}/>
                                 </Grid>
+                            </Grid>
                             </Grid>
                         </Grid>
                     </Grid>

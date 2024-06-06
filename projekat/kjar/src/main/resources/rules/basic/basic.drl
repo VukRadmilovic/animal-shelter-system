@@ -14,6 +14,7 @@ import com.ftn.sbnz.model.models.GlobalChart;
 import com.ftn.sbnz.model.models.GlobalRecommendation;
 import com.ftn.sbnz.model.models.Shelter;
 import com.ftn.sbnz.model.models.Animal;
+import com.ftn.sbnz.model.models.Worker;
 import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.MoneyDeposit;
@@ -31,6 +32,13 @@ import java.util.stream.Collectors
 import java.util.EnumSet
 import com.ftn.sbnz.model.models.Price
 import com.ftn.sbnz.model.models.FoodAvailableForAnimal;
+
+declare Worker
+    username : String
+    password : String
+    shelter : Shelter
+    fullName: String
+end
 
 rule "Breed recommendation update"
     no-loop
@@ -293,4 +301,12 @@ end
 
 query "getFinalists"
     $map : FinalistsForUsers()
+end
+
+query getWorker(String usernameP)
+    $worker : Worker(username == usernameP)
+end
+
+query checkLogin(String usernameP, String passwordP)
+    $worker : Worker(username == usernameP, password == passwordP)
 end

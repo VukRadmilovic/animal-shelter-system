@@ -34,7 +34,7 @@ public class SuggestionsService {
     }
 
     public Suggestions getSuggestions(Long userId) {
-        QueryResults results = kieSession.getQueryResults("getFinalists");
+        QueryResults results = kieSession.getQueryResults("getWorker");
         FinalistsForUsers map = null;
         for (QueryResultsRow row : results) {
             map = (FinalistsForUsers) row.get("$map");
