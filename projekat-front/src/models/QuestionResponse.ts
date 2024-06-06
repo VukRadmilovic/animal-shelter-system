@@ -1,5 +1,5 @@
 export interface QuestionResponse {
     userId : number,
-    questionNumber: number,
-    questionResponse: number
+    questionId: number,
+    choice: number
 }

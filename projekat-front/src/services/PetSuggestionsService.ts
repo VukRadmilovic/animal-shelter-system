@@ -1,13 +1,25 @@
 import axios from "axios";
 import {QuestionResponse} from "../models/QuestionResponse.ts";
 import {Suggestions} from "../models/Suggestions.ts";
+import {Questionnaire} from "../models/Questionnaire.ts";
 
 export class PetSuggestionsService {
     private api_host = "http://localhost:8080";
+
+    public getQuestions() : Promise<Questionnaire> {
+        console.log("trigger");
+        return axios({
+            method: 'GET',
+            url: `${this.api_host}/api/questionnaire/questions`,
+        }).then((questionnaire) => questionnaire.data).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
     public sendResponse(response : QuestionResponse): Promise<void> {
         return axios({
             method: 'POST',
-            url: `${this.api_host}/api/suggestion`,
+            url: `${this.api_host}/api/questionnaire/response`,
             data: response
         }).then(() => {}).catch((err) => {
             console.log(err);
@@ -15,11 +27,10 @@ export class PetSuggestionsService {
         });
     }
 
-    public getSuggestions(lastResponse: QuestionResponse): Promise<Suggestions> {
+    public getSuggestions(userId: string): Promise<Suggestions> {
         return axios({
-            method: 'POST',
-            url: `${this.api_host}/api/suggestions/get`,
-            data: lastResponse
+            method: 'GET',
+            url: `${this.api_host}/api/questionnaire/suggestions/` + userId,
         }).then((suggestions) => suggestions.data).catch((err) => {
             console.log(err);
             throw err;

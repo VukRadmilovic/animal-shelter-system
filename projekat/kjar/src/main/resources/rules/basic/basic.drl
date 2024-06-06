@@ -64,7 +64,9 @@ rule "Breed recommendation for user insertion"
          newMap.putIfAbsent($userId, new ArrayList<AnimalBreed>());
          for (Map.Entry<AnimalBreed, Integer> entry : ((HashMap<AnimalBreed, Integer>)$map.get($userId)).entrySet()) {
              if(entry.getValue() >= 10) {
-                newMap.get($userId).add(entry.getKey());
+                if(!newMap.get($userId).contains(entry.getKey())) {
+                    newMap.get($userId).add(entry.getKey());
+                };
              }
          }
          modify($finalists){setFinalists(newMap)};
@@ -287,4 +289,8 @@ rule "Send notification to feed the animals at 09:00, 13:00 and 18:00"
         Notification notification = new Notification($shelter, "Time to feed the animals.");
         insert(notification);
         System.out.println("DINGDING " + notification);
+end
+
+query "getFinalists"
+    $map : FinalistsForUsers()
 end

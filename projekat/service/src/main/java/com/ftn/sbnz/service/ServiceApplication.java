@@ -2,6 +2,12 @@ package com.ftn.sbnz.service;
 
 import java.util.Arrays;
 
+import com.ftn.sbnz.model.models.FinalistsForUsers;
+import com.ftn.sbnz.model.models.GlobalChart;
+import com.ftn.sbnz.model.models.RecommendationsMap;
+import com.ftn.sbnz.model.models.backModels.Questionnaire;
+import com.ftn.sbnz.service.utils.RuleBaseInitialization;
+import org.kie.api.runtime.KieSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.kie.api.KieServices;
@@ -15,7 +21,8 @@ import org.slf4j.LoggerFactory;
 
 @SpringBootApplication
 public class ServiceApplication  {
-	
+
+	private final RuleBaseInitialization ruleBaseInitialization = new RuleBaseInitialization();
 	private static final Logger log = LoggerFactory.getLogger(ServiceApplication.class);
 	public static void main(String[] args) {
 		ApplicationContext ctx = SpringApplication.run(ServiceApplication.class, args);
@@ -39,4 +46,14 @@ public class ServiceApplication  {
 		kScanner.start(1000);
 		return kContainer;
 	}
+
+	@Bean
+	public KieSession kieSession() {
+		KieSession newSession = ruleBaseInitialization.createKieSession();
+		newSession.insert(new RecommendationsMap());
+		newSession.insert(new FinalistsForUsers());
+		newSession.insert(new GlobalChart());
+		return newSession;
+	}
+
 }
