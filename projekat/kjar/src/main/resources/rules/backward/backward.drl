@@ -11,6 +11,8 @@ import java.util.List
 import java.util.ArrayList;
 
 
+declare Flag end
+
 query isContainedIn(String x, String y, Report r)
   r:= Report( x, y; )
   or
@@ -31,11 +33,12 @@ query isContainedInNonLeaf(String y)
   isContainedIn(x, y, $r; )
 end
 
-
 rule "Create this month's remaining reports on startup"
+    salience 1000
     when
         $clock: SessionClock()
         $shelter: Shelter()
+        not Flag()
     then
         System.out.println("Creating this month's remaining reports on startup");
         LocalDateTime clockTime = LocalDateTime.ofInstant(Instant.ofEpochMilli($clock.getCurrentTime()), ZoneId.systemDefault());
@@ -77,6 +80,8 @@ rule "Create this month's remaining reports on startup"
             System.out.println(r);
             insert(r);
         }
+
+        insert(new Flag());
 end
 
 

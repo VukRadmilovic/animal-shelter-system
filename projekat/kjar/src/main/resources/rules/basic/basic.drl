@@ -132,9 +132,7 @@ rule "New animal sheltered, update shelter"
     when
         $resettlement: Resettlement(resettlementType == resettlementType.SHELTERING, $shelter: shelter, $animal: animal)
     then
-        List<Animal> newAnimalList = $shelter.getAnimals();
-        newAnimalList.add($animal);
-        modify($shelter){setAnimals(newAnimalList)};
+        modify($shelter){addAnimal($animal)};
         System.out.println("New animal added");
 end
 

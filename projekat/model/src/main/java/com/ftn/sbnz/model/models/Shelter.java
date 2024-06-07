@@ -96,4 +96,8 @@ public class Shelter {
         this.animals = animals;
     }
 
+    public void addAnimal(Animal animal) {
+        this.animals.add(animal);
+    }
+
 }
