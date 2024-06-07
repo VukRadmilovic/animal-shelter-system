@@ -1,6 +1,5 @@
 import {UserCredentials} from "../models/UserCredentials";
 import axios from "axios";
-import {User} from "../models/User.ts";
 import {NewUser} from "../models/NewUser.ts";
 
 export class UserService {

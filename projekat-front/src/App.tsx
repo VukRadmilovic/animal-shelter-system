@@ -5,10 +5,13 @@ import {PetSuggestionLandingPage} from "./components/PetSuggestionLandingPage/Pe
 import {PetSuggestionsService} from "./services/PetSuggestionsService.ts";
 import {LoginRegistration} from "./components/LoginRegistration/LoginRegistration.tsx";
 import {ShelterMain} from "./components/shelterMain/ShelterMain.tsx";
+import {ShelterService} from "./services/ShelterService.ts";
+import {ShelterInitialization} from "./components/ShelterInitialization/ShelterInitialization.tsx";
 
 function App() {
  const userServiceSingleton = new UserService();
  const suggestionServiceSingleton = new PetSuggestionsService();
+ const shelterServiceSingleton = new ShelterService();
   return (
     <>
         <BrowserRouter>
@@ -16,6 +19,7 @@ function App() {
                 <Route path="/" element={<PetSuggestionLandingPage suggestionService={suggestionServiceSingleton}/>}/>
                 <Route path="/Shelter" element={<LoginRegistration userService={userServiceSingleton}/>}/>
                 <Route path="/ShelterMain" element={<ShelterMain/>}/>
+                <Route path="/ShelterInit" element={<ShelterInitialization shelterService={shelterServiceSingleton}/>}/>
             </Routes>
         </BrowserRouter>
     </>
