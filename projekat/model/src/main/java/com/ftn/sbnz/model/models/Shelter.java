@@ -16,6 +16,7 @@ public class Shelter {
     private int capacity;
     private List<Animal> animals;
     private Map<AnimalType, Double> prices;
+    private Map<AnimalType, Integer> foodAvailableForAnimals;
 
     public Shelter(String name,
                    String address,
@@ -29,7 +30,10 @@ public class Shelter {
         this.moneyAvailable = moneyAvailable;
         this.capacity = capacity;
         this.animals = animals;
-        this.foodAvailableForAnimals = foodAvailableForAnimals;
+        this.foodAvailableForAnimals = new HashMap<>();
+        for (FoodAvailableForAnimal foodAvailableForAnimal: foodAvailableForAnimals) {
+            this.foodAvailableForAnimals.put(foodAvailableForAnimal.getAnimalType(), foodAvailableForAnimal.getPortionCount());
+        }
         this.prices = new HashMap<>();
         for (Price price: prices) {
             this.prices.put(price.getAnimalType(), price.getPricePerPortion());
@@ -41,7 +45,7 @@ public class Shelter {
                    double moneyAvailable,
                    int capacity,
                    List<Animal> animals,
-                   List<FoodAvailableForAnimal> foodAvailableForAnimals,
+                   Map<AnimalType, Integer> foodAvailableForAnimals,
                    Map<AnimalType, Double> prices) {
         this.name = name;
         this.address = address;
@@ -76,15 +80,13 @@ public class Shelter {
         return sum;
     }
 
-    public List<FoodAvailableForAnimal> getFoodAvailableForAnimals() {
+    public Map<AnimalType, Integer> getFoodAvailableForAnimals() {
         return foodAvailableForAnimals;
     }
 
-    public void setFoodAvailableForAnimals(List<FoodAvailableForAnimal> foodAvailableForAnimals) {
+    public void setFoodAvailableForAnimals(Map<AnimalType, Integer> foodAvailableForAnimals) {
         this.foodAvailableForAnimals = foodAvailableForAnimals;
     }
-
-    private List<FoodAvailableForAnimal> foodAvailableForAnimals;
 
     public String getName() {
         return name;
