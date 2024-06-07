@@ -1,11 +1,12 @@
 import {Box, Button, Grid, Tab, Tabs, TextField, Typography} from "@mui/material";
-import React from "react";
+import React, {useEffect, useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import {useForm} from "react-hook-form";
 import {UserCredentials} from "../../models/UserCredentials.ts";
 import {UserService} from "../../services/UserService.ts";
 import {PopupMessage} from "../PopupMessage/PopupMessage.tsx";
 import {Registration} from "../Registration/Registration.tsx";
+import {ShelterService} from "../../services/ShelterService.ts";
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -19,7 +20,8 @@ interface LoginForm {
 }
 
 interface LoginRegistrationProps {
-    userService: UserService;
+    userService: UserService,
+    shelterService: ShelterService
 }
 
 function TabPanel(props: TabPanelProps) {
@@ -48,11 +50,13 @@ function tabSetup(index: number) {
     };
 }
 
-export function LoginRegistration({userService} : LoginRegistrationProps) {
+export function LoginRegistration({userService, shelterService} : LoginRegistrationProps) {
     const [tabValue, setTabTabValue] = React.useState<number>(0);
     const [errorMessage, setErrorMessage] = React.useState<string>("");
     const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
     const navigate = useNavigate();
+    const shouldCheckShelter = useRef(true);
+    const [shelterExists, setShelterExists] = React.useState<boolean>(true);
     const {register, handleSubmit, formState: {errors}} = useForm<LoginForm>({
         defaultValues: {
             username: "",
@@ -77,6 +81,16 @@ export function LoginRegistration({userService} : LoginRegistrationProps) {
 
     }
 
+    useEffect(() => {
+        if(!shouldCheckShelter.current) return;
+        shelterService.checkShelter().then((result) => {
+            setShelterExists(result);
+        }).catch((err) => {
+            console.log(err)
+        });
+        shouldCheckShelter.current = false;
+    }, []);
+
     const handleErrorPopupClose = (reason?: string) => {
         if (reason === 'clickaway') return;
         setErrorPopupOpen(false);
@@ -88,7 +102,9 @@ export function LoginRegistration({userService} : LoginRegistrationProps) {
                       height={'fit-content'}
                       minHeight={'70vh'}
                       className="container rounded-container">
-                    <Grid item container xs={12} sm={12} md={12} lg={12} xl={12}>
+                    {shelterExists ?
+                    <div>
+                        <Grid item container xs={12} sm={12} md={12} lg={12} xl={12}>
                         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                             <Box sx={{borderBottom: 1, borderColor: 'divider'}} component={'div'}>
                                 <Tabs value={tabValue} onChange={handleTabChange} aria-label="login & sign-up" centered>
@@ -150,6 +166,12 @@ export function LoginRegistration({userService} : LoginRegistrationProps) {
                             <Registration userService={userService}/>
                         </TabPanel>
                     </Grid>
+                    </div> :
+                        <Grid textAlign={'center'} sx={{alignSelf:'center'}} p={2}>
+                            <Typography variant={'h4'}>Seems like shelter is not registered. Register the shelter first by clicking on the button below.</Typography>
+                            <Button variant="contained" type="submit" sx={{marginTop:'2em'}} onClick={() => navigate('/ShelterInit')}>Shelter Registration</Button>
+                        </Grid>
+                        }
                     <PopupMessage message={errorMessage} isSuccess={false} handleClose={handleErrorPopupClose} open={errorPopupOpen}/>
                 </Grid>
             </Grid>

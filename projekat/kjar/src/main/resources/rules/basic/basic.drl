@@ -279,3 +279,7 @@ end
 query checkLogin(String usernameP, String passwordP)
     $worker : Worker(username == usernameP, password == passwordP)
 end
+
+query "checkShelter"
+    $shelter: Shelter()
+end

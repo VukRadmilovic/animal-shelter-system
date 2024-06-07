@@ -12,19 +12,23 @@ import {
 import {useForm} from "react-hook-form";
 import {AnimalWithBreed} from "../../models/AnimalWithBreed.ts";
 import {Animal} from "../../models/Animal.ts";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {PopupMessage} from "../PopupMessage/PopupMessage.tsx";
+import {Shelter} from "../../models/Shelter.ts";
 
-interface AnimalsForm {
+export interface AnimalsForm {
     name: string,
     breed: string
 }
 
 interface AnimalsInitializationProps {
-    animals : AnimalWithBreed[]
+    animals : AnimalWithBreed[],
+    shelter: Shelter,
+    setShelter: (shelter: Shelter) => void
+    isDone: boolean
 }
 
-export function AnimalsInitialization({animals} : AnimalsInitializationProps) {
+export function AnimalsInitialization({animals, shelter, setShelter, isDone} : AnimalsInitializationProps) {
     const {register,handleSubmit, formState: {errors}} = useForm<AnimalsForm>({
         defaultValues: {
             name: "",
@@ -42,6 +46,11 @@ export function AnimalsInitialization({animals} : AnimalsInitializationProps) {
         setErrorPopupOpen(false);
     };
 
+    useEffect(() => {
+        shelter.animals = addedAnimals;
+        setShelter(shelter);
+    }, [isDone]);
+
     const addAnimal = (data : AnimalsForm) => {
         if (addedAnimals.filter(chip => chip.name == data.name && chip.animalBreed == data.breed).length > 0) {
             setErrorMessage("Animal with the specified name and breed already exists!");
@@ -52,6 +61,7 @@ export function AnimalsInitialization({animals} : AnimalsInitializationProps) {
         const animalWithBreed = animals.filter(animal => animal.animalBreed == data.breed);
         addedAnimals.push({name: data.name, animalBreed: data.breed, animalType: animalWithBreed[0].animalType});
     }
+
 
     const handleAnimalDelete = (chipToDelete: Animal) => () => {
         setAddedAnimals((chips) => chips.filter((chip) => chip.name !== chipToDelete.name));
@@ -105,7 +115,7 @@ export function AnimalsInitialization({animals} : AnimalsInitializationProps) {
                           border: '1px solid gray',
                           borderRadius: '1em',
                           boxShadow: 'none',
-                          height:'70vh',
+                          height:'40vh',
                           display:'flex',
                           flexDirection:'row',
                           alignItems:'flex-start',
@@ -118,7 +128,7 @@ export function AnimalsInitialization({animals} : AnimalsInitializationProps) {
                                 return (
                             <ListItem key={data.name + " " + data.animalBreed} sx={{width:'fit-content', padding:'5px 10px !important'}}>
                                 <Chip
-                                    label={data.name + "(" + data.animalBreed + ")"}
+                                    label={data.name + "(" + data.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()) + ")"}
                                     onDelete={handleAnimalDelete(data)}
                                 />
                             </ListItem>
