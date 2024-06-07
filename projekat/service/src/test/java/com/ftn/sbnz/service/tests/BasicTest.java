@@ -26,12 +26,9 @@ import org.kie.internal.utils.KieHelper;
 
 import static org.junit.Assert.*;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 
 import java.io.InputStream;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -286,6 +283,8 @@ public class BasicTest {
     @Test
     public void testShelterForwardChaining() {
         KieSession session = createKieSession();
+        SessionPseudoClock clock = session.getSessionClock();
+
         List<Animal> animals = new ArrayList<>();
         animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
         animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
@@ -307,7 +306,7 @@ public class BasicTest {
 
         assertEquals(2, numOfRulesFired); // calculate money needed for upkeep for new shelter, check if enough food
 
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING,
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING,
                 new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
         numOfRulesFired = session.fireAllRules();
         assertEquals(4, numOfRulesFired); // shelter animal, recalculate money needed, ask for more money, food check
@@ -338,9 +337,10 @@ public class BasicTest {
                 600_000.0, 10, animals, foodAvailableForAnimals, prices);
 
         session.insert(shelter);
+        session.insert(clock);
         int numOfRulesFired = session.fireAllRules();
 
-        assertEquals(3, numOfRulesFired); // calculate money needed for upkeep for new shelter, start sheltering promotion, check if enough food
+        assertEquals(4, numOfRulesFired); // calculate money needed for upkeep for new shelter, start sheltering promotion, check if enough food, report creation
 
         Animal a1 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
         Animal a2 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
@@ -349,54 +349,54 @@ public class BasicTest {
         Animal a5 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
         Animal a6 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
 
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a1));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a2));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a3));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a4));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a5));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING, a6));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a1));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a2));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a3));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a4));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a5));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a6));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(9, numOfRulesFired); // 1 per new animal sheltered, 1 for recalculate money needed, 1 to stop sheltering promotion, 1 to check if enough food
+        assertEquals(15, numOfRulesFired); // 2 per new animal sheltered (1 for updating reports), 1 for recalculate money needed, 1 to stop sheltering promotion, 1 to check if enough food
 
         Collection<?> notifications = session.getObjects(new ClassObjectFilter(Notification.class));
         assertEquals(1, notifications.size()); // need more food notification sent
 
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.SHELTERING,
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING,
                 new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(4, numOfRulesFired); // 1st new animal sheltered, 2nd recalculate money, 3rd start adoption promotion
+        assertEquals(5, numOfRulesFired); // 1st and 2nd new animal sheltered, 3rd recalculate money, 4th start adoption promotion, 5th food check
         Collection<?> promotions = session.getObjects(new ClassObjectFilter(Promotion.class));
         assertEquals(2, promotions.size()); // new adoption promotion started
 
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.ADOPTION, a1));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.ADOPTION, a2));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.ADOPTION, a3));
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.ADOPTION, a4));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a1));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a2));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a3));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a4));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(9, numOfRulesFired); //2 per animal removed, 1 for removing 1 for money recalculation, 1 for food check
+        assertEquals(13, numOfRulesFired); //3 per animal removed, 1 for removing 1 for money recalculation 1 for reports, 1 for food check
 
-        session.insert(new Resettlement(LocalDateTime.now(), shelter, PromotionOrResettlementType.ADOPTION, a5));
+        session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION, a5));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(3, numOfRulesFired); //animal removed, money recalculated, 1 for food check
+        assertEquals(4, numOfRulesFired); //animal removed x2, money recalculated, 1 for food check
 
-        session.insert(new MoneyDeposit(LocalDateTime.now(), shelter, 150));
+        session.insert(new MoneyDeposit(clock.getCurrentTime(), shelter, 150));
         numOfRulesFired = session.fireAllRules();
         assertEquals(1, numOfRulesFired); // increase available money
 
-        session.insert(new FoodPurchase(LocalDateTime.now(), shelter, AnimalType.FISH, 4));
+        session.insert(new FoodPurchase(clock.getCurrentTime(), shelter, AnimalType.FISH, 4));
         numOfRulesFired = session.fireAllRules();
         assertEquals(1, numOfRulesFired); // decrease available money
 
-        session.insert(new Feeding(LocalDateTime.now(), shelter, AnimalType.FISH));
+        session.insert(new Feeding(clock.getCurrentTime(), shelter, AnimalType.FISH));
         numOfRulesFired = session.fireAllRules();
         notifications = session.getObjects(new ClassObjectFilter(Notification.class));
         assertEquals(2, notifications.size()); // need more food notification sent
 
-        session.insert(new Feeding(LocalDateTime.now(), shelter, AnimalType.FISH));
+        session.insert(new Feeding(clock.getCurrentTime(), shelter, AnimalType.FISH));
         numOfRulesFired = session.fireAllRules();
         assertEquals(2, numOfRulesFired); // decrease food, food check
 
-        session.insert(new Feeding(LocalDateTime.now(), shelter, AnimalType.FISH));
+        session.insert(new Feeding(clock.getCurrentTime(), shelter, AnimalType.FISH));
         numOfRulesFired = session.fireAllRules();
         assertEquals(2, numOfRulesFired); // decrease food, food check
         notifications = session.getObjects(new ClassObjectFilter(Notification.class));
@@ -445,19 +445,19 @@ public class BasicTest {
         SessionPseudoClock clock = session.getSessionClock();
 
         clock.advanceTime(1, TimeUnit.DAYS);
-        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
+        session.insert(new Resettlement(clock.getCurrentTime(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
 
         //clock.advanceTime(1, TimeUnit.DAYS);
-        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
+        session.insert(new Resettlement(clock.getCurrentTime(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
 
         /*clock.advanceTime(1, TimeUnit.DAYS);
-        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.SHELTERING,null));
+        session.insert(new Resettlement(clock.getCurrentTime(),shelter,PromotionOrResettlementType.SHELTERING,null));
         session.fireAllRules();*/
 
         //clock.advanceTime(1, TimeUnit.DAYS);
-        session.insert(new Resettlement(LocalDateTime.now(),shelter,PromotionOrResettlementType.ADOPTION,null));
+        session.insert(new Resettlement(clock.getCurrentTime(),shelter,PromotionOrResettlementType.ADOPTION,null));
         session.fireAllRules();
     }
 

@@ -1,9 +1,12 @@
 package com.ftn.sbnz.model.models;
 
 import com.ftn.sbnz.model.enums.AnimalBreed;
+import com.ftn.sbnz.model.enums.AnimalType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Shelter {
     private String name;
@@ -12,7 +15,8 @@ public class Shelter {
     private double moneyNeededForUpkeep;
     private int capacity;
     private List<Animal> animals;
-    private List<Price> prices;
+    private Map<AnimalType, Double> prices;
+    private Map<AnimalType, Integer> foodAvailableForAnimals;
 
     public Shelter(String name,
                    String address,
@@ -21,6 +25,28 @@ public class Shelter {
                    List<Animal> animals,
                    List<FoodAvailableForAnimal> foodAvailableForAnimals,
                    List<Price> prices) {
+        this.name = name;
+        this.address = address;
+        this.moneyAvailable = moneyAvailable;
+        this.capacity = capacity;
+        this.animals = animals;
+        this.foodAvailableForAnimals = new HashMap<>();
+        for (FoodAvailableForAnimal foodAvailableForAnimal: foodAvailableForAnimals) {
+            this.foodAvailableForAnimals.put(foodAvailableForAnimal.getAnimalType(), foodAvailableForAnimal.getPortionCount());
+        }
+        this.prices = new HashMap<>();
+        for (Price price: prices) {
+            this.prices.put(price.getAnimalType(), price.getPricePerPortion());
+        }
+    }
+
+    public Shelter(String name,
+                   String address,
+                   double moneyAvailable,
+                   int capacity,
+                   List<Animal> animals,
+                   Map<AnimalType, Integer> foodAvailableForAnimals,
+                   Map<AnimalType, Double> prices) {
         this.name = name;
         this.address = address;
         this.moneyAvailable = moneyAvailable;
@@ -38,23 +64,29 @@ public class Shelter {
         this.moneyNeededForUpkeep = moneyNeededForUpkeep;
     }
 
-    public List<Price> getPrices() {
+    public Map<AnimalType, Double> getPrices() {
         return prices;
     }
 
-    public void setPrices(List<Price> prices) {
+    public void setPrices(Map<AnimalType, Double> prices) {
         this.prices = prices;
     }
 
-    public List<FoodAvailableForAnimal> getFoodAvailableForAnimals() {
+    public double calculateMoneyNeededForUpkeep() {
+        double sum = 0;
+        for (Animal animal: animals) {
+            sum += 9 * prices.get(animal.getAnimalType());
+        }
+        return sum;
+    }
+
+    public Map<AnimalType, Integer> getFoodAvailableForAnimals() {
         return foodAvailableForAnimals;
     }
 
-    public void setFoodAvailableForAnimals(List<FoodAvailableForAnimal> foodAvailableForAnimals) {
+    public void setFoodAvailableForAnimals(Map<AnimalType, Integer> foodAvailableForAnimals) {
         this.foodAvailableForAnimals = foodAvailableForAnimals;
     }
-
-    private List<FoodAvailableForAnimal> foodAvailableForAnimals;
 
     public String getName() {
         return name;
@@ -96,4 +128,11 @@ public class Shelter {
         this.animals = animals;
     }
 
+    public void addAnimal(Animal animal) {
+        this.animals.add(animal);
+    }
+
+    public void removeAnimal(Animal animal) {
+        this.animals.remove(animal);
+    }
 }

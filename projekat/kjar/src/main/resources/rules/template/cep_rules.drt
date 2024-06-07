@@ -8,12 +8,13 @@ import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.Resettlement;
 import com.ftn.sbnz.model.models.Shelter;
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
-import java.time.LocalDateTime;
+import org.kie.api.time.SessionClock;
 
 template "Adoption/sheltering termination"
 
 rule "@{promotionType} Termination"
 when
+    $clock: SessionClock()
     Shelter($capacity: capacity)
     $promo: Promotion(type == PromotionOrResettlementType.@{promotionType}, isActive == true)
     Number(doubleValue > $capacity * 0.2) from accumulate (
@@ -29,7 +30,7 @@ when
 then
     System.out.println("Inside @{promotionType} termination");
     modify($promo){
-        setEndDate(LocalDateTime.now()),
+        setEndDate($clock.getCurrentTime()),
         setIsActive(false)
     };
 end

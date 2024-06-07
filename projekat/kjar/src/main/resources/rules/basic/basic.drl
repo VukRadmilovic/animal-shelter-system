@@ -132,26 +132,15 @@ rule "New animal sheltered, update shelter"
     when
         $resettlement: Resettlement(resettlementType == resettlementType.SHELTERING, $shelter: shelter, $animal: animal)
     then
-        List<Animal> newAnimalList = $shelter.getAnimals();
-        newAnimalList.add($animal);
-        modify($shelter){setAnimals(newAnimalList)};
+        modify($shelter){addAnimal($animal)};
         System.out.println("New animal added");
 end
 
 rule "If amount of sheltered animals changes, recalculate money needed for upkeep"
     when
-        $shelter: Shelter($animals: animals, $prices: prices)
+        $shelter: Shelter($animals: animals)
     then
-        double moneyNeeded = 0.0;
-        for (Object priceO : $prices) {
-            Price price = (Price) priceO;
-            for (Object animalO : $animals) {
-                Animal animal = (Animal) animalO;
-                if (price.getAnimalType().equals(animal.getAnimalType())) {
-                    moneyNeeded += price.getPricePerPortion() * 9;
-                }
-            }
-        }
+        double moneyNeeded = $shelter.calculateMoneyNeededForUpkeep();
         modify($shelter){setMoneyNeededForUpkeep(moneyNeeded)};
         System.out.println("Money for upkeep set");
 end
@@ -185,9 +174,7 @@ rule "If animal adopted, remove from shelter"
     when
         $resettlement: Resettlement(resettlementType == resettlementType.ADOPTION, $shelter: shelter, $animal: animal)
     then
-        List<Animal> newAnimalList = $shelter.getAnimals();
-        newAnimalList.remove($animal);
-        modify($shelter){setAnimals(newAnimalList)};
+        modify($shelter){removeAnimal($animal)};
         System.out.println("Animal removed");
 end
 
@@ -220,71 +207,53 @@ rule "When food is purchased, decrease available money and increase amount of fo
         $foodPurchase: FoodPurchase($animalType: animalType, $quantity: quantity, $shelter: shelter)
     then
         double availableMoney = $shelter.getMoneyAvailable();
-        for (Object priceO : $shelter.getPrices()) {
-            Price price = (Price) priceO;
-            if (price.getAnimalType().equals($animalType)) {
-                availableMoney -= price.getPricePerPortion() * $quantity;
-            }
-        }
+        availableMoney -= $quantity * $shelter.getPrices().get($animalType);
         modify($shelter){setMoneyAvailable(availableMoney)};
+
         System.out.println($quantity + " portions for " + $animalType + " were purchased, " +
          "setting available money to " + availableMoney);
-        List<FoodAvailableForAnimal> availableForAnimals = $shelter.getFoodAvailableForAnimals();
-        for (Object foodAvailableForAnimalO : availableForAnimals) {
-            FoodAvailableForAnimal foodAvailableForAnimal = (FoodAvailableForAnimal) foodAvailableForAnimalO;
-            if (foodAvailableForAnimal.getAnimalType().equals($animalType)) {
-                foodAvailableForAnimal.setPortionCount(foodAvailableForAnimal.getPortionCount() + $quantity);
-                modify($shelter){setFoodAvailableForAnimals(availableForAnimals)};
-                System.out.println("Increased amount of food available for " + foodAvailableForAnimal.getAnimalType() +
-                " by " + $quantity + " now available: " + foodAvailableForAnimal.getPortionCount());
-                break;
-            }
-        }
+
+        Map<AnimalType, Integer> availableForAnimals = $shelter.getFoodAvailableForAnimals();
+        availableForAnimals.put($animalType, availableForAnimals.get($animalType) + $quantity);
+        modify($shelter){setFoodAvailableForAnimals(availableForAnimals)};
+
+        System.out.println("Increased amount of food available for " + $animalType + " by " + $quantity +
+        " now available: " + availableForAnimals.get($animalType));
 end
 
 rule "When animal is fed, decrease available food for that animal type"
     when
         $feeding: Feeding($shelter: shelter, $animalType: animalType)
+        $numOfAnimalsOfSuchType: Number(intValue != 0) from accumulate (
+            $animal: Animal( animalType == $animalType ) from $shelter.getAnimals(),
+            count($animal)
+        )
     then
-        int numOfAnimalsOfSuchType = 0;
-        for (Object animalO : $shelter.getAnimals()) {
-            Animal animal = (Animal) animalO;
-            if (animal.getAnimalType().equals($animalType)) {
-                numOfAnimalsOfSuchType++;
-            }
-        }
-        List<FoodAvailableForAnimal> availableForAnimals = $shelter.getFoodAvailableForAnimals();
-        for (Object foodAvailableForAnimalO : availableForAnimals) {
-            FoodAvailableForAnimal foodAvailableForAnimal = (FoodAvailableForAnimal) foodAvailableForAnimalO;
-            if (foodAvailableForAnimal.getAnimalType().equals($animalType)) {
-                foodAvailableForAnimal.setPortionCount(foodAvailableForAnimal.getPortionCount() - numOfAnimalsOfSuchType);
-                modify($shelter){setFoodAvailableForAnimals(availableForAnimals)};
-                System.out.println("Decreased amount of food available for " + foodAvailableForAnimal.getAnimalType() +
-                " by " + numOfAnimalsOfSuchType + " now available: " + foodAvailableForAnimal.getPortionCount());
-                break;
-            }
-        }
+        Map<AnimalType, Integer> availableForAnimals = $shelter.getFoodAvailableForAnimals();
+        availableForAnimals.put($animalType, availableForAnimals.get($animalType) - $numOfAnimalsOfSuchType.intValue());
+        modify($shelter){setFoodAvailableForAnimals(availableForAnimals)};
+
+        System.out.println("Decreased amount of food available for " + $animalType + " by " + $numOfAnimalsOfSuchType.intValue() +
+        " now available: " + availableForAnimals.get($animalType));
 end
+
 
 rule "When the amount of sheltered animals changes or someone is fed, check if enough food is available"
     when
         $shelter: Shelter($animal: animals) or $feedingEvent: Feeding($shelter: shelter)
     then
         System.out.println("Food check");
-        for (Object foodAvailableForAnimalO : $shelter.getFoodAvailableForAnimals()) {
-            FoodAvailableForAnimal foodAvailableForAnimal = (FoodAvailableForAnimal) foodAvailableForAnimalO;
-            int numOfAnimalsOfSuchType = 0;
-            for (Object animalO : $shelter.getAnimals()) {
-                Animal animal = (Animal) animalO;
-                if (animal.getAnimalType().equals(foodAvailableForAnimal.getAnimalType())) {
-                    numOfAnimalsOfSuchType++;
-                }
-            }
-            if (foodAvailableForAnimal.getPortionCount() < numOfAnimalsOfSuchType) {
-                Notification notification = new Notification($shelter, "Not enough food to feed all " + foodAvailableForAnimal.getAnimalType() + "! Urgently purchase food.");
+        Map<AnimalType, Integer> availableForAnimals = new HashMap<>($shelter.getFoodAvailableForAnimals());
+
+        for (Object animalO : $shelter.getAnimals()) {
+            Animal animal = (Animal) animalO;
+            availableForAnimals.put(animal.getAnimalType(), availableForAnimals.get(animal.getAnimalType()) - 1);
+
+            if (availableForAnimals.get(animal.getAnimalType()) == -1) {
+                Notification notification = new Notification($shelter, "Not enough food to feed all " + animal.getAnimalType() + "! Urgently purchase food.");
                 insert(notification);
                 System.out.println(notification);
-                System.out.println("Need more food for " + foodAvailableForAnimal.getAnimalType());
+                System.out.println("Need more food for " + animal.getAnimalType());
             }
         }
 end

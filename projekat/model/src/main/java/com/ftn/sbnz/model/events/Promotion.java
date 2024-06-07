@@ -4,7 +4,9 @@ import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
 import com.ftn.sbnz.model.models.Shelter;
 import org.kie.api.definition.type.Role;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Role(Role.Type.EVENT)
 public class Promotion extends Event{
@@ -44,6 +46,10 @@ public class Promotion extends Event{
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
+    }
+
+    public void setEndDate(long endDateLong) {
+        this.endDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(endDateLong), ZoneId.systemDefault());
     }
 
     public boolean getIsActive() {
