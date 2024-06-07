@@ -3,7 +3,9 @@ package com.ftn.sbnz.model.events;
 import com.ftn.sbnz.model.models.Shelter;
 import org.kie.api.definition.type.Role;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Role(Role.Type.EVENT)
 public class MoneyDeposit extends Event{
@@ -13,6 +15,13 @@ public class MoneyDeposit extends Event{
                         Shelter shelter,
                         double amount) {
         super(timestamp, shelter);
+        this.amount = amount;
+    }
+
+    public MoneyDeposit(long timestampLong,
+                        Shelter shelter,
+                        double amount) {
+        super(LocalDateTime.ofInstant(Instant.ofEpochMilli(timestampLong), ZoneId.systemDefault()), shelter);
         this.amount = amount;
     }
 
