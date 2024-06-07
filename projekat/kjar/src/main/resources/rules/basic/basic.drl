@@ -174,9 +174,7 @@ rule "If animal adopted, remove from shelter"
     when
         $resettlement: Resettlement(resettlementType == resettlementType.ADOPTION, $shelter: shelter, $animal: animal)
     then
-        List<Animal> newAnimalList = $shelter.getAnimals();
-        newAnimalList.remove($animal);
-        modify($shelter){setAnimals(newAnimalList)};
+        modify($shelter){removeAnimal($animal)};
         System.out.println("Animal removed");
 end
 

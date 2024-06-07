@@ -130,4 +130,7 @@ public class Shelter {
         this.animals.add(animal);
     }
 
+    public void removeAnimal(Animal animal) {
+        this.animals.remove(animal);
+    }
 }
