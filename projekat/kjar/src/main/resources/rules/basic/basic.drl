@@ -138,18 +138,9 @@ end
 
 rule "If amount of sheltered animals changes, recalculate money needed for upkeep"
     when
-        $shelter: Shelter($animals: animals, $prices: prices)
+        $shelter: Shelter($animals: animals)
     then
-        double moneyNeeded = 0.0;
-        for (Object priceO : $prices) {
-            Price price = (Price) priceO;
-            for (Object animalO : $animals) {
-                Animal animal = (Animal) animalO;
-                if (price.getAnimalType().equals(animal.getAnimalType())) {
-                    moneyNeeded += price.getPricePerPortion() * 9;
-                }
-            }
-        }
+        double moneyNeeded = $shelter.calculateMoneyNeededForUpkeep();
         modify($shelter){setMoneyNeededForUpkeep(moneyNeeded)};
         System.out.println("Money for upkeep set");
 end
@@ -218,12 +209,7 @@ rule "When food is purchased, decrease available money and increase amount of fo
         $foodPurchase: FoodPurchase($animalType: animalType, $quantity: quantity, $shelter: shelter)
     then
         double availableMoney = $shelter.getMoneyAvailable();
-        for (Object priceO : $shelter.getPrices()) {
-            Price price = (Price) priceO;
-            if (price.getAnimalType().equals($animalType)) {
-                availableMoney -= price.getPricePerPortion() * $quantity;
-            }
-        }
+        availableMoney -= $quantity * $shelter.getPrices().get($animalType);
         modify($shelter){setMoneyAvailable(availableMoney)};
         System.out.println($quantity + " portions for " + $animalType + " were purchased, " +
          "setting available money to " + availableMoney);
