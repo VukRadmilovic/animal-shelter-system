@@ -14,23 +14,43 @@ public class Promotion extends Event{
     private LocalDateTime endDate;
     private boolean isActive;
 
-    public Promotion(Shelter shelter,
+    public Promotion(LocalDateTime timestamp,
+                        Shelter shelter,
                      PromotionOrResettlementType type,
                      LocalDateTime endDate) {
-        super(LocalDateTime.now(), shelter);
+        super(timestamp, shelter);
         this.type = type;
         this.endDate = endDate;
         this.isActive = true;
     }
 
-    public Promotion(Shelter shelter,
-                     PromotionOrResettlementType type) {
-        super(LocalDateTime.now(), shelter);
+    public Promotion(LocalDateTime timestamp,
+                    Shelter shelter,
+                    PromotionOrResettlementType type) {
+        super(timestamp, shelter);
         this.type = type;
         this.endDate = null;
         this.isActive = true;
     }
 
+    public Promotion(long timestampLong,
+                    Shelter shelter,
+                    PromotionOrResettlementType type,
+                    long endDateLong) {
+        super(LocalDateTime.ofInstant(Instant.ofEpochMilli(timestampLong), ZoneId.systemDefault()), shelter);
+        this.type = type;
+        this.endDate = LocalDateTime.ofInstant(Instant.ofEpochMilli(endDateLong), ZoneId.systemDefault());
+        this.isActive = true;
+    }
+
+    public Promotion(long timestampLong,
+                    Shelter shelter,
+                    PromotionOrResettlementType type) {
+        super(LocalDateTime.ofInstant(Instant.ofEpochMilli(timestampLong), ZoneId.systemDefault()), shelter);
+        this.type = type;
+        this.endDate = null;
+        this.isActive = true;
+    }
 
     public PromotionOrResettlementType getType() {
         return type;

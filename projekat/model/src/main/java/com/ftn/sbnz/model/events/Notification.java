@@ -11,13 +11,21 @@ public class Notification extends Event{
     private String text;
     private boolean isRead;
 
-    public Notification(Shelter shelter,
+    public Notification(LocalDateTime timestamp,
+                        Shelter shelter,
                         String text) {
-        super(LocalDateTime.now(), shelter);
+        super(timestamp, shelter);
         this.text = text;
         this.isRead = false;
     }
 
+    public Notification(long timestampLong,
+                        Shelter shelter,
+                        String text) {
+        super(timestampLong, shelter);
+        this.text = text;
+        this.isRead = false;
+    }
 
     public String getText() {
         return text;

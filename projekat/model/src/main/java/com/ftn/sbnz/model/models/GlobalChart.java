@@ -12,10 +12,7 @@ public class GlobalChart {
     public GlobalChart() {
         this.recommendations = new ArrayList<>();
         for (AnimalBreed breed : AnimalBreed.values()) {
-            if(breed == AnimalBreed.LABRADOR_RETRIEVER)
-                this.recommendations.add(new GlobalRecommendation(breed,2));
-            else
-                this.recommendations.add(new GlobalRecommendation(breed,0));
+            this.recommendations.add(new GlobalRecommendation(breed, 0));
         }
     }
 

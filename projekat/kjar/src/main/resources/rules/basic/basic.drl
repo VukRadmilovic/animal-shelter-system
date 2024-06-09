@@ -3,6 +3,7 @@ import com.ftn.sbnz.model.enums.AnimalType;
 import java.util.List;
 import com.ftn.sbnz.model.enums.AnimalBreed;
 import java.util.Arrays;
+import org.kie.api.time.SessionClock;
 import com.ftn.sbnz.model.models.Recommendation;
 import com.ftn.sbnz.model.models.RecommendationsMap;
 import com.ftn.sbnz.model.events.UserRecommendationCountChanged;
@@ -107,6 +108,7 @@ end
 
 rule "Adoption promotion after global chart update"
     when
+        $clock: SessionClock()
         $update: GlobalChartTop5Update($newList: newGlobalChart, $diffs : getNewAnimalBreeds(), $diffs.size() > 0)
         $globalChart: GlobalChart()
         $shelter: Shelter($animals: animals)
@@ -123,7 +125,7 @@ rule "Adoption promotion after global chart update"
             String str = breedCast.toString().replace("_"," ").toLowerCase();
             breeds.add(str.substring(0, 1).toUpperCase() + str.substring(1));
         }
-        insert(new Notification($shelter,String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended."));
+        insert(new Notification($clock.getCurrentTime(), $shelter,String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended."));
         modify($globalChart){setRecommendations($newList)};
         delete($update);
 end
@@ -147,9 +149,10 @@ end
 
 rule "If more funds are needed, send notification"
     when
+        $clock: SessionClock()
         $shelter: Shelter($moneyNeeded: moneyNeededForUpkeep, $moneyAvailable: moneyAvailable, moneyAvailable < moneyNeededForUpkeep)
     then
-        Notification notification = new Notification($shelter, "Money available (" + $moneyAvailable + ") is less than money needed for upkeep (" + $moneyNeeded + "). Seek funds!");
+        Notification notification = new Notification($clock.getCurrentTime(), $shelter, "Money available (" + $moneyAvailable + ") is less than money needed for upkeep (" + $moneyNeeded + "). Seek funds!");
         insert(notification);
 //        System.out.println(notification);
         System.out.println("More funds needed!");
@@ -157,6 +160,7 @@ end
 
 rule "If shelter 90%+ full, start adoption promotion"
     when
+        $clock: SessionClock()
         $shelter: Shelter($capacity: capacity, $animals: animals)
         Number(intValue >= $capacity * 0.9) from accumulate(
             Animal() from $animals,
@@ -164,7 +168,7 @@ rule "If shelter 90%+ full, start adoption promotion"
         )
         not Promotion(shelter == $shelter, isActive == true)
     then
-        Promotion promotion = new Promotion($shelter, PromotionOrResettlementType.ADOPTION);
+        Promotion promotion = new Promotion($clock.getCurrentTime(), $shelter, PromotionOrResettlementType.ADOPTION);
         insert(promotion);
         System.out.println(promotion);
         System.out.println("Adoption promotion started!");
@@ -180,6 +184,7 @@ end
 
 rule "If shelter less than 50% full, start sheltering promotion"
     when
+        $clock: SessionClock()
         $shelter: Shelter($capacity: capacity, $animals: animals)
         Number(intValue < $capacity * 0.5) from accumulate(
             Animal() from $animals,
@@ -187,7 +192,7 @@ rule "If shelter less than 50% full, start sheltering promotion"
         )
         not Promotion(shelter == $shelter, isActive == true)
     then
-        Promotion promotion = new Promotion($shelter, PromotionOrResettlementType.SHELTERING);
+        Promotion promotion = new Promotion($clock.getCurrentTime(), $shelter, PromotionOrResettlementType.SHELTERING);
         insert(promotion);
         System.out.println(promotion);
         System.out.println("Sheltering promotion started!");
@@ -240,7 +245,8 @@ end
 
 rule "When the amount of sheltered animals changes or someone is fed, check if enough food is available"
     when
-        $shelter: Shelter($animal: animals) or $feedingEvent: Feeding($shelter: shelter)
+        $clock: SessionClock()
+        ($shelter: Shelter($animal: animals) or $feedingEvent: Feeding($shelter: shelter))
     then
         System.out.println("Food check");
         Map<AnimalType, Integer> availableForAnimals = new HashMap<>($shelter.getFoodAvailableForAnimals());
@@ -250,7 +256,7 @@ rule "When the amount of sheltered animals changes or someone is fed, check if e
             availableForAnimals.put(animal.getAnimalType(), availableForAnimals.get(animal.getAnimalType()) - 1);
 
             if (availableForAnimals.get(animal.getAnimalType()) == -1) {
-                Notification notification = new Notification($shelter, "Not enough food to feed all " + animal.getAnimalType() + "! Urgently purchase food.");
+                Notification notification = new Notification($clock.getCurrentTime(), $shelter, "Not enough food to feed all " + animal.getAnimalType() + "! Urgently purchase food.");
                 insert(notification);
                 System.out.println(notification);
                 System.out.println("Need more food for " + animal.getAnimalType());
@@ -261,9 +267,10 @@ end
 rule "Send notification to feed the animals at 09:00, 13:00 and 18:00"
     timer( cron: 0 0 9,13,18 * * ? )
     when
+        $clock: SessionClock()
         $shelter: Shelter()
     then
-        Notification notification = new Notification($shelter, "Time to feed the animals.");
+        Notification notification = new Notification($clock.getCurrentTime(), $shelter, "Time to feed the animals.");
         insert(notification);
         System.out.println("DINGDING " + notification);
 end

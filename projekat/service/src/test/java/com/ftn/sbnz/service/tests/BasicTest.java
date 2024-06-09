@@ -224,6 +224,10 @@ public class BasicTest {
     @Test
     public void testBasicRules() {
         KieSession session = createKieSession();
+
+        SessionPseudoClock clock = session.getSessionClock();
+        session.insert(clock);
+
         session.insert(new RecommendationsMap());
         session.insert(new FinalistsForUsers());
         session.insert(new GlobalChart());
@@ -284,6 +288,7 @@ public class BasicTest {
     public void testShelterForwardChaining() {
         KieSession session = createKieSession();
         SessionPseudoClock clock = session.getSessionClock();
+        session.insert(clock);
 
         List<Animal> animals = new ArrayList<>();
         animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
@@ -304,12 +309,12 @@ public class BasicTest {
         session.insert(shelter);
         int numOfRulesFired = session.fireAllRules();
 
-        assertEquals(2, numOfRulesFired); // calculate money needed for upkeep for new shelter, check if enough food
+        assertEquals(3, numOfRulesFired); // calculate money needed for upkeep for new shelter, check if enough food, create reports
 
         session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING,
                 new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
         numOfRulesFired = session.fireAllRules();
-        assertEquals(4, numOfRulesFired); // shelter animal, recalculate money needed, ask for more money, food check
+        assertEquals(5, numOfRulesFired); // shelter animal, recalculate money needed, ask for more money, food check, report
 
         Collection<?> notifications = session.getObjects(new ClassObjectFilter(Notification.class));
         assertEquals(1, notifications.size()); // ask for money notification sent
@@ -319,6 +324,7 @@ public class BasicTest {
     public void testShelterRules() {
         KieSession session = createKieSession();
         SessionPseudoClock clock = session.getSessionClock();
+        session.insert(clock);
 
         List<Animal> animals = new ArrayList<>();
         animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
@@ -337,7 +343,6 @@ public class BasicTest {
                 600_000.0, 10, animals, foodAvailableForAnimals, prices);
 
         session.insert(shelter);
-        session.insert(clock);
         int numOfRulesFired = session.fireAllRules();
 
         assertEquals(4, numOfRulesFired); // calculate money needed for upkeep for new shelter, start sheltering promotion, check if enough food, report creation
@@ -422,6 +427,9 @@ public class BasicTest {
     @Test
     public void TestCepRules() {
         KieSession session = createKieSession();
+        SessionPseudoClock clock = session.getSessionClock();
+        session.insert(clock);
+
         List<Animal> animals = new ArrayList<>();
         animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
         animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
@@ -441,8 +449,7 @@ public class BasicTest {
         Shelter shelter = new Shelter("Test name", "Test address",
                 200000.0, 10,animals,foodAvailableForAnimals,prices);
         session.insert(shelter);
-        session.insert(new Promotion(shelter,PromotionOrResettlementType.ADOPTION, null));
-        SessionPseudoClock clock = session.getSessionClock();
+        session.insert(new Promotion(clock.getCurrentTime(), shelter, PromotionOrResettlementType.ADOPTION));
 
         clock.advanceTime(1, TimeUnit.DAYS);
         session.insert(new Resettlement(clock.getCurrentTime(),shelter,PromotionOrResettlementType.ADOPTION,null));
@@ -464,6 +471,9 @@ public class BasicTest {
     @Test
     public void testBackward() {
         KieSession session = createKieSession();
+        SessionPseudoClock clock = session.getSessionClock();
+        session.insert(clock);
+
         List<Animal> animals = new ArrayList<>();
         Animal a = new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena");
         animals.add(a);
@@ -486,9 +496,6 @@ public class BasicTest {
         Shelter shelter = new Shelter("Test name", "Test address",
                 200000.0, 10,animals,foodAvailableForAnimals,prices);
         session.insert(shelter);
-
-        SessionPseudoClock clock = session.getSessionClock();
-        session.insert(clock);
 
 //        LocalDate startDate = LocalDate.of(1970, 1, 1); // start date
 //        LocalDate today = LocalDate.now().withDayOfMonth(1); // today's date
