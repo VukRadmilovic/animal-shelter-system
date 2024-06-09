@@ -95,7 +95,7 @@ export function ShelterInitialization({shelterService} : ShelterInitializationPr
                     {isFinished?
                         <Grid textAlign={'center'} sx={{alignSelf:'center'}} p={2}>
                         <Typography variant={'h4'}>Shelter successfully registered! You can register workers and use the app by clicking the button below.</Typography>
-                        <Button variant="contained" type="submit" sx={{marginTop:'2em'}} onClick={() => navigate('/Shelter')}>Shelter Registration</Button>
+                        <Button variant="contained" type="submit" sx={{marginTop:'2em'}} onClick={() => navigate('/Shelter')}>Login/Sign Up</Button>
                     </Grid> :
                     <div>
                         <Grid item container xs={12} sm={12} md={12} lg={12} xl={12} mb={2} justifyContent={'center'} height={'fit-content'}>
