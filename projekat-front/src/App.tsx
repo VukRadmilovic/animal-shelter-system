@@ -18,7 +18,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<PetSuggestionLandingPage suggestionService={suggestionServiceSingleton}/>}/>
                 <Route path="/Shelter" element={<LoginRegistration userService={userServiceSingleton} shelterService={shelterServiceSingleton}/>}/>
-                <Route path="/ShelterMain" element={<ShelterMain/>}/>
+                <Route path="/ShelterMain" element={<ShelterMain shelterService={shelterServiceSingleton}/>}/>
                 <Route path="/ShelterInit" element={<ShelterInitialization shelterService={shelterServiceSingleton}/>}/>
             </Routes>
         </BrowserRouter>

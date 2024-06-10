@@ -1,5 +1,350 @@
-export function ShelterMain() {
+import "./ShelterMain.css";
+import {
+    Button,
+    Chip,
+    FormControl,
+    FormHelperText,
+    Grid,
+    InputLabel,
+    ListItem,
+    MenuItem,
+    Select,
+    TablePagination, TextField
+} from "@mui/material";
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import * as React from "react";
+import {useEffect, useRef, useState} from "react";
+import {Animal} from "../../models/Animal";
+import {AnimalWithBreed} from "../../models/AnimalWithBreed";
+import {Shelter} from "../../models/Shelter";
+import {useForm} from "react-hook-form";
+import {FoodStuff} from "./FoodStuff";
+import {ShelterService} from "../../services/ShelterService";
+import {useNavigate} from "react-router-dom";
+
+export interface AnimalsForm {
+    name: string,
+    breed: string
+}
+
+function createDataForGlobalChart(
+    breed: string,
+    recommendations: number
+) {
+    return { breed, recommendations };
+}
+
+const globalChartRows = [
+    createDataForGlobalChart('Labrador', 23),
+    createDataForGlobalChart('Labrador', 23),
+    createDataForGlobalChart('Labrador', 23),
+    createDataForGlobalChart('Labrador', 23),
+    createDataForGlobalChart('Labrador', 23),
+];
+
+function createDataForNotifications(
+    text: string,
+    timestamp: string
+) {
+    return { text, timestamp };
+}
+
+const notificationsRows = [
+    createDataForNotifications('Promotion: Adoptions until 19.6.2024.', '12.6.2024. 15:01'),
+    createDataForNotifications('Lack of funds!', '12.6.2024. 15:00'),
+    createDataForNotifications('Time to feed animals.', '12.6.2024. 14:00'),
+    createDataForNotifications('Not enough dog food!', '12.6.2024. 13:00'),
+    createDataForNotifications('Recommendation: start labrador retriever sheltering promotion.', '12.6.2024. 12:00'),
+    createDataForNotifications('Recommendation2: start labrador retriever sheltering promotion.', '12.6.2024. 11:59'),
+    createDataForNotifications('Recommendation3: start labrador retriever sheltering promotion.', '12.6.2024. 11:58'),
+    createDataForNotifications('Recommendation4: start labrador retriever sheltering promotion.', '12.6.2024. 11:57'),
+    createDataForNotifications('Recommendation5: start labrador retriever sheltering promotion.', '12.6.2024. 11:56'),
+];
+
+interface ShelterMainProps {
+    shelterService: ShelterService
+}
+
+export function ShelterMain({shelterService} : ShelterMainProps) {
+    const {register,handleSubmit, formState: {errors}} = useForm<AnimalsForm>({
+        defaultValues: {
+            name: "",
+            breed: ""
+        },
+        mode: "onChange"
+    });
+    const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<AnimalWithBreed[]>([]);
+    const navigate = useNavigate();
+    const shouldLoad = useRef(true);
+
+    const onSubmit = (data: AnimalsForm) => addAnimal(data)
+    const [errorMessage, setErrorMessage] = React.useState<string>("");
+    const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
+    const [isSuccess, setIsSuccess] = React.useState(false);
+    const handleErrorPopupClose = (reason?: string) => {
+        if (reason === 'clickaway') return;
+        setErrorPopupOpen(false);
+    };
+
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
+    const [animals, setAnimals] = useState<Animal[]>([
+        {name: "Buddy", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy2", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy3", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy4", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy5", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy6", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy7", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+        {name: "Buddy8", animalBreed: "LABRADOR_RETRIEVER", animalType: "DOG"},
+    ]);
+    const [selectedAnimal, setSelectedAnimal] = useState(null);
+
+    useEffect(() => {
+        if(!shouldLoad.current) return;
+        console.log('FoodStuff component mounted')
+        shelterService.checkShelter().then((result) => {
+            if(!result) navigate('/Shelter')
+        }).catch((err) => {
+            console.log(err)
+        });
+        shelterService.getAnimalsWithBreeds().then(animals => {
+            setAnimalsWithBreeds(animals);
+        }).catch((err) => {
+            console.log(err);
+        })
+        shouldLoad.current = false;
+    }, []);
+
+    const addAnimal = (data : AnimalsForm) => {
+        console.log(data);
+    }
+
+    const handleSelectAnimal = (animal: Animal) => {
+        setSelectedAnimal(animal);
+    };
+
+    const handleAdopt = () => {
+        if (selectedAnimal) {
+            console.log("Adopted:", selectedAnimal);
+        } else {
+            console.log("No animal selected");
+        }
+    };
+
+    const handleChangePage = (event: unknown, newPage: number) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setRowsPerPage(+event.target.value);
+        setPage(0);
+    };
+
+    const moneyAvailable = 1000;
+
     return (
-        <></>
+        <>
+            <h1> Shelter dashboard </h1>
+            <Grid container className={'dark-background'}>
+                <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
+                      minHeight={'40vh'}
+                      sx={{display:'block', alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                    <TableContainer component={Paper}>
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Breed name</TableCell>
+                                    <TableCell align="right">Number of recommendations</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {globalChartRows.map((row) => (
+                                    <TableRow
+                                        key={row.breed}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row">
+                                            {row.breed}
+                                        </TableCell>
+                                        <TableCell align="right">{row.recommendations}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Grid>
+                <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
+                      minHeight={'40vh'}
+                      sx={{display:'block', alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                    <TableContainer component={Paper}>
+                        <Table stickyHeader sx={{ minWidth: 650, maxHeight: 20 }} aria-label="simple table2">
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Notification</TableCell>
+                                    <TableCell align="right">Timestamp</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {notificationsRows
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row) => (
+                                    <TableRow key={row.timestamp}>
+                                        <TableCell> {row.text} </TableCell>
+                                        <TableCell align="right"> {row.timestamp} </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[5, 10, 25]}
+                        component={Grid}
+                        count={notificationsRows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}/>
+                </Grid>
+                <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
+                      minHeight={'40vh'}
+                      sx={{
+                          display:'block',
+                          alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                    <Grid item container xs={12} sm={12} md={12} lg={12} xl={12} pr={12}
+                          sx={{
+                              border: '1px solid gray',
+                              borderRadius: '1em',
+                              boxShadow: 'none',
+                              height:'30vh',
+                              display:'flex',
+                              flexDirection:'row',
+                              alignItems:'flex-start',
+                              alignContent:'flex-start',
+                              overflowY:'scroll',
+                              overflowX:'hidden',
+                              width: '96%',
+                              listStyle: 'none'}}
+                    p={2} ml={2} mt={2} mb={2} mr={-5}>
+                        {animals.map((data) => {
+                            return (
+                                <ListItem
+                                    key={data.name + " " + data.animalBreed}
+                                    sx={{
+                                        width:'fit-content',
+                                        padding:'5px 10px !important',
+                                        cursor: 'pointer',
+                                        backgroundColor: selectedAnimal === data ? 'lightgray' : 'transparent'
+                                }}
+                                onClick={() => handleSelectAnimal(data)}>
+                                    <Chip
+                                        label={data.name + " (" + data.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase()) + ")"}
+                                    />
+                                </ListItem>
+                            )
+                        })}
+                    </Grid>
+                    <Grid item container xs={12} sm={12} md={12} lg={12} xl={12} mt={5}
+                          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                        <Button onClick={handleAdopt} variant="contained" color="primary" className="margin-bottom-1vh">
+                            Confirm adoption
+                        </Button>
+                    </Grid>
+                </Grid>
+                <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
+                      minHeight={'40vh'}
+                      sx={{display:'block', alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                        <form className={'width-100'}>
+                            <Grid item container
+                                  spacing={2}
+                                  pt={3}
+                                  pl={4} pr={4} xs={12} sm={12} md={12} lg={12} xl={12}
+                                  justifyContent={'center'}>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <FormControl fullWidth={true} error={!!errors.breed}>
+                                        <InputLabel id="breed">Breed</InputLabel>
+                                        <Select
+                                            labelId="breed"
+                                            defaultValue=""
+                                            {...register("breed", { required: "Breed is a required field!" })}>
+                                            <MenuItem value=""><em>None</em></MenuItem>
+                                            {animals.map((animal) => {
+                                                return <MenuItem value={animal.animalBreed}>{animal.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())}</MenuItem>
+                                            })};
+                                        </Select>
+                                        {errors.breed? <FormHelperText>{errors.breed.message}</FormHelperText> : <FormHelperText>Required</FormHelperText>}
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                                    <TextField id="name" label="Name"
+                                               fullWidth={true}
+                                               {...register("name",
+                                                   {
+                                                       required: "Name is a required field!",
+                                                   })}
+                                               error={!!errors.name}
+                                               helperText={errors.name? errors.name?.message : "Required"}/>
+                                </Grid>
+                                <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
+                                    <Button type="submit" variant="contained" color="primary">
+                                        Confirm sheltering
+                                    </Button>
+                                </Grid>
+                            </Grid>
+                        </form>
+                </Grid>
+                <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
+                      minHeight={'40vh'}
+                      sx={{display:'block', alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                    <p>lol</p>
+                </Grid>
+                <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
+                      minHeight={'40vh'}
+                      sx={{display:'block', alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                        <TextField id="moneyAvailable"
+                                   label="Available money"
+                                   defaultValue={moneyAvailable}
+                                   sx={{width: '93%'}}
+                                   InputProps={{
+                                       readOnly: true,
+                                   }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={2.5}>
+                        <TextField id="moneyToDeposit" label="Money to deposit"
+                                   sx={{width: '93%'}}
+                                   {...register("moneyToDeposit",
+                                       {
+                                           required: "Money to deposit is a required field!",
+                                       })}
+                                   error={!!errors.moneyToDeposit}
+                                   helperText={errors.moneyToDeposit? errors.moneyToDeposit?.message : "Required"}/>
+                    </Grid>
+                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
+                        <Button type="submit" variant="contained" color="primary">
+                            Deposit money
+                        </Button>
+                    </Grid>
+                </Grid>
+                <Grid container item xs={12} sm={12} md={12} lg={12} xl={12}
+                      minHeight={'50vh'}
+                      sx={{display:'block', alignContent:'center'}}
+                      className="container rounded-container" m={2}>
+                    <FoodStuff shelterService={shelterService} animals={animalsWithBreeds}/>
+                </Grid>
+            </Grid>
+        </>
     );
 }
