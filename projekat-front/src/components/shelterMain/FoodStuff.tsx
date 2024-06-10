@@ -19,31 +19,55 @@ export function FoodStuff({animals, shelterService} : FoodStuffProps) {
         <>
             <form className={'flex-row'}>
                 <Grid container spacing={2} sx={{display:'flex', flexDirection:'row',
-                    height:'65vh', overflowY: 'scroll'}} paddingTop={2}>
+                    height:'67.5vh', overflowY: 'scroll'}} paddingTop={3}>
                     {Array.from(new Set(animals.map(animal => animal.animalType))).map((type, index) => (
                         <Grid container key={index} sx={{display:'flex', flexDirection:'row', alignItems:'center'}}>
                             <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
                                 <Typography><b>{type}</b></Typography>
                             </Grid>
-                            <Grid item xs={5} sm={5} md={5} lg={5} xl={5}  p={1}>
+                            <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
                                 <TextField
                                     sx={{width:'80%'}}
                                     type={'number'}
-                                    label='Food Portions Available'/>
+                                    label='Number of animals'
+                                    defaultValue={2}
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}/>
                             </Grid>
-                            <Grid item xs={5} sm={5} md={5} lg={5} xl={5} p={1}>
+                            <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
                                 <TextField
                                     sx={{width:'80%'}}
                                     type={'number'}
-                                    label='Price Per Portion (Dinars)'/>
+                                    label='Available food'
+                                    defaultValue={10}
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}/>
+                            </Grid>
+                            <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                                <TextField
+                                    sx={{width:'80%'}}
+                                    type={'number'}
+                                    label='Price Per Portion (Dinars)'
+                                    defaultValue={15}
+                                    InputProps={{
+                                        readOnly: true,
+                                    }}/>
+                            </Grid>
+                            <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                                <TextField
+                                    sx={{width:'80%'}}
+                                    type={'number'}
+                                    label='Number of portions to buy'/>
+                            </Grid>
+                            <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                                <Button type="submit" variant="contained" color="primary">
+                                    Buy food
+                                </Button>
                             </Grid>
                         </Grid>
                     ))}
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                        <Button type="submit" variant="contained" color="primary" sx={{display:'none'}}>
-                            Add Animal
-                        </Button>
-                    </Grid>
                 </Grid>
             </form>
         </>
