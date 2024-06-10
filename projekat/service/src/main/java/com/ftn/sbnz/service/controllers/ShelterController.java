@@ -67,4 +67,14 @@ public class ShelterController {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }
     }
+
+    @PutMapping(value = "/deposit/{amount}")
+    public ResponseEntity<?> depositMoney(@PathVariable double amount) {
+        try {
+            shelterService.depositMoney(amount);
+            return new ResponseEntity<>("Successful deposit", HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
 }

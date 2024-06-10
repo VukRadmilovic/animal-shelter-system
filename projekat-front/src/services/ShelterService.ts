@@ -66,4 +66,14 @@ export class ShelterService {
             throw err;
         });
     }
+
+    public depositMoney(amount: number) : Promise<void> {
+        return axios({
+            method: 'PUT',
+            url: `${this.api_host}/api/shelter/deposit/` + amount,
+        }).then(() => {}).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
 }

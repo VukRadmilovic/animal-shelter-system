@@ -1,6 +1,7 @@
 package com.ftn.sbnz.service.services;
 
 import com.ftn.sbnz.model.events.Event;
+import com.ftn.sbnz.model.events.MoneyDeposit;
 import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.models.FinalistsForUsers;
@@ -10,6 +11,7 @@ import com.ftn.sbnz.model.models.backModels.ShelterInfo;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+import org.kie.api.time.SessionClock;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -80,5 +82,16 @@ public class ShelterService {
             return (Shelter) row.get("$shelter");
         }
         return null;
+    }
+
+    public SessionClock getSessionClock() {
+        return kieSession.getSessionClock();
+    }
+
+    public void depositMoney(double amount) {
+        Shelter shelter = getShelter();
+        MoneyDeposit moneyDeposit = new MoneyDeposit(getSessionClock().getCurrentTime(), shelter, amount);
+        kieSession.insert(moneyDeposit);
+        kieSession.fireAllRules();
     }
 }

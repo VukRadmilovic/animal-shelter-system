@@ -22,7 +22,7 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {Animal} from "../../models/Animal";
 import {AnimalWithBreed} from "../../models/AnimalWithBreed";
-import {useForm} from "react-hook-form";
+import {set, useForm} from "react-hook-form";
 import {FoodStuff} from "./FoodStuff";
 import {ShelterService} from "../../services/ShelterService";
 import {useNavigate} from "react-router-dom";
@@ -30,10 +30,15 @@ import {Reports} from "./Reports";
 import {GlobalChartEntry} from "../../models/GlobalChartEntry";
 import {Notification} from "../../models/Notification";
 import {Shelter} from "../../models/Shelter";
+import {PopupMessage} from "../PopupMessage/PopupMessage";
 
 export interface AnimalsForm {
     name: string,
     breed: string
+}
+
+export interface MoneyDepositForm {
+    moneyToDeposit: number
 }
 
 interface ShelterMainProps {
@@ -41,13 +46,21 @@ interface ShelterMainProps {
 }
 
 export function ShelterMain({shelterService} : ShelterMainProps) {
-    const {register,handleSubmit, formState: {errors}} = useForm<AnimalsForm>({
+    const { register: registerAnimalsForm, handleSubmit: handleSubmitAnimalsForm, formState: { errors: animalsFormErrors }, reset: resetAnimalsForm } = useForm<AnimalsForm>({
         defaultValues: {
             name: "",
             breed: ""
         },
         mode: "onChange"
     });
+
+    const { register: registerMoneyForm, handleSubmit: handleSubmitMoneyForm, formState: { errors: moneyFormErrors }, reset: resetMoneyForm } = useForm<MoneyDepositForm>({
+        defaultValues: {
+            moneyToDeposit: 0
+        },
+        mode: "onChange"
+    });
+
     const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<AnimalWithBreed[]>([]);
     const [globalChart, setGlobalChart] = React.useState<GlobalChartEntry[]>([]);
     const [notifications, setNotifications] = React.useState<Notification[]>([]);
@@ -65,6 +78,24 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
         if (reason === 'clickaway') return;
         setErrorPopupOpen(false);
     };
+
+    const onDepositMoneySubmit = (data: MoneyDepositForm) => {
+        console.log("Form data:", data);
+        shelterService.depositMoney(data.moneyToDeposit)
+            .then(() => {
+                // Update UI or show success message if needed
+                setErrorMessage("Money deposited successfully");
+                setIsSuccess(true);
+                setErrorPopupOpen(true);
+                setTimeout(() => {
+                    navigate(0);
+                }, 2000);
+                console.log("Money deposited successfully");
+            })
+            .catch((error) => {
+                console.error("Error depositing money:", error);
+            });
+    }
 
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -261,29 +292,29 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                   pl={4} pr={4} xs={12} sm={12} md={12} lg={12} xl={12}
                                   justifyContent={'center'}>
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <FormControl fullWidth={true} error={!!errors.breed}>
+                                    <FormControl fullWidth={true} error={!!animalsFormErrors.breed}>
                                         <InputLabel id="breed">Breed</InputLabel>
                                         <Select
                                             labelId="breed"
                                             defaultValue=""
-                                            {...register("breed", { required: "Breed is a required field!" })}>
+                                            {...registerAnimalsForm("breed", { required: "Breed is a required field!" })}>
                                             <MenuItem value=""><em>None</em></MenuItem>
                                             {animals.map((animal, index) => {
                                                 return <MenuItem key={index} value={animal.animalBreed}>{animal.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())}</MenuItem>
                                             })};
                                         </Select>
-                                        {errors.breed? <FormHelperText>{errors.breed.message}</FormHelperText> : <FormHelperText>Required</FormHelperText>}
+                                        {animalsFormErrors.breed? <FormHelperText>{animalsFormErrors.breed.message}</FormHelperText> : <FormHelperText>Required</FormHelperText>}
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                                     <TextField id="name" label="Name"
                                                fullWidth={true}
-                                               {...register("name",
+                                               {...registerAnimalsForm("name",
                                                    {
                                                        required: "Name is a required field!",
                                                    })}
-                                               error={!!errors.name}
-                                               helperText={errors.name? errors.name?.message : "Required"}/>
+                                               error={!!animalsFormErrors.name}
+                                               helperText={animalsFormErrors.name? animalsFormErrors.name?.message : "Required"}/>
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
                                     <Button type="submit" variant="contained" color="primary">
@@ -313,21 +344,23 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                    }}
                         />
                     </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={2.5}>
-                        <TextField id="moneyToDeposit" label="Money to deposit"
-                                   sx={{width: '93%'}}
-                                   {...register("moneyToDeposit",
-                                       {
-                                           required: "Money to deposit is a required field!",
-                                       })}
-                                   error={!!errors.moneyToDeposit}
-                                   helperText={errors.moneyToDeposit? errors.moneyToDeposit?.message : "Required"}/>
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
-                        <Button type="submit" variant="contained" color="primary">
-                            Deposit money
-                        </Button>
-                    </Grid>
+                    <FormControl>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={2.5}>
+                            <TextField id="moneyToDeposit" label="Money to deposit"
+                                       sx={{width: '93%'}}
+                                       {...registerMoneyForm("moneyToDeposit",
+                                           {
+                                               required: "Money to deposit is a required field!",
+                                           })}
+                                       error={!!moneyFormErrors.moneyToDeposit}
+                                       helperText={moneyFormErrors.moneyToDeposit? moneyFormErrors.moneyToDeposit?.message : "Required"}/>
+                        </Grid>
+                        <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
+                            <Button type="submit" variant="contained" color="primary" onClick={handleSubmitMoneyForm(onDepositMoneySubmit)}>
+                                Deposit money
+                            </Button>
+                        </Grid>
+                    </FormControl>
                 </Grid>
                 <Grid container item xs={12} sm={12} md={12} lg={12} xl={12}
                       minHeight={'50vh'}
@@ -335,6 +368,8 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                       className="container rounded-container" m={2}>
                     <FoodStuff shelterService={shelterService} animals={animalsWithBreeds}/>
                 </Grid>
+                <PopupMessage message={errorMessage} isSuccess={isSuccess} handleClose={handleErrorPopupClose}
+                              open={errorPopupOpen}/>
             </Grid>
         </>
     );
