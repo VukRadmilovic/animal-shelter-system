@@ -56,4 +56,14 @@ export class ShelterService {
             throw err;
         });
     }
+
+    public getShelter() : Promise<Shelter> {
+        return axios({
+            method: 'GET',
+            url: `${this.api_host}/api/shelter/`,
+        }).then((shelter) => shelter.data).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
 }

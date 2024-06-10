@@ -73,4 +73,12 @@ public class ShelterService {
         }
         return notifications;
     }
+
+    public Shelter getShelter() {
+        QueryResults results = kieSession.getQueryResults("checkShelter");
+        for (QueryResultsRow row : results) {
+            return (Shelter) row.get("$shelter");
+        }
+        return null;
+    }
 }

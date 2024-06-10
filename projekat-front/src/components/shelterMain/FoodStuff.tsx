@@ -11,7 +11,6 @@ interface FoodStuffProps {
 export function FoodStuff({animals, shelterService} : FoodStuffProps) {
     animals = animals.animals;
     if (!Array.isArray(animals)) {
-        console.error("animals is not an array", animals);
         return <p>Oopsie</p>;
     }
 

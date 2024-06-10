@@ -29,6 +29,7 @@ import {useNavigate} from "react-router-dom";
 import {Reports} from "./Reports";
 import {GlobalChartEntry} from "../../models/GlobalChartEntry";
 import {Notification} from "../../models/Notification";
+import {Shelter} from "../../models/Shelter";
 
 export interface AnimalsForm {
     name: string,
@@ -50,6 +51,8 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
     const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<AnimalWithBreed[]>([]);
     const [globalChart, setGlobalChart] = React.useState<GlobalChartEntry[]>([]);
     const [notifications, setNotifications] = React.useState<Notification[]>([]);
+    const [shelter, setShelter] = React.useState<Shelter | null>(null);
+    const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
 
     const navigate = useNavigate();
     const shouldLoad = useRef(true);
@@ -102,6 +105,13 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
         }).catch((err) => {
             console.log(err);
         })
+        shelterService.getShelter().then(shelter => {
+            console.log(shelter);
+            setShelter(shelter);
+            setMoneyAvailable(shelter.moneyAvailable);
+        }).catch((err) => {
+            console.log(err);
+        })
         shouldLoad.current = false;
     }, [navigate, shelterService]);
 
@@ -129,8 +139,6 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-
-    const moneyAvailable = 1000;
 
     return (
         <>
@@ -260,8 +268,8 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                             defaultValue=""
                                             {...register("breed", { required: "Breed is a required field!" })}>
                                             <MenuItem value=""><em>None</em></MenuItem>
-                                            {animals.map((animal) => {
-                                                return <MenuItem value={animal.animalBreed}>{animal.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())}</MenuItem>
+                                            {animals.map((animal, index) => {
+                                                return <MenuItem key={index} value={animal.animalBreed}>{animal.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())}</MenuItem>
                                             })};
                                         </Select>
                                         {errors.breed? <FormHelperText>{errors.breed.message}</FormHelperText> : <FormHelperText>Required</FormHelperText>}
@@ -298,7 +306,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                     <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                         <TextField id="moneyAvailable"
                                    label="Available money"
-                                   defaultValue={moneyAvailable}
+                                   value={moneyAvailable || ''}
                                    sx={{width: '93%'}}
                                    InputProps={{
                                        readOnly: true,

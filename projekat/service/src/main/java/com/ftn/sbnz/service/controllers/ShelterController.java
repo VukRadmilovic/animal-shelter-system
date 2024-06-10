@@ -58,4 +58,13 @@ public class ShelterController {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }
     }
+
+    @GetMapping(value = "/")
+    public ResponseEntity<?> getShelter() {
+        try {
+            return new ResponseEntity<>(shelterService.getShelter(), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
 }
