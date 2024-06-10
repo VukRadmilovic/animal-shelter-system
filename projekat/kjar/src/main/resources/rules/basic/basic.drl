@@ -290,3 +290,15 @@ end
 query "checkShelter"
     $shelter: Shelter()
 end
+
+query "getGlobalChart"
+    $globalChart: GlobalChart()
+end
+
+query "getNotifications"
+    $notifications: List() from collect(Notification())
+end
+
+query "getPromotions"
+    $promotions: List() from collect(Promotion())
+end

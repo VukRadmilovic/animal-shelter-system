@@ -50,4 +50,13 @@ public class SuggestionsController {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }
     }
+
+    @GetMapping(value = "/global-chart")
+    public ResponseEntity<?> getGlobalChart() {
+        try {
+            return new ResponseEntity<>(suggestionsService.getGlobalChart(), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
 }

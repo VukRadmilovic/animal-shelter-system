@@ -1,8 +1,12 @@
 package com.ftn.sbnz.service.services;
 
 import com.ftn.sbnz.model.enums.AnimalBreed;
+import com.ftn.sbnz.model.events.Event;
+import com.ftn.sbnz.model.events.Notification;
+import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.QuestionnaireFilled;
 import com.ftn.sbnz.model.models.FinalistsForUsers;
+import com.ftn.sbnz.model.models.GlobalChart;
 import com.ftn.sbnz.model.models.RecommendationsMap;
 import com.ftn.sbnz.model.models.Response;
 import com.ftn.sbnz.model.models.backModels.*;
@@ -13,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -50,5 +56,14 @@ public class SuggestionsService {
 
     public Questionnaire getQuestions() {
         return new Questionnaire(QuestionsAndAnswers.questions);
+    }
+
+    public GlobalChart getGlobalChart() {
+        QueryResults results = kieSession.getQueryResults("getGlobalChart");
+        GlobalChart chart = null;
+        for (QueryResultsRow row : results) {
+            chart = (GlobalChart) row.get("$globalChart");
+        }
+        return chart;
     }
 }

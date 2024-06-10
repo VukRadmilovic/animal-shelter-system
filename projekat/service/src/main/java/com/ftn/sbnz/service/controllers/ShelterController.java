@@ -49,4 +49,13 @@ public class ShelterController {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }
     }
+
+    @GetMapping(value = "/notifications")
+    public ResponseEntity<?> getNotificationsAndPromotions() {
+        try {
+            return new ResponseEntity<>(shelterService.getNotificationsAndPromotions(), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
 }

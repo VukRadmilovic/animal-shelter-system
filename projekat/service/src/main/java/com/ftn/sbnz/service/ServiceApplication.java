@@ -1,7 +1,9 @@
 package com.ftn.sbnz.service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.models.FinalistsForUsers;
 import com.ftn.sbnz.model.models.GlobalChart;
 import com.ftn.sbnz.model.models.RecommendationsMap;

@@ -22,51 +22,18 @@ import * as React from "react";
 import {useEffect, useRef, useState} from "react";
 import {Animal} from "../../models/Animal";
 import {AnimalWithBreed} from "../../models/AnimalWithBreed";
-import {Shelter} from "../../models/Shelter";
 import {useForm} from "react-hook-form";
 import {FoodStuff} from "./FoodStuff";
 import {ShelterService} from "../../services/ShelterService";
 import {useNavigate} from "react-router-dom";
 import {Reports} from "./Reports";
+import {GlobalChartEntry} from "../../models/GlobalChartEntry";
+import {Notification} from "../../models/Notification";
 
 export interface AnimalsForm {
     name: string,
     breed: string
 }
-
-function createDataForGlobalChart(
-    breed: string,
-    recommendations: number
-) {
-    return { breed, recommendations };
-}
-
-const globalChartRows = [
-    createDataForGlobalChart('Labrador', 23),
-    createDataForGlobalChart('Labrador', 23),
-    createDataForGlobalChart('Labrador', 23),
-    createDataForGlobalChart('Labrador', 23),
-    createDataForGlobalChart('Labrador', 23),
-];
-
-function createDataForNotifications(
-    text: string,
-    timestamp: string
-) {
-    return { text, timestamp };
-}
-
-const notificationsRows = [
-    createDataForNotifications('Promotion: Adoptions until 19.6.2024.', '12.6.2024. 15:01'),
-    createDataForNotifications('Lack of funds!', '12.6.2024. 15:00'),
-    createDataForNotifications('Time to feed animals.', '12.6.2024. 14:00'),
-    createDataForNotifications('Not enough dog food!', '12.6.2024. 13:00'),
-    createDataForNotifications('Recommendation: start labrador retriever sheltering promotion.', '12.6.2024. 12:00'),
-    createDataForNotifications('Recommendation2: start labrador retriever sheltering promotion.', '12.6.2024. 11:59'),
-    createDataForNotifications('Recommendation3: start labrador retriever sheltering promotion.', '12.6.2024. 11:58'),
-    createDataForNotifications('Recommendation4: start labrador retriever sheltering promotion.', '12.6.2024. 11:57'),
-    createDataForNotifications('Recommendation5: start labrador retriever sheltering promotion.', '12.6.2024. 11:56'),
-];
 
 interface ShelterMainProps {
     shelterService: ShelterService
@@ -81,6 +48,9 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
         mode: "onChange"
     });
     const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<AnimalWithBreed[]>([]);
+    const [globalChart, setGlobalChart] = React.useState<GlobalChartEntry[]>([]);
+    const [notifications, setNotifications] = React.useState<Notification[]>([]);
+
     const navigate = useNavigate();
     const shouldLoad = useRef(true);
 
@@ -120,8 +90,20 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
         }).catch((err) => {
             console.log(err);
         })
+        shelterService.getGlobalChart().then((chartData) => {
+            setGlobalChart(chartData.top5);
+        }).catch((err) => {
+            console.log("FAILED TO GET GLOBAL CHART");
+            console.log(err);
+        })
+        shelterService.getNotifications().then(notifications => {
+            console.log(notifications);
+            setNotifications(notifications);
+        }).catch((err) => {
+            console.log(err);
+        })
         shouldLoad.current = false;
-    }, []);
+    }, [navigate, shelterService]);
 
     const addAnimal = (data : AnimalsForm) => {
         console.log(data);
@@ -167,14 +149,14 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {globalChartRows.map((row) => (
+                                {globalChart.map((row) => (
                                     <TableRow
-                                        key={row.breed}
+                                        key={row.animalBreed}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row">
-                                            {row.breed}
+                                            {row.animalBreed}
                                         </TableCell>
-                                        <TableCell align="right">{row.recommendations}</TableCell>
+                                        <TableCell align="right">{row.recommendationCount}</TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
@@ -194,7 +176,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {notificationsRows
+                                {notifications
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
                                     <TableRow key={row.timestamp}>
@@ -208,7 +190,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                     <TablePagination
                         rowsPerPageOptions={[5, 10, 25]}
                         component={Grid}
-                        count={notificationsRows.length}
+                        count={notifications.length}
                         rowsPerPage={rowsPerPage}
                         page={page}
                         onPageChange={handleChangePage}
