@@ -10,6 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import {Button, InputLabel, MenuItem, Select} from "@mui/material";
 import {useEffect, useState} from "react";
+import {ShelterService} from "../../services/ShelterService";
+import {Report} from "../../models/Report";
 
 const weeksInMonth = (year, month) => {
     const startOfMonth = dayjs(new Date(year, month, 1));
@@ -30,10 +32,11 @@ const weeksInMonth = (year, month) => {
     return weeks;
 };
 
-const WeekPicker = () => {
+const WeekPicker = ({weekSelected, setWeekSelected, monthYear, setMonthYear}) => {
     const [weeks, setWeeks] = useState([]);
-    const [monthYear, setMonthYear] = React.useState<Dayjs | null>(dayjs('2023-06-12'))
+    // const [monthYear, setMonthYear] = React.useState<Dayjs | null>(dayjs('2023-06-12'))
     const [selectedDate, setSelectedDate] = React.useState({ start: dayjs(), end: dayjs() });
+    // const [weekSelected, setWeekSelected] = React.useState({ start: dayjs(), end: dayjs() });
 
     useEffect(() => {
         const date = monthYear;
@@ -45,6 +48,7 @@ const WeekPicker = () => {
     const handleWeekChange = (event) => {
         const week = weeks[event.target.value];
         setSelectedDate({ start: week.start, end: week.end });
+        setWeekSelected(week);
     };
 
     return (
@@ -76,13 +80,50 @@ const WeekPicker = () => {
     );
 };
 
-export function Reports() {
+interface ReportProps {
+    shelterService: ShelterService;
+}
+
+export function Reports({shelterService}: ReportProps) {
     const [reportType, setReportType] = React.useState('daily');
-    const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(dayjs('2023-06-12'));
+    const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(dayjs('2024-06-12'));
+    const [weekSelected, setWeekSelected] = React.useState({ start: dayjs(), end: dayjs() });
+    const [monthYear, setMonthYear] = React.useState<Dayjs | null>(dayjs('2024-06-12'));
+    const [reportData, setReportData] = React.useState({ adoptionCount: -1, shelteredCount: -1});
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setReportType((event.target as HTMLInputElement).value);
     };
+
+    function generateReport() {
+        console.log("Generating report for", reportType, selectedDate?.toDate());
+
+        if (reportType === 'daily') {
+            const data = selectedDate?.format('D.M.YYYY.');
+            console.log("Day selected", data);
+            shelterService.getDailyReport(data).then((response: Report) => {
+                console.log(response);
+                setReportData(response);
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+
+        if (reportType === 'weekly') {
+            console.log("Week selected", weekSelected);
+        }
+
+        if (reportType === 'monthly') {
+            const data = selectedDate?.format('M.YYYY.');
+            console.log("Month selected", data);
+            shelterService.getMonthlyReport(data).then((response: Report) => {
+                console.log(response);
+                setReportData(response);
+            }).catch((error) => {
+                console.error(error);
+            });
+        }
+    }
 
     return (
         <FormControl>
@@ -110,8 +151,10 @@ export function Reports() {
                 </LocalizationProvider>}
             {reportType === 'weekly' && (
                 <WeekPicker
-                    selectedDate={selectedDate}
-                    setSelectedDate={setSelectedDate}
+                    weekSelected={weekSelected}
+                    setWeekSelected={setWeekSelected}
+                    monthYear={monthYear}
+                    setMonthYear={setMonthYear}
                 />
             )}
             {reportType == 'monthly' &&
@@ -124,10 +167,10 @@ export function Reports() {
                     />
                 </LocalizationProvider>}
             <br/>
-            <Button type="submit" variant="contained" color="primary">
+            <Button type="submit" variant="contained" color="primary" onClick={generateReport}>
                 Generate report
             </Button>
-            <p>Report: 2 adoptions, 3 shelterings </p>
+            <p>Report: {reportData.adoptionCount} adoptions, {reportData.shelteredCount} shelterings </p>
         </FormControl>
     );
 }

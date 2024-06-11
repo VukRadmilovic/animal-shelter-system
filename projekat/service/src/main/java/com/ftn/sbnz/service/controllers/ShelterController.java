@@ -4,12 +4,14 @@ package com.ftn.sbnz.service.controllers;
 import com.ftn.sbnz.model.models.Animal;
 import com.ftn.sbnz.model.models.backModels.AnimalsWithBreeds;
 import com.ftn.sbnz.model.models.backModels.ShelterInfo;
-import com.ftn.sbnz.model.models.backModels.Suggestions;
 import com.ftn.sbnz.service.services.ShelterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @CrossOrigin("http://localhost:5173")
 @RestController
@@ -94,6 +96,24 @@ public class ShelterController {
         try {
             shelterService.adoptAnimal(animal);
             return new ResponseEntity<>("Successful adoption", HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
+
+    @GetMapping(value = "/daily-report/{date}")
+    public ResponseEntity<?> getDailyReport(@PathVariable String date) {
+        try {
+            return new ResponseEntity<>(shelterService.getDailyReport(date), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
+
+    @GetMapping(value = "/monthly-report/{month}")
+    public ResponseEntity<?> getMonthlyReport(@PathVariable String month) {
+        try {
+            return new ResponseEntity<>(shelterService.getMonthlyReport(month), HttpStatus.OK);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }
