@@ -83,10 +83,12 @@ rule "Breed recommendation for user insertion"
          delete($event);
 end
 
+
 rule "Global charts update"
     when
         FinalistsForUsers($final : finalists)
         $globalChart: GlobalChart($list : recommendations)
+        $recommendationsMap : RecommendationsMap($map : map)
         $event : QuestionnaireFilled($userId: userId)
     then
          System.out.println("inside global charts update");
@@ -99,8 +101,20 @@ rule "Global charts update"
             AnimalBreed breedEnum = (AnimalBreed)breed;
             newList.stream().filter(recommendation -> recommendation.getAnimalBreed() == breedEnum).forEach(res -> res.setRecommendationCount(res.getRecommendationCount() + 1));
          }
+         if(((HashMap<Long,List<AnimalBreed>>)$final).get($userId).isEmpty()) {
+                     System.out.println("inside here");
+                     AnimalBreed firstWithMax = ((HashMap<AnimalBreed, Integer>)$map.get($userId))
+                     .entrySet()
+                     .stream()
+                     .max(Map.Entry.comparingByValue())
+                     .map(Map.Entry::getKey).orElse(null);
+                     ((HashMap<Long,List<AnimalBreed>>)$final).get($userId).add(firstWithMax);
+                  }
          newList.sort(Comparator.comparingInt(GlobalRecommendation::getRecommendationCount).reversed());
+         $map.remove($userId);
          List<GlobalRecommendation> top5 = $globalChart.getTop5Differences(newList.stream().limit(5).collect(Collectors.toList()));
+         modify($globalChart){setRecommendations(newList)};
+         modify($recommendationsMap){setMap($map)};
          insert(new GlobalChartTop5Update(top5, newList));
          delete($event);
 end
@@ -126,7 +140,7 @@ rule "Adoption promotion after global chart update"
             breeds.add(str.substring(0, 1).toUpperCase() + str.substring(1));
         }
         insert(new Notification($clock.getCurrentTime(), $shelter,String.join(", ", breeds) + " are in the top 5 most suitable pets and available in shelter. Adoption promotion is recommended."));
-        modify($globalChart){setRecommendations($newList)};
+        //modify($globalChart){setRecommendations($newList)};
         delete($update);
 end
 
