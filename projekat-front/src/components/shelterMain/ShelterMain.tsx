@@ -31,6 +31,7 @@ import {GlobalChartEntry} from "../../models/GlobalChartEntry";
 import {Notification} from "../../models/Notification";
 import {PopupMessage} from "../PopupMessage/PopupMessage";
 import {ShelterWithMaps} from "../../models/ShelterWithMaps";
+import dayjs from 'dayjs';
 
 export interface AnimalsForm {
     name: string,
@@ -43,6 +44,10 @@ export interface MoneyDepositForm {
 
 interface ShelterMainProps {
     shelterService: ShelterService
+}
+
+export function formatTimestamp(timestamp: string): string {
+    return dayjs(timestamp).format('D.M.YYYY. HH:mm:ss');
 }
 
 export function ShelterMain({shelterService} : ShelterMainProps) {
@@ -248,9 +253,9 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                 {notifications
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-                                    <TableRow key={`${row.timestamp}-${row.text}`}>
+                                    <TableRow key={`${formatTimestamp(row.timestamp)}-${row.text}`}>
                                         <TableCell> {row.text} </TableCell>
-                                        <TableCell align="right"> {row.timestamp} </TableCell>
+                                        <TableCell align="right"> {formatTimestamp(row.timestamp)} </TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>

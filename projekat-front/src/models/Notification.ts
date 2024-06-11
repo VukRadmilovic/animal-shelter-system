@@ -1,4 +1,4 @@
 export interface Notification {
     text: string,
-    timestamp: string
+    timestamp: string,
 }
