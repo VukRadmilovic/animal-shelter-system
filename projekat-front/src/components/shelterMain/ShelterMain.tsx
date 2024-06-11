@@ -34,7 +34,7 @@ import {PopupMessage} from "../PopupMessage/PopupMessage";
 
 export interface AnimalsForm {
     name: string,
-    breed: string
+    animalBreed: string
 }
 
 export interface MoneyDepositForm {
@@ -66,11 +66,34 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
     const [notifications, setNotifications] = React.useState<Notification[]>([]);
     const [shelter, setShelter] = React.useState<Shelter | null>(null);
     const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
+    const [shelteredAnimals, setShelteredAnimals] = React.useState<Animal[]>([]);
 
     const navigate = useNavigate();
     const shouldLoad = useRef(true);
 
-    const onSubmit = (data: AnimalsForm) => addAnimal(data)
+    const onSubmitAnimalsForm = (data: AnimalsForm) => {
+        // @ts-ignore
+        const animal: Animal = {
+            name: data.name,
+            animalBreed: data.animalBreed,
+            animalType: animalsWithBreeds.find(animal => animal.animalBreed === data.animalBreed).animalType
+        }
+        console.log("Form data:", animal);
+        shelterService.shelterAnimal(animal)
+            .then(() => {
+                setErrorMessage("Animal sheltered successfully");
+                setIsSuccess(true);
+                setErrorPopupOpen(true);
+                setTimeout(() => {
+                    navigate(0);
+                }, 2000);
+                console.log("Animal sheltered successfully");
+            })
+            .catch((error) => {
+                console.error("Error sheltering animal:", error);
+            });
+    }
+
     const [errorMessage, setErrorMessage] = React.useState<string>("");
     const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
     const [isSuccess, setIsSuccess] = React.useState(false);
@@ -120,7 +143,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
             console.log(err)
         });
         shelterService.getAnimalsWithBreeds().then(animals => {
-            setAnimalsWithBreeds(animals);
+            setAnimalsWithBreeds(animals.animals);
         }).catch((err) => {
             console.log(err);
         })
@@ -140,15 +163,12 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
             console.log(shelter);
             setShelter(shelter);
             setMoneyAvailable(shelter.moneyAvailable);
+            setShelteredAnimals(shelter.animals);
         }).catch((err) => {
             console.log(err);
         })
         shouldLoad.current = false;
     }, [navigate, shelterService]);
-
-    const addAnimal = (data : AnimalsForm) => {
-        console.log(data);
-    }
 
     const handleSelectAnimal = (animal: Animal) => {
         setSelectedAnimal(animal);
@@ -156,7 +176,17 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
 
     const handleAdopt = () => {
         if (selectedAnimal) {
-            console.log("Adopted:", selectedAnimal);
+            shelterService.adoptAnimal(selectedAnimal).then(() => {
+                console.log("Animal adopted successfully");
+                setErrorMessage("Animal adopted successfully");
+                setIsSuccess(true);
+                setErrorPopupOpen(true);
+                setTimeout(() => {
+                    navigate(0);
+                }, 2000);
+            }).catch((error) => {
+                console.error("Error adopting animal:", error);
+            });
         } else {
             console.log("No animal selected");
         }
@@ -218,7 +248,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                 {notifications
                                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => (
-                                    <TableRow key={row.timestamp}>
+                                    <TableRow key={`${row.timestamp}-${row.text}`}>
                                         <TableCell> {row.text} </TableCell>
                                         <TableCell align="right"> {row.timestamp} </TableCell>
                                     </TableRow>
@@ -256,7 +286,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                               width: '96%',
                               listStyle: 'none'}}
                     p={2} ml={2} mt={2} mb={2} mr={-5}>
-                        {animals.map((data) => {
+                        {shelteredAnimals.map((data) => {
                             return (
                                 <ListItem
                                     key={data.name + " " + data.animalBreed}
@@ -292,18 +322,18 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                   pl={4} pr={4} xs={12} sm={12} md={12} lg={12} xl={12}
                                   justifyContent={'center'}>
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-                                    <FormControl fullWidth={true} error={!!animalsFormErrors.breed}>
+                                    <FormControl fullWidth={true} error={!!animalsFormErrors.animalBreed}>
                                         <InputLabel id="breed">Breed</InputLabel>
                                         <Select
                                             labelId="breed"
                                             defaultValue=""
-                                            {...registerAnimalsForm("breed", { required: "Breed is a required field!" })}>
+                                            {...registerAnimalsForm("animalBreed", { required: "Breed is a required field!" })}>
                                             <MenuItem value=""><em>None</em></MenuItem>
-                                            {animals.map((animal, index) => {
+                                            {animalsWithBreeds.map((animal, index) => {
                                                 return <MenuItem key={index} value={animal.animalBreed}>{animal.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())}</MenuItem>
                                             })};
                                         </Select>
-                                        {animalsFormErrors.breed? <FormHelperText>{animalsFormErrors.breed.message}</FormHelperText> : <FormHelperText>Required</FormHelperText>}
+                                        {animalsFormErrors.animalBreed? <FormHelperText>{animalsFormErrors.animalBreed.message}</FormHelperText> : <FormHelperText>Required</FormHelperText>}
                                     </FormControl>
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -317,7 +347,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                                helperText={animalsFormErrors.name? animalsFormErrors.name?.message : "Required"}/>
                                 </Grid>
                                 <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
-                                    <Button type="submit" variant="contained" color="primary">
+                                    <Button type="submit" variant="contained" color="primary" onClick={handleSubmitAnimalsForm(onSubmitAnimalsForm)}>
                                         Confirm sheltering
                                     </Button>
                                 </Grid>

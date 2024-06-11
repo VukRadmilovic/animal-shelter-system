@@ -1,6 +1,7 @@
 package com.ftn.sbnz.service.controllers;
 
 
+import com.ftn.sbnz.model.models.Animal;
 import com.ftn.sbnz.model.models.backModels.AnimalsWithBreeds;
 import com.ftn.sbnz.model.models.backModels.ShelterInfo;
 import com.ftn.sbnz.model.models.backModels.Suggestions;
@@ -73,6 +74,26 @@ public class ShelterController {
         try {
             shelterService.depositMoney(amount);
             return new ResponseEntity<>("Successful deposit", HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
+
+    @PostMapping(value = "/shelter-animal", consumes = "application/json")
+    public ResponseEntity<?> shelterAnimal(@RequestBody Animal animal) {
+        try {
+            shelterService.shelterAnimal(animal);
+            return new ResponseEntity<>("Successful sheltering", HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
+
+    @PostMapping(value = "/adopt-animal", consumes = "application/json")
+    public ResponseEntity<?> adoptAnimal(@RequestBody Animal animal) {
+        try {
+            shelterService.adoptAnimal(animal);
+            return new ResponseEntity<>("Successful adoption", HttpStatus.OK);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }

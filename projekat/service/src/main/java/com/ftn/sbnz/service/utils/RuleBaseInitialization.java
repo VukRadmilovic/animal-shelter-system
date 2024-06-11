@@ -197,6 +197,11 @@ public class RuleBaseInitialization {
         InputStream basicRules = RuleBaseInitialization.class.getResourceAsStream("/rules/basic/basic.drl");
         Resource ruleResource = ResourceFactory.newInputStreamResource(basicRules);
         kieHelper.addResource(ruleResource, ResourceType.DRL);
+
+        InputStream backwardRules = RuleBaseInitialization.class.getResourceAsStream("/rules/backward/backward.drl");
+        Resource backwardResource = ResourceFactory.newInputStreamResource(backwardRules);
+        kieHelper.addResource(backwardResource, ResourceType.DRL);
+
         KieSessionConfiguration config = KieServices.Factory.get().newKieSessionConfiguration();
         config.setOption(ClockTypeOption.get("pseudo"));
         return kieHelper.build().newKieSession(config,null);

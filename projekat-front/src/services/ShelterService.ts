@@ -2,6 +2,7 @@ import {AnimalsWithBreeds} from "../models/AnimalsWithBreeds.ts";
 import axios from "axios";
 import {Shelter} from "../models/Shelter.ts";
 import {GlobalChartEntry} from "../models/GlobalChartEntry";
+import {Animal} from "../models/Animal";
 
 export class ShelterService {
     private api_host = "http://localhost:8080";
@@ -71,6 +72,28 @@ export class ShelterService {
         return axios({
             method: 'PUT',
             url: `${this.api_host}/api/shelter/deposit/` + amount,
+        }).then(() => {}).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
+
+    public shelterAnimal(animal: Animal) : Promise<void> {
+        return axios({
+            method: 'POST',
+            url: `${this.api_host}/api/shelter/shelter-animal`,
+            data: animal
+        }).then(() => {}).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
+
+    public adoptAnimal(animal: Animal) : Promise<void> {
+        return axios({
+            method: 'POST',
+            url: `${this.api_host}/api/shelter/adopt-animal`,
+            data: animal
         }).then(() => {}).catch((err) => {
             console.log(err);
             throw err;

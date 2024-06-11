@@ -1,7 +1,10 @@
 package com.ftn.sbnz.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.models.FinalistsForUsers;
@@ -10,6 +13,7 @@ import com.ftn.sbnz.model.models.RecommendationsMap;
 import com.ftn.sbnz.model.models.backModels.Questionnaire;
 import com.ftn.sbnz.service.utils.RuleBaseInitialization;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.time.SessionPseudoClock;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.kie.api.KieServices;
@@ -51,11 +55,21 @@ public class ServiceApplication  {
 
 	@Bean
 	public KieSession kieSession() {
-		KieSession newSession = ruleBaseInitialization.createKieSession();
-		newSession.insert(new RecommendationsMap());
-		newSession.insert(new FinalistsForUsers());
-		newSession.insert(new GlobalChart());
-		return newSession;
+		KieSession session = ruleBaseInitialization.createKieSession();
+		SessionPseudoClock clock = session.getSessionClock();
+
+		LocalDate startDate = LocalDate.of(1970, 1, 1); // start date
+        LocalDate today = LocalDate.now().withDayOfMonth(1); // 1st day of current month
+
+        long daysBetween = ChronoUnit.DAYS.between(startDate, today); // calculate number of days between start and today
+        clock.advanceTime(daysBetween - 30, TimeUnit.DAYS);
+
+		session.insert(clock);
+		session.insert(new RecommendationsMap());
+		session.insert(new FinalistsForUsers());
+		session.insert(new GlobalChart());
+		session.fireAllRules();
+		return session;
 	}
 
 }

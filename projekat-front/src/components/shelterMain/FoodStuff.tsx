@@ -9,7 +9,6 @@ interface FoodStuffProps {
 }
 
 export function FoodStuff({animals, shelterService} : FoodStuffProps) {
-    animals = animals.animals;
     if (!Array.isArray(animals)) {
         return <p>Oopsie</p>;
     }

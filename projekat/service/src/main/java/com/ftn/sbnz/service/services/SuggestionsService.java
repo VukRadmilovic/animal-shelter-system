@@ -13,6 +13,7 @@ import com.ftn.sbnz.model.models.backModels.*;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
+import org.kie.api.time.SessionPseudoClock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,8 +24,12 @@ import java.util.Map;
 
 @Service
 public class SuggestionsService {
-
     private final KieSession kieSession;
+
+    private void advanceTime() {
+        SessionPseudoClock clock = kieSession.getSessionClock();
+        clock.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
+    }
 
     @Autowired
     public SuggestionsService(KieSession kieSession) {
@@ -32,6 +37,7 @@ public class SuggestionsService {
     }
 
     public void submitResponse(Response response) {
+        advanceTime();
         kieSession.insert(response);
         if(response.getQuestionId() == 15) {
             kieSession.insert(new QuestionnaireFilled(response.getUserId()));
