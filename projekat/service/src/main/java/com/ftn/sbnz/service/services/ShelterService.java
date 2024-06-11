@@ -38,8 +38,8 @@ public class ShelterService {
     }
 
     private void advanceTime() {
-        SessionPseudoClock clock = kieSession.getSessionClock();
-        clock.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
+//        SessionPseudoClock clock = kieSession.getSessionClock();
+//        clock.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     public void registerShelter(ShelterInfo shelterInfo) {

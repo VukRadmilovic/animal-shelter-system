@@ -56,15 +56,15 @@ public class ServiceApplication  {
 	@Bean
 	public KieSession kieSession() {
 		KieSession session = ruleBaseInitialization.createKieSession();
-		SessionPseudoClock clock = session.getSessionClock();
+//		SessionPseudoClock clock = session.getSessionClock();
 
-		LocalDate startDate = LocalDate.of(1970, 1, 1); // start date
-        LocalDate today = LocalDate.now().withDayOfMonth(1); // 1st day of current month
+//		LocalDate startDate = LocalDate.of(1970, 1, 1); // start date
+//        LocalDate today = LocalDate.now().withDayOfMonth(1); // 1st day of current month
+//
+//        long daysBetween = ChronoUnit.DAYS.between(startDate, today); // calculate number of days between start and today
+//        clock.advanceTime(daysBetween - 30, TimeUnit.DAYS);
 
-        long daysBetween = ChronoUnit.DAYS.between(startDate, today); // calculate number of days between start and today
-        clock.advanceTime(daysBetween - 30, TimeUnit.DAYS);
-
-		session.insert(clock);
+		session.insert(session.getSessionClock());
 		session.insert(new RecommendationsMap());
 		session.insert(new FinalistsForUsers());
 		session.insert(new GlobalChart());

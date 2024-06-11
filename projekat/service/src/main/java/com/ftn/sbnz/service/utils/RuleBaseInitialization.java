@@ -181,7 +181,7 @@ public class RuleBaseInitialization {
         //System.out.println(cepTemplateCompiled);
     }
 
-    public KieSession createKieSession(){
+    public KieSession createKieSession() {
         KieHelper kieHelper = new KieHelper();
         kieHelper.addContent(basicTemplateCompiled, ResourceType.DRL);
         kieHelper.addContent(continuousTemplateCompiled, ResourceType.DRL);
@@ -203,7 +203,7 @@ public class RuleBaseInitialization {
         kieHelper.addResource(backwardResource, ResourceType.DRL);
 
         KieSessionConfiguration config = KieServices.Factory.get().newKieSessionConfiguration();
-        config.setOption(ClockTypeOption.get("pseudo"));
+        config.setOption(ClockTypeOption.get("realtime"));
         return kieHelper.build().newKieSession(config,null);
     }
 }

@@ -27,8 +27,8 @@ public class SuggestionsService {
     private final KieSession kieSession;
 
     private void advanceTime() {
-        SessionPseudoClock clock = kieSession.getSessionClock();
-        clock.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
+//        SessionPseudoClock clock = kieSession.getSessionClock();
+//        clock.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
     @Autowired
