@@ -4,6 +4,7 @@ import {Shelter} from "../models/Shelter.ts";
 import {GlobalChartEntry} from "../models/GlobalChartEntry";
 import {Animal} from "../models/Animal";
 import {Report} from "../models/Report";
+import {ShelterWithMaps} from "../models/ShelterWithMaps";
 
 export class ShelterService {
     private api_host = "http://localhost:8080";
@@ -59,7 +60,7 @@ export class ShelterService {
         });
     }
 
-    public getShelter() : Promise<Shelter> {
+    public getShelter() : Promise<ShelterWithMaps> {
         return axios({
             method: 'GET',
             url: `${this.api_host}/api/shelter/`,

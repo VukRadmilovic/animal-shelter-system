@@ -2,13 +2,16 @@ import {Button, Grid, TextField, Typography} from "@mui/material";
 import React from "react";
 import {ShelterService} from "../../services/ShelterService";
 import {AnimalWithBreed} from "../../models/AnimalWithBreed";
+import {Shelter} from "../../models/Shelter";
+import {ShelterWithMaps} from "../../models/ShelterWithMaps";
 
 interface FoodStuffProps {
     animals : AnimalWithBreed[],
+    shelter: ShelterWithMaps,
     shelterService: ShelterService,
 }
 
-export function FoodStuff({animals, shelterService} : FoodStuffProps) {
+export function FoodStuff({animals, shelter, shelterService} : FoodStuffProps) {
     if (!Array.isArray(animals)) {
         return <p>Oopsie</p>;
     }
@@ -28,7 +31,7 @@ export function FoodStuff({animals, shelterService} : FoodStuffProps) {
                                     sx={{width:'80%'}}
                                     type={'number'}
                                     label='Number of animals'
-                                    defaultValue={2}
+                                    value={shelter.animals.filter(animal => animal.animalType === type).length}
                                     InputProps={{
                                         readOnly: true,
                                     }}/>
@@ -38,7 +41,7 @@ export function FoodStuff({animals, shelterService} : FoodStuffProps) {
                                     sx={{width:'80%'}}
                                     type={'number'}
                                     label='Available food'
-                                    defaultValue={10}
+                                    value={shelter.foodAvailableForAnimals[type]}
                                     InputProps={{
                                         readOnly: true,
                                     }}/>
@@ -48,7 +51,7 @@ export function FoodStuff({animals, shelterService} : FoodStuffProps) {
                                     sx={{width:'80%'}}
                                     type={'number'}
                                     label='Price Per Portion (Dinars)'
-                                    defaultValue={15}
+                                    value={shelter.prices[type]}
                                     InputProps={{
                                         readOnly: true,
                                     }}/>

@@ -29,8 +29,8 @@ import {useNavigate} from "react-router-dom";
 import {Reports} from "./Reports";
 import {GlobalChartEntry} from "../../models/GlobalChartEntry";
 import {Notification} from "../../models/Notification";
-import {Shelter} from "../../models/Shelter";
 import {PopupMessage} from "../PopupMessage/PopupMessage";
+import {ShelterWithMaps} from "../../models/ShelterWithMaps";
 
 export interface AnimalsForm {
     name: string,
@@ -64,7 +64,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
     const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<AnimalWithBreed[]>([]);
     const [globalChart, setGlobalChart] = React.useState<GlobalChartEntry[]>([]);
     const [notifications, setNotifications] = React.useState<Notification[]>([]);
-    const [shelter, setShelter] = React.useState<Shelter | null>(null);
+    const [shelter, setShelter] = React.useState<ShelterWithMaps | null>(null);
     const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
     const [shelteredAnimals, setShelteredAnimals] = React.useState<Animal[]>([]);
 
@@ -396,7 +396,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                       minHeight={'50vh'}
                       sx={{display:'block', alignContent:'center'}}
                       className="container rounded-container" m={2}>
-                    <FoodStuff shelterService={shelterService} animals={animalsWithBreeds}/>
+                    <FoodStuff shelterService={shelterService} shelter={shelter} animals={animalsWithBreeds}/>
                 </Grid>
                 <PopupMessage message={errorMessage} isSuccess={isSuccess} handleClose={handleErrorPopupClose}
                               open={errorPopupOpen}/>
