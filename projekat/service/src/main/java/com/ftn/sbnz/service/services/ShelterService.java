@@ -144,6 +144,25 @@ public class ShelterService {
         return new ReportDTO(r.getAdoptionCount(), r.getShelteringCount());
     }
 
+    public ReportDTO getWeeklyReport(String week) {
+        advanceTime();
+        QueryResults results = kieSession.getQueryResults("isContainedInNonLeaf", week);
+
+        if (results.size() == 0) {
+            System.out.println("No report found for week: " + week);
+            return new ReportDTO(-1, -1);
+        }
+
+        Report weeklyReport = new Report(week, "", ReportType.WEEKLY, getShelter());
+        for (QueryResultsRow row : results) {
+            Report r = (Report) row.get("$r");
+            weeklyReport.incrementAdoptionCount(r.getAdoptionCount());
+            weeklyReport.incrementShelteringCount(r.getShelteringCount());
+        }
+
+        return new ReportDTO(weeklyReport.getAdoptionCount(), weeklyReport.getShelteringCount());
+    }
+
     public ReportDTO getMonthlyReport(String month) {
         advanceTime();
 

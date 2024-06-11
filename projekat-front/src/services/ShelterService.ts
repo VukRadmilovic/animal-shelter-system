@@ -111,6 +111,16 @@ export class ShelterService {
         });
     }
 
+    public getWeeklyReport(date: string) : Promise<Report> {
+        return axios({
+            method: 'GET',
+            url: `${this.api_host}/api/shelter/weekly-report/` + date,
+        }).then((report) => report.data).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
+
     public getMonthlyReport(date: string) : Promise<Report> {
         return axios({
             method: 'GET',

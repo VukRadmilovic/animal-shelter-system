@@ -44,7 +44,7 @@ rule "Create this month's remaining reports on startup"
         LocalDateTime clockTime = LocalDateTime.ofInstant(Instant.ofEpochMilli($clock.getCurrentTime()), ZoneId.systemDefault());
         System.out.println("Current time: " + clockTime);
         String monthName = clockTime.getMonth().name();
-        LocalDateTime firstDay = clockTime;
+        LocalDateTime firstDay = clockTime.withDayOfMonth(1);
         LocalDateTime lastDay = clockTime.withDayOfMonth(clockTime.getMonth().length(clockTime.toLocalDate().isLeapYear()));
 
         // generate report

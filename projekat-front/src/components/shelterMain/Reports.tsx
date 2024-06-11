@@ -110,7 +110,14 @@ export function Reports({shelterService}: ReportProps) {
         }
 
         if (reportType === 'weekly') {
-            console.log("Week selected", weekSelected);
+            const data = weekSelected?.start.format('D.M.YYYY.') + ' - ' + weekSelected?.end.format('D.M.YYYY.');
+            console.log("Week selected", data);
+            shelterService.getWeeklyReport(data).then((response: Report) => {
+                console.log(response);
+                setReportData(response);
+            }).catch((error) => {
+                console.error(error);
+            });
         }
 
         if (reportType === 'monthly') {

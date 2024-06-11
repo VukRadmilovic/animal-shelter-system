@@ -110,6 +110,15 @@ public class ShelterController {
         }
     }
 
+    @GetMapping(value = "/weekly-report/{week}")
+    public ResponseEntity<?> getWeeklyReport(@PathVariable String week) {
+        try {
+            return new ResponseEntity<>(shelterService.getWeeklyReport(week), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
+
     @GetMapping(value = "/monthly-report/{month}")
     public ResponseEntity<?> getMonthlyReport(@PathVariable String month) {
         try {
