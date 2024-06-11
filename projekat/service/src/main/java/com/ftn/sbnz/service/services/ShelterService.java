@@ -1,5 +1,6 @@
 package com.ftn.sbnz.service.services;
 
+import com.ftn.sbnz.model.enums.AnimalType;
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
 import com.ftn.sbnz.model.enums.ReportType;
 import com.ftn.sbnz.model.events.*;
@@ -182,5 +183,13 @@ public class ShelterService {
         }
 
         return new ReportDTO(monthlyReport.getAdoptionCount(), monthlyReport.getShelteringCount());
+    }
+
+    public void purchaseFood(int amount, AnimalType animalType) {
+        advanceTime();
+        System.out.println("Service: Purchasing food: " + amount + " for " + animalType);
+        FoodPurchase foodPurchase = new FoodPurchase(getSessionClock().getCurrentTime(), getShelter(), animalType, amount);
+        kieSession.insert(foodPurchase);
+        kieSession.fireAllRules();
     }
 }

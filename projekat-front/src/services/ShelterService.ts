@@ -131,4 +131,18 @@ export class ShelterService {
             throw err;
         });
     }
+
+    public purchaseFood(animalType: string, quantity: number) : Promise<void> {
+        return axios({
+            method: 'POST',
+            url: `${this.api_host}/api/shelter/food-purchase`,
+            data: {
+                animalType: animalType,
+                quantity: quantity
+            }
+        }).then(() => {}).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
 }

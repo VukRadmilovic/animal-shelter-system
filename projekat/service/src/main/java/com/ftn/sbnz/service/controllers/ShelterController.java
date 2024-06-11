@@ -3,6 +3,7 @@ package com.ftn.sbnz.service.controllers;
 
 import com.ftn.sbnz.model.models.Animal;
 import com.ftn.sbnz.model.models.backModels.AnimalsWithBreeds;
+import com.ftn.sbnz.model.models.backModels.FoodPurchaseDTO;
 import com.ftn.sbnz.model.models.backModels.ShelterInfo;
 import com.ftn.sbnz.service.services.ShelterService;
 import org.springframework.http.HttpStatus;
@@ -123,6 +124,16 @@ public class ShelterController {
     public ResponseEntity<?> getMonthlyReport(@PathVariable String month) {
         try {
             return new ResponseEntity<>(shelterService.getMonthlyReport(month), HttpStatus.OK);
+        } catch (ResponseStatusException ex) {
+            return new ResponseEntity<>(ex.getReason(), ex.getStatus());
+        }
+    }
+
+    @PostMapping(value = "/food-purchase")
+    public ResponseEntity<?> purchaseFood(@RequestBody FoodPurchaseDTO foodPurchaseDTO) {
+        try {
+            shelterService.purchaseFood(foodPurchaseDTO.getQuantity(), foodPurchaseDTO.getAnimalType());
+            return new ResponseEntity<>("Successful purchase", HttpStatus.OK);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
         }
