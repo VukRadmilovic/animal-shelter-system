@@ -223,7 +223,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                                         key={row.animalBreed}
                                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
                                         <TableCell component="th" scope="row">
-                                            {row.animalBreed}
+                                            {row.animalBreed.toLowerCase().replace(/_/g, ' ').replace(/^\w/, c => c.toUpperCase())}
                                         </TableCell>
                                         <TableCell align="right">{row.recommendationCount}</TableCell>
                                     </TableRow>

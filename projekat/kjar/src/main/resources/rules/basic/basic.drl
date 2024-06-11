@@ -97,10 +97,6 @@ rule "Global charts update"
             GlobalRecommendation grc = (GlobalRecommendation)gr;
              newList.add(grc.clone());
          }
-         for(Object breed : ((HashMap<Long,List<AnimalBreed>>)$final).get($userId)) {
-            AnimalBreed breedEnum = (AnimalBreed)breed;
-            newList.stream().filter(recommendation -> recommendation.getAnimalBreed() == breedEnum).forEach(res -> res.setRecommendationCount(res.getRecommendationCount() + 1));
-         }
          if(((HashMap<Long,List<AnimalBreed>>)$final).get($userId).isEmpty()) {
                      System.out.println("inside here");
                      AnimalBreed firstWithMax = ((HashMap<AnimalBreed, Integer>)$map.get($userId))
@@ -110,6 +106,10 @@ rule "Global charts update"
                      .map(Map.Entry::getKey).orElse(null);
                      ((HashMap<Long,List<AnimalBreed>>)$final).get($userId).add(firstWithMax);
                   }
+         for(Object breed : ((HashMap<Long,List<AnimalBreed>>)$final).get($userId)) {
+            AnimalBreed breedEnum = (AnimalBreed)breed;
+            newList.stream().filter(recommendation -> recommendation.getAnimalBreed() == breedEnum).forEach(res -> res.setRecommendationCount(res.getRecommendationCount() + 1));
+         }
          newList.sort(Comparator.comparingInt(GlobalRecommendation::getRecommendationCount).reversed());
          $map.remove($userId);
          List<GlobalRecommendation> top5 = $globalChart.getTop5Differences(newList.stream().limit(5).collect(Collectors.toList()));
