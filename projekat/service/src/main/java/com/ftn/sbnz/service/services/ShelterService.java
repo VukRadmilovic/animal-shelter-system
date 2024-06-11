@@ -1,11 +1,14 @@
 package com.ftn.sbnz.service.services;
 
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
+import com.ftn.sbnz.model.enums.ReportType;
 import com.ftn.sbnz.model.events.*;
 import com.ftn.sbnz.model.models.Animal;
 import com.ftn.sbnz.model.models.FinalistsForUsers;
+import com.ftn.sbnz.model.models.Report;
 import com.ftn.sbnz.model.models.Shelter;
 import com.ftn.sbnz.model.models.backModels.AnimalsWithBreeds;
+import com.ftn.sbnz.model.models.backModels.ReportDTO;
 import com.ftn.sbnz.model.models.backModels.ShelterInfo;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
@@ -14,6 +17,8 @@ import org.kie.api.time.SessionClock;
 import org.kie.api.time.SessionPseudoClock;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -46,6 +51,7 @@ public class ShelterService {
                 shelterInfo.getFoodAvailableForAnimals(),
                 shelterInfo.getPrices());
         kieSession.insert(shelter);
+        kieSession.fireAllRules();
     }
 
     public boolean checkIfShelterExists() {
@@ -119,5 +125,62 @@ public class ShelterService {
         Resettlement resettlement = new Resettlement(getSessionClock().getCurrentTime(), getShelter(), PromotionOrResettlementType.ADOPTION, animal);
         kieSession.insert(resettlement);
         kieSession.fireAllRules();
+    }
+
+    public ReportDTO getDailyReport(String date) {
+        advanceTime();
+        QueryResults results = kieSession.getQueryResults("findLeaf", date);
+        Report r = new Report();
+
+        if (results.size() == 0) {
+            System.out.println("No report found for date: " + date);
+            return new ReportDTO(-1, -1);
+        }
+
+        for (QueryResultsRow row : results) {
+            r = (Report) row.get("$r");
+        }
+
+        return new ReportDTO(r.getAdoptionCount(), r.getShelteringCount());
+    }
+
+    public ReportDTO getWeeklyReport(String week) {
+        advanceTime();
+        QueryResults results = kieSession.getQueryResults("isContainedInNonLeaf", week);
+
+        if (results.size() == 0) {
+            System.out.println("No report found for week: " + week);
+            return new ReportDTO(-1, -1);
+        }
+
+        Report weeklyReport = new Report(week, "", ReportType.WEEKLY, getShelter());
+        for (QueryResultsRow row : results) {
+            Report r = (Report) row.get("$r");
+            weeklyReport.incrementAdoptionCount(r.getAdoptionCount());
+            weeklyReport.incrementShelteringCount(r.getShelteringCount());
+        }
+
+        return new ReportDTO(weeklyReport.getAdoptionCount(), weeklyReport.getShelteringCount());
+    }
+
+    public ReportDTO getMonthlyReport(String month) {
+        advanceTime();
+
+        QueryResults results;
+        results = kieSession.getQueryResults("isContainedInNonLeaf", month);
+
+        if (results.size() == 0) {
+            System.out.println("No report found for month: " + month);
+            return new ReportDTO(-1, -1);
+        }
+
+        Report monthlyReport = new Report(month, "", ReportType.MONTHLY, getShelter());
+        for (QueryResultsRow row : results) {
+            Report r = (Report) row.get("$r");
+            monthlyReport.incrementAdoptionCount(r.getAdoptionCount());
+            monthlyReport.incrementShelteringCount(r.getShelteringCount());
+        }
+
+        return new ReportDTO(monthlyReport.getAdoptionCount(), monthlyReport.getShelteringCount());
     }
 }

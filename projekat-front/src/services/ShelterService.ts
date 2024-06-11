@@ -3,6 +3,7 @@ import axios from "axios";
 import {Shelter} from "../models/Shelter.ts";
 import {GlobalChartEntry} from "../models/GlobalChartEntry";
 import {Animal} from "../models/Animal";
+import {Report} from "../models/Report";
 
 export class ShelterService {
     private api_host = "http://localhost:8080";
@@ -95,6 +96,36 @@ export class ShelterService {
             url: `${this.api_host}/api/shelter/adopt-animal`,
             data: animal
         }).then(() => {}).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
+
+    public getDailyReport(date: string) : Promise<Report> {
+        return axios({
+            method: 'GET',
+            url: `${this.api_host}/api/shelter/daily-report/` + date,
+        }).then((report) => report.data).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
+
+    public getWeeklyReport(date: string) : Promise<Report> {
+        return axios({
+            method: 'GET',
+            url: `${this.api_host}/api/shelter/weekly-report/` + date,
+        }).then((report) => report.data).catch((err) => {
+            console.log(err);
+            throw err;
+        });
+    }
+
+    public getMonthlyReport(date: string) : Promise<Report> {
+        return axios({
+            method: 'GET',
+            url: `${this.api_host}/api/shelter/monthly-report/` + date,
+        }).then((report) => report.data).catch((err) => {
             console.log(err);
             throw err;
         });

@@ -358,7 +358,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                       minHeight={'40vh'}
                       sx={{display:'block', alignContent:'center'}}
                       className="container rounded-container" m={2}>
-                    <Reports/>
+                    <Reports shelterService={shelterService}/>
                 </Grid>
                 <Grid container item xs={5.7} sm={5.7} md={5.7} lg={5.7} xl={5.7}
                       minHeight={'40vh'}
