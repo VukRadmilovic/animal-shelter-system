@@ -2,12 +2,11 @@ package com.ftn.sbnz.model.models;
 
 import com.ftn.sbnz.model.enums.AnimalBreed;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FinalistsForUsers {
+public class RecommendationFinalistsForUsers {
     public Map<Long, List<AnimalBreed>> getFinalists() {
         return finalists;
     }
@@ -18,7 +17,7 @@ public class FinalistsForUsers {
 
     private Map<Long, List<AnimalBreed>> finalists;
 
-    public FinalistsForUsers() {
+    public RecommendationFinalistsForUsers() {
         this.finalists = new HashMap<>();
     }
 }

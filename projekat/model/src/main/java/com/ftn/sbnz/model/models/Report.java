@@ -3,8 +3,6 @@ package com.ftn.sbnz.model.models;
 import com.ftn.sbnz.model.enums.ReportType;
 import org.kie.api.definition.type.Position;
 
-import java.time.LocalDateTime;
-
 public class Report {
     @Position(0)
     private String name;

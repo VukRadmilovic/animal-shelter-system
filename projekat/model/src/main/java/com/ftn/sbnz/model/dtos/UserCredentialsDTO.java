@@ -1,6 +1,6 @@
-package com.ftn.sbnz.model.models.backModels;
+package com.ftn.sbnz.model.dtos;
 
-public class UserCredentials {
+public class UserCredentialsDTO {
     public String getUsername() {
         return username;
     }
@@ -20,7 +20,7 @@ public class UserCredentials {
     private String username;
     private String password;
 
-    public UserCredentials(String username, String password) {
+    public UserCredentialsDTO(String username, String password) {
         this.username = username;
         this.password = password;
     }

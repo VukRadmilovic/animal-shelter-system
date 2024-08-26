@@ -13,7 +13,7 @@ import {
     Typography
 } from "@mui/material";
 import React, {useEffect, useRef} from "react";
-import {QuestionResponse} from "../../models/QuestionResponse.ts";
+import {UsersQuestionResponse} from "../../models/UsersQuestionResponse.ts";
 import {PopupMessage} from "../PopupMessage/PopupMessage.tsx";
 import {Suggestions} from "../../models/Suggestions.ts";
 import {Questionnaire} from "../../models/Questionnaire.ts";
@@ -49,7 +49,7 @@ export function PetSuggestionLandingPage({suggestionService} : PetSuggestionLand
         if(activeStep == 0) {
             sessionStorage.setItem('userId',(Math.floor(Math.random() * (2 ** 32)) - (2 ** 31)).toString());
         }
-        const response : QuestionResponse = {
+        const response : UsersQuestionResponse = {
             userId: Number(sessionStorage.getItem('userId')),
             questionId: activeStep + 1,
             choice: value

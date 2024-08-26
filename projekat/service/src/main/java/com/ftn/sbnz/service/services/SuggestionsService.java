@@ -1,26 +1,17 @@
 package com.ftn.sbnz.service.services;
 
 import com.ftn.sbnz.model.enums.AnimalBreed;
-import com.ftn.sbnz.model.events.Event;
-import com.ftn.sbnz.model.events.Notification;
-import com.ftn.sbnz.model.events.Promotion;
 import com.ftn.sbnz.model.events.QuestionnaireFilled;
-import com.ftn.sbnz.model.models.FinalistsForUsers;
-import com.ftn.sbnz.model.models.GlobalChart;
-import com.ftn.sbnz.model.models.RecommendationsMap;
-import com.ftn.sbnz.model.models.Response;
-import com.ftn.sbnz.model.models.backModels.*;
+import com.ftn.sbnz.model.models.*;
+import com.ftn.sbnz.model.utils.BreedsAndPictures;
+import com.ftn.sbnz.model.utils.QuestionsAndAnswers;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
-import org.kie.api.time.SessionPseudoClock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class SuggestionsService {
@@ -47,9 +38,9 @@ public class SuggestionsService {
 
     public Suggestions getSuggestions(Long userId) {
         QueryResults results = kieSession.getQueryResults("getFinalists");
-        FinalistsForUsers map = null;
+        RecommendationFinalistsForUsers map = null;
         for (QueryResultsRow row : results) {
-            map = (FinalistsForUsers) row.get("$map");
+            map = (RecommendationFinalistsForUsers) row.get("$map");
         }
         Suggestions suggestions = new Suggestions(new ArrayList<>());
         for(AnimalBreed breed : map.getFinalists().get(userId)) {
@@ -64,11 +55,11 @@ public class SuggestionsService {
         return new Questionnaire(QuestionsAndAnswers.questions);
     }
 
-    public GlobalChart getGlobalChart() {
+    public GlobalRecommendationChart getGlobalChart() {
         QueryResults results = kieSession.getQueryResults("getGlobalChart");
-        GlobalChart chart = null;
+        GlobalRecommendationChart chart = null;
         for (QueryResultsRow row : results) {
-            chart = (GlobalChart) row.get("$globalChart");
+            chart = (GlobalRecommendationChart) row.get("$globalChart");
         }
         return chart;
     }

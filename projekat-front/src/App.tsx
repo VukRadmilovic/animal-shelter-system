@@ -4,7 +4,7 @@ import {UserService} from "./services/UserService.ts";
 import {PetSuggestionLandingPage} from "./components/PetSuggestionLandingPage/PetSuggestionLandingPage.tsx";
 import {PetSuggestionsService} from "./services/PetSuggestionsService.ts";
 import {LoginRegistration} from "./components/LoginRegistration/LoginRegistration.tsx";
-import {ShelterMain} from "./components/shelterMain/ShelterMain.tsx";
+import {ShelterMain} from "./components/ShelterMain/ShelterMain.tsx";
 import {ShelterService} from "./services/ShelterService.ts";
 import {ShelterInitialization} from "./components/ShelterInitialization/ShelterInitialization.tsx";
 

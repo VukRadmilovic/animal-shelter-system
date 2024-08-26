@@ -168,7 +168,7 @@ export function LoginRegistration({userService, shelterService} : LoginRegistrat
                     </Grid>
                     </div> :
                         <Grid textAlign={'center'} sx={{alignSelf:'center'}} p={2}>
-                            <Typography variant={'h4'}>Seems like shelter is not registered. Register the shelter first by clicking on the button below.</Typography>
+                            <Typography variant={'h4'}>Seems like the shelter is not registered. Register the shelter first by clicking the button below.</Typography>
                             <Button variant="contained" type="submit" sx={{marginTop:'2em'}} onClick={() => navigate('/ShelterInit')}>Shelter Registration</Button>
                         </Grid>
                         }

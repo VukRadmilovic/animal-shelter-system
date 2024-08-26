@@ -23,7 +23,7 @@ import {useEffect, useRef, useState} from "react";
 import {Animal} from "../../models/Animal";
 import {AnimalWithBreed} from "../../models/AnimalWithBreed";
 import {set, useForm} from "react-hook-form";
-import {FoodStuff} from "./FoodStuff";
+import {AnimalsAndTheirFoodTable} from "./AnimalsAndTheirFoodTable";
 import {ShelterService} from "../../services/ShelterService";
 import {useNavigate} from "react-router-dom";
 import {Reports} from "./Reports";
@@ -401,7 +401,7 @@ export function ShelterMain({shelterService} : ShelterMainProps) {
                       minHeight={'50vh'}
                       sx={{display:'block', alignContent:'center'}}
                       className="container rounded-container" m={2}>
-                    <FoodStuff shelterService={shelterService} shelter={shelter} animals={animalsWithBreeds}/>
+                    <AnimalsAndTheirFoodTable shelterService={shelterService} shelter={shelter} animals={animalsWithBreeds}/>
                 </Grid>
                 <PopupMessage message={errorMessage} isSuccess={isSuccess} handleClose={handleErrorPopupClose}
                               open={errorPopupOpen}/>

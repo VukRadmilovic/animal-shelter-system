@@ -1,4 +1,4 @@
-package com.ftn.sbnz.model.models.backModels;
+package com.ftn.sbnz.model.models;
 
 import java.util.List;
 

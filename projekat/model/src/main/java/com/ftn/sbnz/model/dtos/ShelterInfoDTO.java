@@ -1,17 +1,17 @@
-package com.ftn.sbnz.model.models.backModels;
+package com.ftn.sbnz.model.dtos;
 
-import com.ftn.sbnz.model.models.Animal;
+import com.ftn.sbnz.model.models.AnimalWithName;
 import com.ftn.sbnz.model.models.FoodAvailableForAnimal;
 import com.ftn.sbnz.model.models.Price;
 
 import java.util.List;
 
-public class ShelterInfo {
+public class ShelterInfoDTO {
     private String name;
     private String address;
     private int capacity;
     private double moneyAvailable;
-    private List<Animal> animals;
+    private List<AnimalWithName> animals;
     private List<Price> prices;
 
     public String getName() {
@@ -46,11 +46,11 @@ public class ShelterInfo {
         this.moneyAvailable = moneyAvailable;
     }
 
-    public List<Animal> getAnimals() {
+    public List<AnimalWithName> getAnimals() {
         return animals;
     }
 
-    public void setAnimals(List<Animal> animals) {
+    public void setAnimals(List<AnimalWithName> animals) {
         this.animals = animals;
     }
 
@@ -72,7 +72,7 @@ public class ShelterInfo {
 
     private List<FoodAvailableForAnimal> foodAvailableForAnimals;
 
-    public ShelterInfo(String name, String address, int capacity, double moneyAvailable, List<Animal> animals, List<Price> prices, List<FoodAvailableForAnimal> foodAvailableForAnimals) {
+    public ShelterInfoDTO(String name, String address, int capacity, double moneyAvailable, List<AnimalWithName> animals, List<Price> prices, List<FoodAvailableForAnimal> foodAvailableForAnimals) {
         this.name = name;
         this.address = address;
         this.capacity = capacity;

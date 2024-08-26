@@ -1,9 +1,8 @@
 package com.ftn.sbnz.service.services;
 
-import com.ftn.sbnz.model.models.FinalistsForUsers;
 import com.ftn.sbnz.model.models.Worker;
-import com.ftn.sbnz.model.models.backModels.NewUser;
-import com.ftn.sbnz.model.models.backModels.UserCredentials;
+import com.ftn.sbnz.model.dtos.NewUserDTO;
+import com.ftn.sbnz.model.dtos.UserCredentialsDTO;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
@@ -19,7 +18,7 @@ public class UserService {
         this.kieSession = kieSession;
     }
 
-    public void register(NewUser user) {
+    public void register(NewUserDTO user) {
         QueryResults results = kieSession.getQueryResults("getWorker",user.getUsername());
         if(results.size() != 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username already in use!");
@@ -28,7 +27,7 @@ public class UserService {
         kieSession.insert(newWorker);
     }
 
-    public String login(UserCredentials credentials) {
+    public String login(UserCredentialsDTO credentials) {
         QueryResults results = kieSession.getQueryResults("checkLogin",credentials.getUsername(), credentials.getPassword());
         if(results.size() == 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username and password do not match!");

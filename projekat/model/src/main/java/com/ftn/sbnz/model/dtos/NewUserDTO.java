@@ -1,11 +1,11 @@
-package com.ftn.sbnz.model.models.backModels;
+package com.ftn.sbnz.model.dtos;
 
-public class NewUser {
+public class NewUserDTO {
     private String username;
     private String password;
     private String fullName;
 
-    public NewUser(String username, String password, String fullName) {
+    public NewUserDTO(String username, String password, String fullName) {
         this.username = username;
         this.password = password;
         this.fullName = fullName;

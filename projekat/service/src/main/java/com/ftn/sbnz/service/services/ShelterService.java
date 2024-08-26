@@ -4,22 +4,18 @@ import com.ftn.sbnz.model.enums.AnimalType;
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
 import com.ftn.sbnz.model.enums.ReportType;
 import com.ftn.sbnz.model.events.*;
-import com.ftn.sbnz.model.models.Animal;
-import com.ftn.sbnz.model.models.FinalistsForUsers;
+import com.ftn.sbnz.model.models.AnimalWithName;
 import com.ftn.sbnz.model.models.Report;
 import com.ftn.sbnz.model.models.Shelter;
-import com.ftn.sbnz.model.models.backModels.AnimalsWithBreeds;
-import com.ftn.sbnz.model.models.backModels.ReportDTO;
-import com.ftn.sbnz.model.models.backModels.ShelterInfo;
+import com.ftn.sbnz.model.utils.AnimalsWithBreeds;
+import com.ftn.sbnz.model.dtos.ReportDTO;
+import com.ftn.sbnz.model.dtos.ShelterInfoDTO;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.QueryResults;
 import org.kie.api.runtime.rule.QueryResultsRow;
 import org.kie.api.time.SessionClock;
-import org.kie.api.time.SessionPseudoClock;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,15 +38,15 @@ public class ShelterService {
 //        clock.advanceTime(1, java.util.concurrent.TimeUnit.SECONDS);
     }
 
-    public void registerShelter(ShelterInfo shelterInfo) {
+    public void registerShelter(ShelterInfoDTO shelterInfoDTO) {
         advanceTime();
-        Shelter shelter = new Shelter(shelterInfo.getName(),
-                shelterInfo.getAddress(),
-                shelterInfo.getMoneyAvailable(),
-                shelterInfo.getCapacity(),
-                shelterInfo.getAnimals(),
-                shelterInfo.getFoodAvailableForAnimals(),
-                shelterInfo.getPrices());
+        Shelter shelter = new Shelter(shelterInfoDTO.getName(),
+                shelterInfoDTO.getAddress(),
+                shelterInfoDTO.getMoneyAvailable(),
+                shelterInfoDTO.getCapacity(),
+                shelterInfoDTO.getAnimals(),
+                shelterInfoDTO.getFoodAvailableForAnimals(),
+                shelterInfoDTO.getPrices());
         kieSession.insert(shelter);
         kieSession.fireAllRules();
     }
@@ -112,14 +108,14 @@ public class ShelterService {
         kieSession.fireAllRules();
     }
 
-    public void shelterAnimal(Animal animal) {
+    public void shelterAnimal(AnimalWithName animal) {
         advanceTime();
         Resettlement resettlement = new Resettlement(getSessionClock().getCurrentTime(), getShelter(), PromotionOrResettlementType.SHELTERING, animal);
         kieSession.insert(resettlement);
         kieSession.fireAllRules();
     }
 
-    public void adoptAnimal(Animal animal) {
+    public void adoptAnimal(AnimalWithName animal) {
         advanceTime();
         System.out.println("Adopting animal: " + animal);
         System.out.println("Shelter animals: " + getShelter().getAnimals());

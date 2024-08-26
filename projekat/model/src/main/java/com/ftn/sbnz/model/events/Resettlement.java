@@ -1,7 +1,7 @@
 package com.ftn.sbnz.model.events;
 
 import com.ftn.sbnz.model.enums.PromotionOrResettlementType;
-import com.ftn.sbnz.model.models.Animal;
+import com.ftn.sbnz.model.models.AnimalWithName;
 import com.ftn.sbnz.model.models.Shelter;
 import org.kie.api.definition.type.Role;
 
@@ -12,13 +12,13 @@ import java.time.ZoneId;
 @Role(Role.Type.EVENT)
 public class Resettlement extends Event {
     private PromotionOrResettlementType resettlementType;
-    private Animal animal;
+    private AnimalWithName animal;
 
 
     public Resettlement(LocalDateTime timestamp,
                         Shelter shelter,
                         PromotionOrResettlementType resettlementType,
-                        Animal animal) {
+                        AnimalWithName animal) {
         super(timestamp, shelter);
         this.resettlementType = resettlementType;
         this.animal = animal;
@@ -27,7 +27,7 @@ public class Resettlement extends Event {
     public Resettlement(long timestampLong,
                         Shelter shelter,
                         PromotionOrResettlementType resettlementType,
-                        Animal animal) {
+                        AnimalWithName animal) {
         super(LocalDateTime.ofInstant(Instant.ofEpochMilli(timestampLong), ZoneId.systemDefault()), shelter);
         this.resettlementType = resettlementType;
         this.animal = animal;
@@ -41,11 +41,11 @@ public class Resettlement extends Event {
         this.resettlementType = resettlementType;
     }
 
-    public Animal getAnimal() {
+    public AnimalWithName getAnimal() {
         return animal;
     }
 
-    public void setAnimal(Animal animal) {
+    public void setAnimal(AnimalWithName animal) {
         this.animal = animal;
     }
 

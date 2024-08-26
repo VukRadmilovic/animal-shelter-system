@@ -1,5 +1,5 @@
 import axios from "axios";
-import {QuestionResponse} from "../models/QuestionResponse.ts";
+import {UsersQuestionResponse} from "../models/UsersQuestionResponse.ts";
 import {Suggestions} from "../models/Suggestions.ts";
 import {Questionnaire} from "../models/Questionnaire.ts";
 
@@ -16,7 +16,7 @@ export class PetSuggestionsService {
             throw err;
         });
     }
-    public sendResponse(response : QuestionResponse): Promise<void> {
+    public sendResponse(response : UsersQuestionResponse): Promise<void> {
         return axios({
             method: 'POST',
             url: `${this.api_host}/api/questionnaire/response`,

@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GlobalChart {
+public class GlobalRecommendationChart {
     private List<GlobalRecommendation> recommendations;
 
-    public GlobalChart() {
+    public GlobalRecommendationChart() {
         this.recommendations = new ArrayList<>();
         for (AnimalBreed breed : AnimalBreed.values()) {
             this.recommendations.add(new GlobalRecommendation(breed, 0));

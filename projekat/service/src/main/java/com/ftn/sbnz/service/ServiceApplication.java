@@ -1,19 +1,12 @@
 package com.ftn.sbnz.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
-import com.ftn.sbnz.model.events.Notification;
-import com.ftn.sbnz.model.models.FinalistsForUsers;
-import com.ftn.sbnz.model.models.GlobalChart;
+import com.ftn.sbnz.model.models.RecommendationFinalistsForUsers;
+import com.ftn.sbnz.model.models.GlobalRecommendationChart;
 import com.ftn.sbnz.model.models.RecommendationsMap;
-import com.ftn.sbnz.model.models.backModels.Questionnaire;
 import com.ftn.sbnz.service.utils.RuleBaseInitialization;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.time.SessionPseudoClock;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.kie.api.KieServices;
@@ -40,7 +33,7 @@ public class ServiceApplication  {
 		for (String beanName : beanNames) {
 			sb.append(beanName + "\n");
 		}
-		log.info(sb.toString());
+//		log.info(sb.toString());
 	}
 
 	@Bean
@@ -66,8 +59,8 @@ public class ServiceApplication  {
 
 		session.insert(session.getSessionClock());
 		session.insert(new RecommendationsMap());
-		session.insert(new FinalistsForUsers());
-		session.insert(new GlobalChart());
+		session.insert(new RecommendationFinalistsForUsers());
+		session.insert(new GlobalRecommendationChart());
 		session.fireAllRules();
 		return session;
 	}

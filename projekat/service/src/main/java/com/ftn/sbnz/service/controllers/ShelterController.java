@@ -1,18 +1,15 @@
 package com.ftn.sbnz.service.controllers;
 
 
-import com.ftn.sbnz.model.models.Animal;
-import com.ftn.sbnz.model.models.backModels.AnimalsWithBreeds;
-import com.ftn.sbnz.model.models.backModels.FoodPurchaseDTO;
-import com.ftn.sbnz.model.models.backModels.ShelterInfo;
+import com.ftn.sbnz.model.models.AnimalWithName;
+import com.ftn.sbnz.model.utils.AnimalsWithBreeds;
+import com.ftn.sbnz.model.dtos.FoodPurchaseDTO;
+import com.ftn.sbnz.model.dtos.ShelterInfoDTO;
 import com.ftn.sbnz.service.services.ShelterService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 @CrossOrigin("http://localhost:5173")
 @RestController
@@ -35,9 +32,9 @@ public class ShelterController {
     }
 
     @PostMapping(value = "/register", consumes = "application/json")
-    public ResponseEntity<?> registerShelter(@RequestBody ShelterInfo shelterInfo) {
+    public ResponseEntity<?> registerShelter(@RequestBody ShelterInfoDTO shelterInfoDTO) {
         try {
-            shelterService.registerShelter(shelterInfo);
+            shelterService.registerShelter(shelterInfoDTO);
             return new ResponseEntity<>("Successful shelter initialization", HttpStatus.OK);
         } catch (ResponseStatusException ex) {
             return new ResponseEntity<>(ex.getReason(), ex.getStatus());
@@ -83,7 +80,7 @@ public class ShelterController {
     }
 
     @PostMapping(value = "/shelter-animal", consumes = "application/json")
-    public ResponseEntity<?> shelterAnimal(@RequestBody Animal animal) {
+    public ResponseEntity<?> shelterAnimal(@RequestBody AnimalWithName animal) {
         try {
             shelterService.shelterAnimal(animal);
             return new ResponseEntity<>("Successful sheltering", HttpStatus.OK);
@@ -93,7 +90,7 @@ public class ShelterController {
     }
 
     @PostMapping(value = "/adopt-animal", consumes = "application/json")
-    public ResponseEntity<?> adoptAnimal(@RequestBody Animal animal) {
+    public ResponseEntity<?> adoptAnimal(@RequestBody AnimalWithName animal) {
         try {
             shelterService.adoptAnimal(animal);
             return new ResponseEntity<>("Successful adoption", HttpStatus.OK);

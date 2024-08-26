@@ -12,7 +12,7 @@ interface FoodStuffProps {
     shelterService: ShelterService,
 }
 
-export function FoodStuff({animals, shelter, shelterService} : FoodStuffProps) {
+export function AnimalsAndTheirFoodTable({animals, shelter, shelterService} : FoodStuffProps) {
     if (!Array.isArray(animals)) {
         return <p>Oopsie</p>;
     }

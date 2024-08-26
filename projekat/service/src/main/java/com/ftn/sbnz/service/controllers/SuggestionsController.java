@@ -2,8 +2,8 @@ package com.ftn.sbnz.service.controllers;
 
 
 import com.ftn.sbnz.model.models.Response;
-import com.ftn.sbnz.model.models.backModels.Questionnaire;
-import com.ftn.sbnz.model.models.backModels.Suggestions;
+import com.ftn.sbnz.model.models.Questionnaire;
+import com.ftn.sbnz.model.models.Suggestions;
 import com.ftn.sbnz.service.services.SuggestionsService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

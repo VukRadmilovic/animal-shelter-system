@@ -1,5 +1,8 @@
-package com.ftn.sbnz.model.models.backModels;
+package com.ftn.sbnz.model.utils;
 
+
+import com.ftn.sbnz.model.models.Answer;
+import com.ftn.sbnz.model.models.Question;
 
 import java.util.Arrays;
 import java.util.List;

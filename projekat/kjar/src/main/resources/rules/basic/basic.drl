@@ -9,12 +9,12 @@ import com.ftn.sbnz.model.models.RecommendationsMap;
 import com.ftn.sbnz.model.events.UserRecommendationCountChanged;
 import com.ftn.sbnz.model.events.QuestionnaireFilled;
 import com.ftn.sbnz.model.models.Response;
-import com.ftn.sbnz.model.models.FinalistsForUsers;
+import com.ftn.sbnz.model.models.RecommendationFinalistsForUsers;
 import com.ftn.sbnz.model.events.FinalistsChangedForUser;
-import com.ftn.sbnz.model.models.GlobalChart;
+import com.ftn.sbnz.model.models.GlobalRecommendationChart;
 import com.ftn.sbnz.model.models.GlobalRecommendation;
 import com.ftn.sbnz.model.models.Shelter;
-import com.ftn.sbnz.model.models.Animal;
+import com.ftn.sbnz.model.models.AnimalWithName;
 import com.ftn.sbnz.model.models.Worker;
 import com.ftn.sbnz.model.events.Notification;
 import com.ftn.sbnz.model.events.Promotion;
@@ -66,7 +66,7 @@ rule "Breed recommendation for user insertion"
     when
         $recommendation : Recommendation($userId: userId)
         $recommendationsMap : RecommendationsMap($map : map)
-        $finalists : FinalistsForUsers($final : finalists)
+        $finalists : RecommendationFinalistsForUsers($final : finalists)
         $event : UserRecommendationCountChanged(userId == $userId)
     then
          System.out.println("inside user insertion");
@@ -87,8 +87,8 @@ end
 
 rule "Global charts update"
     when
-        FinalistsForUsers($final : finalists)
-        $globalChart: GlobalChart($list : recommendations)
+        RecommendationFinalistsForUsers($final : finalists)
+        $globalChart: GlobalRecommendationChart($list : recommendations)
         $recommendationsMap : RecommendationsMap($map : map)
         $event : QuestionnaireFilled($userId: userId)
     then
@@ -125,10 +125,10 @@ rule "Adoption promotion after global chart update"
     when
         $clock: SessionClock()
         $update: GlobalChartTop5Update($newList: newGlobalChart, $diffs : getNewAnimalBreeds(), $diffs.size() > 0)
-        $globalChart: GlobalChart()
+        $globalChart: GlobalRecommendationChart()
         $shelter: Shelter($animals: animals)
         $matches : Set(size > 0) from accumulate(
-                Animal($breed: animalBreed, $breed memberOf $diffs) from $animals,
+                AnimalWithName($breed: animalBreed, $breed memberOf $diffs) from $animals,
                 collectSet($breed)
         )
     then
@@ -178,7 +178,7 @@ rule "If shelter 90%+ full, start adoption promotion"
         $clock: SessionClock()
         $shelter: Shelter($capacity: capacity, $animals: animals)
         Number(intValue >= $capacity * 0.9) from accumulate(
-            Animal() from $animals,
+            AnimalWithName() from $animals,
             count()
         )
         not Promotion(shelter == $shelter, isActive == true)
@@ -202,7 +202,7 @@ rule "If shelter less than 50% full, start sheltering promotion"
         $clock: SessionClock()
         $shelter: Shelter($capacity: capacity, $animals: animals)
         Number(intValue < $capacity * 0.5) from accumulate(
-            Animal() from $animals,
+            AnimalWithName() from $animals,
             count()
         )
         not Promotion(shelter == $shelter, isActive == true)
@@ -245,7 +245,7 @@ rule "When animal is fed, decrease available food for that animal type"
     when
         $feeding: Feeding($shelter: shelter, $animalType: animalType)
         $numOfAnimalsOfSuchType: Number(intValue != 0) from accumulate (
-            $animal: Animal( animalType == $animalType ) from $shelter.getAnimals(),
+            $animal: AnimalWithName( animalType == $animalType ) from $shelter.getAnimals(),
             count($animal)
         )
     then
@@ -267,7 +267,7 @@ rule "When the amount of sheltered animals changes or someone is fed, check if e
         Map<AnimalType, Integer> availableForAnimals = new HashMap<>($shelter.getFoodAvailableForAnimals());
 
         for (Object animalO : $shelter.getAnimals()) {
-            Animal animal = (Animal) animalO;
+            AnimalWithName animal = (AnimalWithName) animalO;
             availableForAnimals.put(animal.getAnimalType(), availableForAnimals.get(animal.getAnimalType()) - 1);
 
             if (availableForAnimals.get(animal.getAnimalType()) == -1) {
@@ -291,7 +291,7 @@ rule "Send notification to feed the animals at 09:00, 13:00 and 18:00"
 end
 
 query "getFinalists"
-    $map : FinalistsForUsers()
+    $map : RecommendationFinalistsForUsers()
 end
 
 query getWorker(String usernameP)
@@ -307,7 +307,7 @@ query "checkShelter"
 end
 
 query "getGlobalChart"
-    $globalChart: GlobalChart()
+    $globalChart: GlobalRecommendationChart()
 end
 
 query "getNotifications"

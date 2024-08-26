@@ -229,12 +229,12 @@ public class BasicTest {
         session.insert(clock);
 
         session.insert(new RecommendationsMap());
-        session.insert(new FinalistsForUsers());
-        session.insert(new GlobalChart());
-        List<Animal> animals = new ArrayList<>();
-        animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
-        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
-        animals.add(new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
+        session.insert(new RecommendationFinalistsForUsers());
+        session.insert(new GlobalRecommendationChart());
+        List<AnimalWithName> animals = new ArrayList<>();
+        animals.add(new AnimalWithName(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
+        animals.add(new AnimalWithName(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
+        animals.add(new AnimalWithName(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
 
         List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
                 new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
@@ -290,9 +290,9 @@ public class BasicTest {
         SessionPseudoClock clock = session.getSessionClock();
         session.insert(clock);
 
-        List<Animal> animals = new ArrayList<>();
-        animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
-        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
+        List<AnimalWithName> animals = new ArrayList<>();
+        animals.add(new AnimalWithName(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
+        animals.add(new AnimalWithName(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
         List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
                 new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
                 new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
@@ -312,7 +312,7 @@ public class BasicTest {
         assertEquals(3, numOfRulesFired); // calculate money needed for upkeep for new shelter, check if enough food, create reports
 
         session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING,
-                new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
+                new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
         numOfRulesFired = session.fireAllRules();
         assertEquals(5, numOfRulesFired); // shelter animal, recalculate money needed, ask for more money, food check, report
 
@@ -326,9 +326,9 @@ public class BasicTest {
         SessionPseudoClock clock = session.getSessionClock();
         session.insert(clock);
 
-        List<Animal> animals = new ArrayList<>();
-        animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
-        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
+        List<AnimalWithName> animals = new ArrayList<>();
+        animals.add(new AnimalWithName(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
+        animals.add(new AnimalWithName(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Hoho"));
         List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
                 new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
                 new Price(AnimalType.DOG, 75), new Price(AnimalType.BIRD, 30),
@@ -347,12 +347,12 @@ public class BasicTest {
 
         assertEquals(4, numOfRulesFired); // calculate money needed for upkeep for new shelter, start sheltering promotion, check if enough food, report creation
 
-        Animal a1 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
-        Animal a2 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
-        Animal a3 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
-        Animal a4 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
-        Animal a5 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
-        Animal a6 = new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
+        AnimalWithName a1 = new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
+        AnimalWithName a2 = new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
+        AnimalWithName a3 = new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
+        AnimalWithName a4 = new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
+        AnimalWithName a5 = new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
+        AnimalWithName a6 = new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers");
 
         session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a1));
         session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING, a2));
@@ -367,7 +367,7 @@ public class BasicTest {
         assertEquals(1, notifications.size()); // need more food notification sent
 
         session.insert(new Resettlement(clock.getCurrentTime(), shelter, PromotionOrResettlementType.SHELTERING,
-                new Animal(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
+                new AnimalWithName(AnimalType.FISH, AnimalBreed.BIG_FISH, "Myers")));
         numOfRulesFired = session.fireAllRules();
         assertEquals(5, numOfRulesFired); // 1st and 2nd new animal sheltered, 3rd recalculate money, 4th start adoption promotion, 5th food check
         Collection<?> promotions = session.getObjects(new ClassObjectFilter(Promotion.class));
@@ -430,10 +430,10 @@ public class BasicTest {
         SessionPseudoClock clock = session.getSessionClock();
         session.insert(clock);
 
-        List<Animal> animals = new ArrayList<>();
-        animals.add(new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
-        animals.add(new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
-        animals.add(new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
+        List<AnimalWithName> animals = new ArrayList<>();
+        animals.add(new AnimalWithName(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena"));
+        animals.add(new AnimalWithName(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober"));
+        animals.add(new AnimalWithName(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober"));
 
         List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),
                 new Price(AnimalType.FISH, 25), new Price(AnimalType.CAT, 40),
@@ -474,12 +474,12 @@ public class BasicTest {
         SessionPseudoClock clock = session.getSessionClock();
         session.insert(clock);
 
-        List<Animal> animals = new ArrayList<>();
-        Animal a = new Animal(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena");
+        List<AnimalWithName> animals = new ArrayList<>();
+        AnimalWithName a = new AnimalWithName(AnimalType.CAT, AnimalBreed.DOMESTIC_SHORTHAIR_CAT,"Lena");
         animals.add(a);
-        Animal b = new Animal(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober");
+        AnimalWithName b = new AnimalWithName(AnimalType.RABBIT, AnimalBreed.LIONHEAD,"Goober");
         animals.add(b);
-        Animal c = new Animal(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober");
+        AnimalWithName c = new AnimalWithName(AnimalType.DOG, AnimalBreed.LABRADOR_RETRIEVER,"Groober");
         animals.add(c);
 
         List<Price> prices = new ArrayList<>(Arrays.asList(new Price(AnimalType.RABBIT, 20),

@@ -1,6 +1,7 @@
-package com.ftn.sbnz.model.models.backModels;
+package com.ftn.sbnz.model.models;
+import java.util.List;
 
-public class Answer {
+public class Question {
     public int getNumber() {
         return number;
     }
@@ -17,11 +18,21 @@ public class Answer {
         this.text = text;
     }
 
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<Answer> answers) {
+        this.answers = answers;
+    }
+
     private int number;
     private String text;
+    private List<Answer> answers;
 
-    public Answer(int number, String text) {
+    public Question(int number, String text, List<Answer> answers) {
         this.number = number;
         this.text = text;
+        this.answers = answers;
     }
 }

@@ -1,9 +1,7 @@
 package com.ftn.sbnz.model.models;
 
-import com.ftn.sbnz.model.enums.AnimalBreed;
 import com.ftn.sbnz.model.enums.AnimalType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,7 @@ public class Shelter {
     private double moneyAvailable;
     private double moneyNeededForUpkeep;
     private int capacity;
-    private List<Animal> animals;
+    private List<AnimalWithName> animals;
     private Map<AnimalType, Double> prices;
     private Map<AnimalType, Integer> foodAvailableForAnimals;
 
@@ -22,7 +20,7 @@ public class Shelter {
                    String address,
                    double moneyAvailable,
                    int capacity,
-                   List<Animal> animals,
+                   List<AnimalWithName> animals,
                    List<FoodAvailableForAnimal> foodAvailableForAnimals,
                    List<Price> prices) {
         this.name = name;
@@ -44,7 +42,7 @@ public class Shelter {
                    String address,
                    double moneyAvailable,
                    int capacity,
-                   List<Animal> animals,
+                   List<AnimalWithName> animals,
                    Map<AnimalType, Integer> foodAvailableForAnimals,
                    Map<AnimalType, Double> prices) {
         this.name = name;
@@ -74,7 +72,7 @@ public class Shelter {
 
     public double calculateMoneyNeededForUpkeep() {
         double sum = 0;
-        for (Animal animal: animals) {
+        for (AnimalWithName animal: animals) {
             sum += 9 * prices.get(animal.getAnimalType());
         }
         return sum;
@@ -120,19 +118,19 @@ public class Shelter {
         this.capacity = capacity;
     }
 
-    public List<Animal> getAnimals() {
+    public List<AnimalWithName> getAnimals() {
         return animals;
     }
 
-    public void setAnimals(List<Animal> animals) {
+    public void setAnimals(List<AnimalWithName> animals) {
         this.animals = animals;
     }
 
-    public void addAnimal(Animal animal) {
+    public void addAnimal(AnimalWithName animal) {
         this.animals.add(animal);
     }
 
-    public void removeAnimal(Animal animal) {
+    public void removeAnimal(AnimalWithName animal) {
         this.animals.remove(animal);
     }
 }
