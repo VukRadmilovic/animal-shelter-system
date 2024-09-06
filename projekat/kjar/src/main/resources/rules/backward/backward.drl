@@ -21,8 +21,6 @@ end
 
 query isContainedInForLeaf(String x, String y, Report r)
   r:= Report( x, y; )
-  or
-  (r:= Report( z, y; ) and isContainedIn( x, z, r; ) )
 end
 
 query findLeaf(String x)
