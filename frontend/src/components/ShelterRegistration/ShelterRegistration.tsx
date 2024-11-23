@@ -200,11 +200,6 @@ export function ShelterRegistration({
                 {activeStep == 0 ? (
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <Grid
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      lg={12}
-                      xl={12}
                       width={"100%"}
                       mt={7}
                       height={"100%"}
@@ -237,10 +232,6 @@ export function ShelterRegistration({
                             item
                             container
                             xs={12}
-                            sm={12}
-                            md={12}
-                            lg={12}
-                            xl={12}
                             justifyContent={"center"}
                           >
                             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
