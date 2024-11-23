@@ -28,11 +28,12 @@ import { AnimalsAndTheirFoodTable } from "./AnimalsAndTheirFoodTable";
 import { ShelterService } from "../../services/ShelterService";
 import { useNavigate } from "react-router-dom";
 import { Reports } from "./Reports";
-import { GlobalChartEntry } from "../../models/GlobalChartEntry";
+import { PetRecommendationCounter } from "../../models/GlobalChartEntry";
 import { Notification } from "../../models/Notification";
 import { PopupMessage } from "../PopupMessage/PopupMessage";
 import { ShelterWithMaps } from "../../models/ShelterWithMaps";
 import dayjs from "dayjs";
+import RecommendationsTable from "./RecommendationsTable";
 
 export interface AnimalsForm {
   name: string;
@@ -80,7 +81,9 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
   const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<
     AnimalWithBreed[]
   >([]);
-  const [globalChart, setGlobalChart] = React.useState<GlobalChartEntry[]>([]);
+  const [globalChart, setGlobalChart] = React.useState<
+    PetRecommendationCounter[]
+  >([]);
   const [notifications, setNotifications] = React.useState<Notification[]>([]);
   const [shelter, setShelter] = React.useState<ShelterWithMaps | null>(null);
   const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
@@ -260,34 +263,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
           className="container rounded-container"
           m={2}
         >
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>Breed name</TableCell>
-                  <TableCell align="right">Number of recommendations</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {globalChart.map((row) => (
-                  <TableRow
-                    key={row.animalBreed}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      {row.animalBreed
-                        .toLowerCase()
-                        .replace(/_/g, " ")
-                        .replace(/^\w/, (c) => c.toUpperCase())}
-                    </TableCell>
-                    <TableCell align="right">
-                      {row.recommendationCount}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <RecommendationsTable recommendations={globalChart} />
         </Grid>
         <Grid
           container

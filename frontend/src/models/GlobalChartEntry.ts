@@ -1,4 +1,4 @@
-export interface GlobalChartEntry {
-    animalBreed: string,
-    recommendationCount: number
+export interface PetRecommendationCounter {
+  animalBreed: string;
+  recommendationCount: number;
 }
