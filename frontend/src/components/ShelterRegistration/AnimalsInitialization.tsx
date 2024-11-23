@@ -102,10 +102,6 @@ export function AnimalsInitialization({
             pl={4}
             pr={4}
             xs={12}
-            sm={12}
-            md={12}
-            lg={12}
-            xl={12}
             justifyContent={"center"}
           >
             <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
@@ -144,7 +140,7 @@ export function AnimalsInitialization({
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Grid item xs={12}>
               <TextField
                 id="name"
                 label="Name"
@@ -156,7 +152,7 @@ export function AnimalsInitialization({
                 helperText={errors.name ? errors.name?.message : "Required"}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12} mt={5}>
+            <Grid item xs={12} mt={5}>
               <Button type="submit" variant="contained" color="primary">
                 Add Animal
               </Button>

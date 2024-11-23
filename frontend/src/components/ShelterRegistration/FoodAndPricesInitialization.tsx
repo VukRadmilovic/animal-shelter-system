@@ -119,12 +119,12 @@ export function FoodAndPricesInitialization({
                 }}
                 key={index}
               >
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
+                <Grid item xs={2}>
                   <Typography>
                     <b>{type}</b>
                   </Typography>
                 </Grid>
-                <Grid item xs={5} sm={5} md={5} lg={5} xl={5} p={1}>
+                <Grid item xs={5} p={1}>
                   <TextField
                     sx={{ width: "80%" }}
                     type={"number"}
@@ -138,7 +138,7 @@ export function FoodAndPricesInitialization({
                     helperText={errors?.[index]?.food?.message}
                   />
                 </Grid>
-                <Grid item xs={5} sm={5} md={5} lg={5} xl={5} p={1}>
+                <Grid item xs={5} p={1}>
                   <TextField
                     sx={{ width: "80%" }}
                     type={"number"}
@@ -155,7 +155,7 @@ export function FoodAndPricesInitialization({
               </Grid>
             )
           )}
-          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+          <Grid item xs={12}>
             <Button
               type="submit"
               variant="contained"
