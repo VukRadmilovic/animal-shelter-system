@@ -48,7 +48,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
   } = useForm<AnimalsForm>({
     defaultValues: {
       name: "",
-      breed: "",
+      animalBreed: "",
     },
     mode: "onChange",
   });
@@ -72,7 +72,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
     PetRecommendationCounter[]
   >([]);
 
-  const [shelter, setShelter] = React.useState<ShelterWithMaps | null>(null);
+  const [shelter, setShelter] = React.useState<ShelterWithMaps | undefined>();
   const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
 
   const [shelteredAnimals, setShelteredAnimals] = React.useState<Animal[]>([]);
@@ -93,13 +93,22 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
   const shouldLoad = useRef(true);
 
   const onSubmitAnimalsForm = (data: AnimalsForm) => {
-    // @ts-ignore
+    const foundAnimalWithNeededBreed = animalsWithBreeds.find(
+      (animal) => animal.animalBreed === data.animalBreed
+    );
+
+    if (!foundAnimalWithNeededBreed) {
+      console.log(
+        "Unexpected error, haven't found animal with needed breed. It's likely that the animal list didn't load yet."
+      );
+      sendErrorMessage("Please try again.");
+      return;
+    }
+
     const animal: Animal = {
       name: data.name,
       animalBreed: data.animalBreed,
-      animalType: animalsWithBreeds.find(
-        (animal) => animal.animalBreed === data.animalBreed
-      ).animalType,
+      animalType: foundAnimalWithNeededBreed.animalType,
     };
     console.log("Form data:", animal);
     shelterService
@@ -155,6 +164,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
     shelterService
       .getGlobalChart()
       .then((chartData) => {
+        console.log(chartData);
         setGlobalChart(chartData.top5);
       })
       .catch((err) => {

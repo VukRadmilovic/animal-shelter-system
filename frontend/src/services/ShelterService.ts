@@ -46,7 +46,10 @@ export class ShelterService {
       });
   }
 
-  public getGlobalChart(): Promise<PetRecommendationCounter[]> {
+  public getGlobalChart(): Promise<{
+    recommendations: PetRecommendationCounter[];
+    top5: PetRecommendationCounter[];
+  }> {
     return axios({
       method: "GET",
       url: `${this.api_host}/api/questionnaire/global-chart`,
