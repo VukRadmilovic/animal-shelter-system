@@ -67,8 +67,8 @@ function NotificationTable({ shelterService }: Props) {
           <TableBody>
             {notifications
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
-                <TableRow key={`${formatTimestamp(row.timestamp)}-${row.text}`}>
+              .map((row, index) => (
+                <TableRow key={index}>
                   <TableCell> {row.text} </TableCell>
                   <TableCell align="right">
                     {" "}
