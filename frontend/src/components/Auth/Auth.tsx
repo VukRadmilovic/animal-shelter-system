@@ -20,10 +20,7 @@ interface LoginRegistrationProps {
   shelterService: ShelterService;
 }
 
-export function LoginRegistration({
-  userService,
-  shelterService,
-}: LoginRegistrationProps) {
+export function Auth({ userService, shelterService }: LoginRegistrationProps) {
   const [tabValue, setTabTabValue] = React.useState<number>(0);
   const [errorMessage, setErrorMessage] = React.useState<string>("");
   const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
@@ -77,7 +74,7 @@ export function LoginRegistration({
           className="container rounded-container"
         >
           {shelterExists ? (
-            <div>
+            <div style={{ width: "100%" }}>
               <Grid item container xs={12}>
                 <Grid item xs={12}>
                   <Box
@@ -95,14 +92,14 @@ export function LoginRegistration({
                     </Tabs>
                   </Box>
                 </Grid>
-                <Grid item justifyContent={"center"} xs={12}>
-                  <TabPanel value={tabValue} index={0}>
-                    <Login
-                      sendPopupMessage={sendPopupMessage}
-                      userService={userService}
-                    />
-                  </TabPanel>
-                </Grid>
+              </Grid>
+              <Grid item justifyContent={"center"} xs={12}>
+                <TabPanel value={tabValue} index={0}>
+                  <Login
+                    sendPopupMessage={sendPopupMessage}
+                    userService={userService}
+                  />
+                </TabPanel>
               </Grid>
               <Grid item justifyContent={"center"} xs={12}>
                 <TabPanel value={tabValue} index={1}>

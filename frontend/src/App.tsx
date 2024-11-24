@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { UserService } from "./services/UserService.ts";
 import { PetSuggestionLandingPage } from "./components/PetSuggestionLandingPage.tsx";
 import { PetSuggestionsService } from "./services/PetSuggestionsService.ts";
-import { LoginRegistration } from "./components/Auth/Auth.tsx";
+import { Auth } from "./components/Auth/Auth.tsx";
 import { Dashboard } from "./components/Dashboard/Dashboard.tsx";
 import { ShelterService } from "./services/ShelterService.ts";
 import { ShelterRegistration } from "./components/ShelterRegistration/ShelterRegistration.tsx";
@@ -27,7 +27,7 @@ function App() {
           <Route
             path="/auth"
             element={
-              <LoginRegistration
+              <Auth
                 userService={userServiceSingleton}
                 shelterService={shelterServiceSingleton}
               />

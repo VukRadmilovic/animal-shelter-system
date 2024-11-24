@@ -43,51 +43,47 @@ function Login({ userService, sendPopupMessage }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container item xs={12} direction={"row"} justifyContent={"center"}>
-        <Grid item container rowSpacing={3}>
+      <Grid container item direction={"row"} xs={12} justifyContent={"center"}>
+        <Grid item mb={3} xs={12}>
+          <Typography variant="h2" mb={5} fontWeight={400}>
+            Login
+          </Typography>
+        </Grid>
+        <Grid item container rowSpacing={3} xs={8}>
           <Grid item xs={12}>
-            <Typography variant="h2" mb={5} fontWeight={400}>
-              Login
-            </Typography>
+            <TextField
+              id="username"
+              label="Username"
+              {...register("username", {
+                required: "Username is a required field!",
+              })}
+              error={!!errors.username}
+              helperText={
+                errors.username ? errors.username?.message : "Required"
+              }
+              fullWidth={true}
+            />
           </Grid>
-          <Grid item container xs={12} justifyContent={"center"}>
-            <Grid item xs={12} md={8} xl={6}>
-              <TextField
-                id="username"
-                label="Username"
-                fullWidth={true}
-                {...register("username", {
-                  required: "Username is a required field!",
-                })}
-                error={!!errors.username}
-                helperText={
-                  errors.username ? errors.username?.message : "Required"
-                }
-              />
-            </Grid>
+          <Grid item xs={12}>
+            <TextField
+              id="password"
+              label="Password"
+              type="password"
+              {...register("password", {
+                required: "Password is a required field!",
+              })}
+              error={!!errors.password}
+              helperText={
+                errors.password ? errors.password?.message : "Required"
+              }
+              fullWidth={true}
+            />
           </Grid>
-          <Grid item container xs={12} justifyContent={"center"}>
-            <Grid item xs={12} md={8} xl={6}>
-              <TextField
-                id="password"
-                label="Password"
-                fullWidth={true}
-                type="password"
-                {...register("password", {
-                  required: "Password is a required field!",
-                })}
-                error={!!errors.password}
-                helperText={
-                  errors.password ? errors.password?.message : "Required"
-                }
-              />
-            </Grid>
-          </Grid>
-          <Grid item xs={12} mt={5}>
-            <Button variant="contained" type="submit">
-              Login
-            </Button>
-          </Grid>
+        </Grid>
+        <Grid item xs={12} mt={5}>
+          <Button variant="contained" type="submit">
+            Login
+          </Button>
         </Grid>
       </Grid>
     </form>
