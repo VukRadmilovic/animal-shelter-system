@@ -24,9 +24,7 @@ function Login({ userService, sendPopupMessage }: Props) {
 
   const navigate = useNavigate();
 
-  const onSubmit = (formData: UserWithoutFullName) => tryLogin(formData);
-
-  function tryLogin(formData: UserWithoutFullName) {
+  const onLoginAttempt = (formData: UserWithoutFullName) => {
     const userCredentials: UserWithoutFullName = {
       username: formData.username.trim(),
       password: formData.password.trim(),
@@ -39,10 +37,10 @@ function Login({ userService, sendPopupMessage }: Props) {
       .catch((error) => {
         sendPopupMessage(error.response.data);
       });
-  }
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onLoginAttempt)}>
       <Grid container item direction={"row"} xs={12} justifyContent={"center"}>
         <Grid item mb={3} xs={12}>
           <Typography variant="h2" mb={5} fontWeight={400}>

@@ -7,7 +7,7 @@ function ShelterNotRegisteredRedirect() {
   return (
     <Grid textAlign={"center"} sx={{ alignSelf: "center" }} p={2}>
       <Typography variant={"h4"}>
-        Seems like the shelter is not registered. Register the shelter first by
+        You don't have a registered shelter. Register the shelter first by
         clicking the button below.
       </Typography>
       <Button

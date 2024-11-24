@@ -15,6 +15,7 @@ type RegistrationForm = {
 interface RegistrationProps {
   userService: UserService;
 }
+
 export function Registration({ userService }: RegistrationProps) {
   const [errorMessage, setErrorMessage] = React.useState("");
   const [errorPopupOpen, setErrorPopupOpen] = React.useState(false);
@@ -35,8 +36,7 @@ export function Registration({ userService }: RegistrationProps) {
     mode: "onChange",
   });
 
-  const onSubmit = (formData: RegistrationForm) => registerUser(formData);
-  function registerUser(formData: RegistrationForm) {
+  const onRegistrationAttempt = (formData: RegistrationForm) => {
     const newUser: User = {
       fullName: formData.fullName.trim(),
       username: formData.username.trim(),
@@ -48,19 +48,14 @@ export function Registration({ userService }: RegistrationProps) {
         setErrorMessage("User successfully registered!");
         setIsSuccess(true);
         setErrorPopupOpen(true);
-        reset({
-          fullName: "",
-          username: "",
-          password: "",
-          passwordConfirmation: "",
-        });
+        reset();
       })
       .catch((error) => {
         setErrorMessage(error.response.data);
         setIsSuccess(false);
         setErrorPopupOpen(true);
       });
-  }
+  };
 
   const handleErrorPopupClose = (reason?: string) => {
     if (reason === "clickaway") return;
@@ -68,7 +63,7 @@ export function Registration({ userService }: RegistrationProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onRegistrationAttempt)}>
       <Grid container item xs={12} direction={"row"} justifyContent={"center"}>
         <Grid item xs={12} mb={3}>
           <Typography variant="h2" mb={5} fontWeight={400}>
