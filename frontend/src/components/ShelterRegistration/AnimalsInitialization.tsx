@@ -16,6 +16,7 @@ import { Animal } from "../../models/Animal.ts";
 import React, { useEffect, useState } from "react";
 import { PopupMessage } from "../PopupMessage/PopupMessage.tsx";
 import { Shelter } from "../../models/Shelter.ts";
+import { fixAnimalBreedName } from "../../utils.ts";
 
 export interface AnimalsForm {
   name: string;
@@ -123,10 +124,7 @@ export function AnimalsInitialization({
                         key={animal.animalBreed}
                         value={animal.animalBreed}
                       >
-                        {animal.animalBreed
-                          .toLowerCase()
-                          .replace(/_/g, " ")
-                          .replace(/^\w/, (c) => c.toUpperCase())}
+                        {fixAnimalBreedName(animal.animalBreed)}
                       </MenuItem>
                     );
                   })}
@@ -191,13 +189,7 @@ export function AnimalsInitialization({
             >
               <Chip
                 label={
-                  data.name +
-                  "(" +
-                  data.animalBreed
-                    .toLowerCase()
-                    .replace(/_/g, " ")
-                    .replace(/^\w/, (c) => c.toUpperCase()) +
-                  ")"
+                  data.name + "(" + fixAnimalBreedName(data.animalBreed) + ")"
                 }
                 onDelete={handleAnimalDelete(data)}
               />

@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "@mui/material";
 import { PetRecommendationCounter } from "../../models/GlobalChartEntry";
+import { fixAnimalBreedName } from "../../utils";
 
 interface Props {
   recommendations: PetRecommendationCounter[];
@@ -30,10 +31,7 @@ function RecommendationsTable({ recommendations }: Props) {
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {row.animalBreed
-                  .toLowerCase()
-                  .replace(/_/g, " ")
-                  .replace(/^\w/, (c) => c.toUpperCase())}
+                {fixAnimalBreedName(row.animalBreed)}
               </TableCell>
               <TableCell align="right">{row.recommendationCount}</TableCell>
             </TableRow>
