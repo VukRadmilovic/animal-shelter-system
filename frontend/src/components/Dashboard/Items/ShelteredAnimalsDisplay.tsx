@@ -1,8 +1,8 @@
 import { Grid, ListItem, Chip, Button } from "@mui/material";
-import { Animal } from "../../models/Animal";
+import { Animal } from "../../../models/animals";
 import { useState } from "react";
-import { ShelterService } from "../../services/ShelterService";
-import { fixAnimalBreedName } from "../../utils";
+import { ShelterService } from "../../../services/ShelterService";
+import { fixAnimalBreedName } from "../../../utils";
 
 interface Props {
   animals: Animal[];

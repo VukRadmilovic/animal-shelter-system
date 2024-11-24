@@ -1,10 +1,16 @@
 import { AnimalsWithBreeds } from "../models/AnimalsWithBreeds.ts";
 import axios from "axios";
-import { Shelter } from "../models/Shelter.ts";
-import { PetRecommendationCounter } from "../models/GlobalChartEntry";
-import { Animal } from "../models/Animal";
-import { Report } from "../models/Report";
-import { ShelterWithMaps } from "../models/ShelterWithMaps";
+import { Shelter } from "../models/types.ts";
+import { PetRecommendationCounter } from "../models/types.ts";
+import { Animal } from "../models/animals.ts";
+import { Report } from "../models/types.ts";
+import { ShelterWithMaps } from "../models/types.ts";
+import { Notification } from "../models/types.ts";
+import { AnimalWithBreed } from "../models/animals.ts";
+
+interface AnimalsWithBreeds {
+  animals: AnimalWithBreed[];
+}
 
 export class ShelterService {
   private api_host = "http://localhost:8080";
@@ -61,7 +67,7 @@ export class ShelterService {
       });
   }
 
-  public getNotifications(): Promise<any> {
+  public getNotifications(): Promise<Notification[]> {
     return axios({
       method: "GET",
       url: `${this.api_host}/api/shelter/notifications`,

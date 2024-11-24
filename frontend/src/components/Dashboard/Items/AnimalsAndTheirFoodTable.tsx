@@ -1,10 +1,10 @@
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
-import { ShelterService } from "../../services/ShelterService";
-import { AnimalWithBreed } from "../../models/AnimalWithBreed";
-import { ShelterWithMaps } from "../../models/ShelterWithMaps";
+import { ShelterService } from "../../../services/ShelterService";
+import { AnimalWithBreed } from "../../../models/animals";
+import { ShelterWithMaps } from "../../../models/types";
 import { useNavigate } from "react-router-dom";
-import { PopupMessage } from "../PopupMessage/PopupMessage";
+import { PopupMessage } from "../../PopupMessage";
 
 interface FoodStuffProps {
   animals: AnimalWithBreed[];

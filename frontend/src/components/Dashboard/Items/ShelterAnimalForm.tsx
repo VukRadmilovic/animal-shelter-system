@@ -8,11 +8,11 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { fixAnimalBreedName } from "../../utils";
+import { fixAnimalBreedName } from "../../../utils";
 import { useForm } from "react-hook-form";
-import { Animal } from "../../models/Animal";
-import { AnimalWithBreed } from "../../models/AnimalWithBreed";
-import { ShelterService } from "../../services/ShelterService";
+import { Animal } from "../../../models/animals";
+import { AnimalWithBreed } from "../../../models/animals";
+import { ShelterService } from "../../../services/ShelterService";
 
 interface AnimalsForm {
   name: string;

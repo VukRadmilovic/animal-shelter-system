@@ -10,10 +10,10 @@ import {
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { UserCredentials } from "../../models/UserCredentials.ts";
+import { UserCredentials } from "../../models/users.ts";
 import { UserService } from "../../services/UserService.ts";
-import { PopupMessage } from "../PopupMessage/PopupMessage.tsx";
-import { Registration } from "../Registration/Registration.tsx";
+import { PopupMessage } from "../PopupMessage.tsx";
+import { Registration } from "./Registration.tsx";
 import { ShelterService } from "../../services/ShelterService.ts";
 
 interface TabPanelProps {

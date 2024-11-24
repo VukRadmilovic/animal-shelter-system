@@ -11,11 +11,11 @@ import {
   TextField,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { AnimalWithBreed } from "../../models/AnimalWithBreed.ts";
-import { Animal } from "../../models/Animal.ts";
+import { AnimalWithBreed } from "../../models/animals.ts";
+import { Animal } from "../../models/animals.ts";
 import React, { useEffect, useState } from "react";
-import { PopupMessage } from "../PopupMessage/PopupMessage.tsx";
-import { Shelter } from "../../models/Shelter.ts";
+import { PopupMessage } from "../PopupMessage.tsx";
+import { Shelter } from "../../models/types.ts";
 import { fixAnimalBreedName } from "../../utils.ts";
 
 export interface AnimalsForm {

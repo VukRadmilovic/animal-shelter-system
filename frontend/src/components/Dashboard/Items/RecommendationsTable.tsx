@@ -7,8 +7,8 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
-import { PetRecommendationCounter } from "../../models/GlobalChartEntry";
-import { fixAnimalBreedName } from "../../utils";
+import { PetRecommendationCounter } from "../../../models/types";
+import { fixAnimalBreedName } from "../../../utils";
 
 interface Props {
   recommendations: PetRecommendationCounter[];

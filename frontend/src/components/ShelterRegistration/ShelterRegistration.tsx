@@ -10,11 +10,11 @@ import {
 import { ShelterService } from "../../services/ShelterService.ts";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { AnimalWithBreed } from "../../models/AnimalWithBreed.ts";
-import { PopupMessage } from "../PopupMessage/PopupMessage.tsx";
+import { AnimalWithBreed } from "../../models/animals.ts";
+import { PopupMessage } from "../PopupMessage.tsx";
 import { AnimalsInitialization } from "./AnimalsInitialization.tsx";
 import { FoodAndPricesInitialization } from "./FoodAndPricesInitialization.tsx";
-import { Shelter } from "../../models/Shelter.ts";
+import { Shelter } from "../../models/types.ts";
 import { useNavigate } from "react-router-dom";
 
 interface ShelterRegistrationProps {

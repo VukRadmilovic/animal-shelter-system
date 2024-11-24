@@ -1,6 +1,6 @@
 import { Grid, TextField, FormControl, Button } from "@mui/material";
 import { useEffect } from "react";
-import { ShelterService } from "../../services/ShelterService";
+import { ShelterService } from "../../../services/ShelterService";
 import { useForm } from "react-hook-form";
 
 interface Props {

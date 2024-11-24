@@ -10,9 +10,9 @@ import {
   Grid,
 } from "@mui/material";
 import React, { useEffect } from "react";
-import { ShelterService } from "../../services/ShelterService";
+import { ShelterService } from "../../../services/ShelterService";
 import dayjs from "dayjs";
-import { Notification } from "../../models/Notification";
+import { Notification } from "../../../models/types";
 
 interface Props {
   shelterService: ShelterService;

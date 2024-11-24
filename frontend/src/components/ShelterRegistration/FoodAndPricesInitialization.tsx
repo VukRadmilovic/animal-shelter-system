@@ -1,12 +1,12 @@
-import { AnimalWithBreed } from "../../models/AnimalWithBreed.ts";
+import { AnimalWithBreed } from "../../models/animals.ts";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button, Grid, TextField, Typography } from "@mui/material";
-import { Shelter } from "../../models/Shelter.ts";
+import { Shelter } from "../../models/types.ts";
 import React, { useEffect } from "react";
-import { FoodAvailableForAnimal } from "../../models/FoodAvailableForAnimal.ts";
-import { Price } from "../../models/Price.ts";
+import { FoodAvailableForAnimal } from "../../models/types.ts";
+import { Price } from "../../models/types.ts";
 import { ShelterService } from "../../services/ShelterService.ts";
-import { PopupMessage } from "../PopupMessage/PopupMessage.tsx";
+import { PopupMessage } from "../PopupMessage.tsx";
 
 interface FoodAndPricesInitializationProps {
   animals: AnimalWithBreed[];
