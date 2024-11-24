@@ -1,7 +1,7 @@
 import React from "react";
 import { PopupMessage } from "../PopupMessage.tsx";
 import { Button, Grid, TextField, Typography } from "@mui/material";
-import { NewUser } from "../../models/users.ts";
+import { User } from "../../models/users.ts";
 import { useForm } from "react-hook-form";
 import { UserService } from "../../services/UserService.ts";
 
@@ -37,7 +37,7 @@ export function Registration({ userService }: RegistrationProps) {
 
   const onSubmit = (formData: RegistrationForm) => registerUser(formData);
   function registerUser(formData: RegistrationForm) {
-    const newUser: NewUser = {
+    const newUser: User = {
       fullName: formData.fullName.trim(),
       username: formData.username.trim(),
       password: formData.password.trim(),

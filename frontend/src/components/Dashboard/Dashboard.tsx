@@ -103,7 +103,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
 
   return (
     <>
-      <h1> Shelter dashboard </h1>
+      <h1> {sessionStorage.getItem("full_name")}'s shelter dashboard </h1>
       <Grid container className={"dark-background"}>
         <DashboardItemContainer>
           <RecommendationsTable recommendations={globalChart} />
