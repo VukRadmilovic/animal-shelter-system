@@ -30,7 +30,7 @@ public class UserService {
     public String login(UserCredentialsDTO credentials) {
         QueryResults results = kieSession.getQueryResults("checkLogin",credentials.getUsername(), credentials.getPassword());
         if(results.size() == 0) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username and password do not match!");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong password!");
         }
         Worker worker = null;
         for (QueryResultsRow row : results) {
