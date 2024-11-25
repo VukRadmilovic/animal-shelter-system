@@ -8,12 +8,18 @@ import dayjs, { Dayjs } from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { Button, InputLabel, MenuItem, Select } from "@mui/material";
+import {
+  Button,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
 import { Report } from "../../../models/types";
 
-const weeksInMonth = (year, month) => {
+const weeksInMonth = (year: number, month: number) => {
   const startOfMonth = dayjs(new Date(year, month, 1));
   const endOfMonth = dayjs(new Date(year, month + 1, 0));
   const weeks = [];
@@ -34,13 +40,28 @@ const weeksInMonth = (year, month) => {
   return weeks;
 };
 
-const WeekPicker = ({
-  weekSelected,
+interface WeekPickerProps {
+  setWeekSelected: React.Dispatch<
+    React.SetStateAction<{
+      start: dayjs.Dayjs;
+      end: dayjs.Dayjs;
+    }>
+  >;
+  monthYear: Dayjs | null;
+  setMonthYear: React.Dispatch<React.SetStateAction<dayjs.Dayjs | null>>;
+}
+
+function WeekPicker({
   setWeekSelected,
   monthYear,
   setMonthYear,
-}) => {
-  const [weeks, setWeeks] = useState([]);
+}: WeekPickerProps) {
+  const [weeks, setWeeks] = useState([
+    {
+      start: dayjs("1.1.2000."),
+      end: dayjs("7.1.2000."),
+    },
+  ]);
   // const [monthYear, setMonthYear] = React.useState<Dayjs | null>(dayjs('2023-06-12'))
   const [selectedDate, setSelectedDate] = React.useState({
     start: dayjs(),
@@ -50,13 +71,16 @@ const WeekPicker = ({
 
   useEffect(() => {
     const date = monthYear;
+    if (!date) {
+      return;
+    }
     const year = date.year();
     const month = date.month();
     setWeeks(weeksInMonth(year, month));
   }, [monthYear]);
 
-  const handleWeekChange = (event) => {
-    const week = weeks[event.target.value];
+  const handleWeekChange = (event: SelectChangeEvent) => {
+    const week = weeks[parseInt(event.target.value)];
     setSelectedDate({ start: week.start, end: week.end });
     setWeekSelected(week);
   };
@@ -79,11 +103,13 @@ const WeekPicker = ({
         labelId="week-label"
         id="week-select"
         label="Pick week for report"
-        value={weeks.findIndex(
-          (week) =>
-            week.start.isSame(selectedDate.start) &&
-            week.end.isSame(selectedDate.end)
-        )}
+        value={weeks
+          .findIndex(
+            (week) =>
+              week.start.isSame(selectedDate.start) &&
+              week.end.isSame(selectedDate.end)
+          )
+          .toString()}
         onChange={handleWeekChange}
       >
         {weeks.map((week, index) => (
@@ -96,7 +122,7 @@ const WeekPicker = ({
       </Select>
     </FormControl>
   );
-};
+}
 
 interface ReportProps {
   shelterService: ShelterService;
@@ -107,13 +133,16 @@ export function Reports({ shelterService }: ReportProps) {
   const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(
     dayjs("2024-06-12")
   );
+
   const [weekSelected, setWeekSelected] = React.useState({
     start: dayjs(),
     end: dayjs(),
   });
+
   const [monthYear, setMonthYear] = React.useState<Dayjs | null>(
     dayjs("2024-06-12")
   );
+
   const [reportData, setReportData] = React.useState({
     adoptionCount: -1,
     shelteredCount: -1,
@@ -127,7 +156,12 @@ export function Reports({ shelterService }: ReportProps) {
     console.log("Generating report for", reportType, selectedDate?.toDate());
 
     if (reportType === "daily") {
-      const data = selectedDate?.format("D.M.YYYY.");
+      if (!selectedDate) {
+        console.log("You must select a date!");
+        return;
+      }
+
+      const data = selectedDate.format("D.M.YYYY.");
       console.log("Day selected", data);
       shelterService
         .getDailyReport(data)
@@ -138,9 +172,7 @@ export function Reports({ shelterService }: ReportProps) {
         .catch((error) => {
           console.error(error);
         });
-    }
-
-    if (reportType === "weekly") {
+    } else if (reportType === "weekly") {
       const data =
         weekSelected?.start.format("D.M.YYYY.") +
         " - " +
@@ -155,10 +187,13 @@ export function Reports({ shelterService }: ReportProps) {
         .catch((error) => {
           console.error(error);
         });
-    }
+    } else if (reportType === "monthly") {
+      if (!selectedDate) {
+        console.log("You must select a month!");
+        return;
+      }
 
-    if (reportType === "monthly") {
-      const data = selectedDate?.format("M.YYYY.");
+      const data = selectedDate.format("M.YYYY.");
       console.log("Month selected", data);
       shelterService
         .getMonthlyReport(data)
@@ -199,7 +234,6 @@ export function Reports({ shelterService }: ReportProps) {
       )}
       {reportType === "weekly" && (
         <WeekPicker
-          weekSelected={weekSelected}
           setWeekSelected={setWeekSelected}
           monthYear={monthYear}
           setMonthYear={setMonthYear}

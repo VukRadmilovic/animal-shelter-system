@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
 import { AnimalWithBreed } from "../../../models/animals";
 import { ShelterWithMaps } from "../../../models/types";
-import { useNavigate } from "react-router-dom";
 import { PopupMessage } from "../../PopupMessage";
 
 interface FoodStuffProps {
@@ -26,7 +25,6 @@ export function AnimalsAndTheirFoodTable({
   if (!Array.isArray(animals)) {
     return <p>Oopsie</p>;
   }
-  const navigate = useNavigate();
   const [portionsToBuy, setPortionsToBuy] = useState<{ [key: string]: number }>(
     {}
   );
@@ -64,7 +62,7 @@ export function AnimalsAndTheirFoodTable({
     if (portions > 0) {
       shelterService
         .purchaseFood(animalType, portions)
-        .then((response) => {
+        .then((_) => {
           setErrorMessage("Food bought successfully");
           setIsSuccess(true);
           setErrorPopupOpen(true);
