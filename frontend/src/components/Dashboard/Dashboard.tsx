@@ -155,6 +155,9 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
             shelterService={shelterService}
             shelter={shelter}
             animals={animalsWithBreeds}
+            setShelter={setShelter}
+            moneyAvailable={moneyAvailable}
+            setMoneyAvailable={setMoneyAvailable}
           />
         </DashboardItemContainer>
 

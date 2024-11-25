@@ -10,12 +10,18 @@ interface FoodStuffProps {
   animals: AnimalWithBreed[];
   shelter?: ShelterWithMaps;
   shelterService: ShelterService;
+  setShelter: React.Dispatch<React.SetStateAction<ShelterWithMaps | undefined>>;
+  moneyAvailable: number;
+  setMoneyAvailable: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export function AnimalsAndTheirFoodTable({
   animals,
   shelter,
   shelterService,
+  setShelter,
+  moneyAvailable,
+  setMoneyAvailable,
 }: FoodStuffProps) {
   if (!Array.isArray(animals)) {
     return <p>Oopsie</p>;
@@ -41,24 +47,53 @@ export function AnimalsAndTheirFoodTable({
   };
 
   const handleBuyFood = (animalType: string) => {
+    if (!shelter) {
+      return;
+    }
     const portions = portionsToBuy[animalType];
-    if (portions && portions > 0) {
+    const priceForPortion = shelter.prices[animalType];
+    const totalPrice = portions * priceForPortion;
+
+    if (moneyAvailable < totalPrice) {
+      setErrorMessage("There is a lack of funds for this transaction.");
+      setIsSuccess(false);
+      setErrorPopupOpen(true);
+      return;
+    }
+
+    if (portions > 0) {
       shelterService
         .purchaseFood(animalType, portions)
         .then((response) => {
           setErrorMessage("Food bought successfully");
           setIsSuccess(true);
           setErrorPopupOpen(true);
-          setTimeout(() => {
-            navigate(0);
-          }, 2000);
-          setErrorMessage("Food bought successfully");
+          setShelter((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              foodAvailableForAnimals: {
+                ...prev.foodAvailableForAnimals,
+                [animalType]:
+                  (prev.foodAvailableForAnimals[animalType] || 0) + portions,
+              },
+            };
+          });
+          setPortionsToBuy((prev) => {
+            prev[animalType] = 0;
+            return prev;
+          });
+          setMoneyAvailable(
+            (prev) => prev - shelter.prices[animalType] * portions
+          );
         })
         .catch((error) => {
           console.error(error);
         });
     } else {
-      console.error("Please enter a valid number of portions to buy.");
+      setErrorMessage("Please enter a valid number of portions to buy.");
+      setIsSuccess(false);
+      setErrorPopupOpen(true);
     }
   };
 
