@@ -1,4 +1,3 @@
-import { AnimalsWithBreeds } from "../models/AnimalsWithBreeds.ts";
 import axios from "axios";
 import { Shelter } from "../models/types.ts";
 import { PetRecommendationCounter } from "../models/types.ts";

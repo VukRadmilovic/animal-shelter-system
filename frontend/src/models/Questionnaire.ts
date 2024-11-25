@@ -1,5 +1,3 @@
-import { Answer, Suggestion } from "./questionnaire";
-
 export interface Questionnaire {
   questions: Question[];
 }

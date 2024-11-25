@@ -1,7 +1,9 @@
 import axios from "axios";
-import { UsersQuestionResponse } from "../models/questionnaire.ts";
-import { Suggestions } from "../models/questionnaire.ts";
-import { Questionnaire } from "../models/questionnaire.ts";
+import {
+  Questionnaire,
+  UsersQuestionResponse,
+  Suggestions,
+} from "../models/questionnaire.ts";
 
 export class PetSuggestionsService {
   private api_host = "http://localhost:8080";

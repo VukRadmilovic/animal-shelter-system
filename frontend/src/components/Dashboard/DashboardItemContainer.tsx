@@ -1,4 +1,4 @@
-import { Grid, GridSize, Theme } from "@mui/material";
+import { Grid } from "@mui/material";
 import { ReactNode } from "react";
 
 interface Props {
