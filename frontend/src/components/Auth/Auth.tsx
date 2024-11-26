@@ -1,7 +1,6 @@
 import { Box, Grid, Tab, Tabs } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import { UserService } from "../../services/UserService.ts";
-import { PopupMessage } from "../PopupMessage.tsx";
 import { Registration } from "./Registration.tsx";
 import { ShelterService } from "../../services/ShelterService.ts";
 import TabPanel from "./TabPanel.tsx";
@@ -22,14 +21,7 @@ interface LoginRegistrationProps {
 
 export function Auth({ userService, shelterService }: LoginRegistrationProps) {
   const [tabValue, setTabTabValue] = React.useState<number>(0);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
   const [shelterExists, setShelterExists] = React.useState<boolean>(true);
-
-  const sendPopupMessage = (message: string) => {
-    setErrorMessage(message);
-    setErrorPopupOpen(true);
-  };
 
   const shouldCheckShelter = useRef(true);
 
@@ -48,11 +40,6 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
       });
     shouldCheckShelter.current = false;
   }, []);
-
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
 
   return (
     <>
@@ -95,10 +82,7 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
               </Grid>
               <Grid item justifyContent={"center"} xs={12}>
                 <TabPanel value={tabValue} index={0}>
-                  <Login
-                    sendPopupMessage={sendPopupMessage}
-                    userService={userService}
-                  />
+                  <Login userService={userService} />
                 </TabPanel>
               </Grid>
               <Grid item justifyContent={"center"} xs={12}>
@@ -110,12 +94,6 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
           ) : (
             <ShelterNotRegisteredRedirect />
           )}
-          <PopupMessage
-            message={errorMessage}
-            isSuccess={false}
-            handleClose={handleErrorPopupClose}
-            open={errorPopupOpen}
-          />
         </Grid>
       </Grid>
     </>

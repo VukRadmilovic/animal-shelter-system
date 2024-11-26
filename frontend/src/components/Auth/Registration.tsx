@@ -1,9 +1,8 @@
-import React from "react";
-import { PopupMessage } from "../PopupMessage.tsx";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { User } from "../../models/users.ts";
 import { useForm } from "react-hook-form";
 import { UserService } from "../../services/UserService.ts";
+import { PopupType, usePopup } from "../PopupProvider.tsx";
 
 type RegistrationForm = {
   fullName: string;
@@ -17,9 +16,6 @@ interface RegistrationProps {
 }
 
 export function Registration({ userService }: RegistrationProps) {
-  const [errorMessage, setErrorMessage] = React.useState("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(true);
   const {
     register,
     getValues,
@@ -36,6 +32,8 @@ export function Registration({ userService }: RegistrationProps) {
     mode: "onChange",
   });
 
+  const { displayPopup } = usePopup();
+
   const onRegistrationAttempt = (formData: RegistrationForm) => {
     const newUser: User = {
       fullName: formData.fullName.trim(),
@@ -45,21 +43,12 @@ export function Registration({ userService }: RegistrationProps) {
     userService
       .registerUser(newUser)
       .then(() => {
-        setErrorMessage("User successfully registered!");
-        setIsSuccess(true);
-        setErrorPopupOpen(true);
+        displayPopup("User successfully registered!", PopupType.SUCCESS);
         reset();
       })
       .catch((error) => {
-        setErrorMessage(error.response.data);
-        setIsSuccess(false);
-        setErrorPopupOpen(true);
+        displayPopup(error.response.data, PopupType.ERROR);
       });
-  };
-
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
   };
 
   return (
@@ -159,12 +148,6 @@ export function Registration({ userService }: RegistrationProps) {
             Sign up
           </Button>
         </Grid>
-        <PopupMessage
-          message={errorMessage}
-          isSuccess={isSuccess}
-          handleClose={handleErrorPopupClose}
-          open={errorPopupOpen}
-        />
       </Grid>
     </form>
   );

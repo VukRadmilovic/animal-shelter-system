@@ -3,13 +3,13 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { UserWithoutFullName } from "../../models/users";
 import { UserService } from "../../services/UserService";
+import { PopupType, usePopup } from "../PopupProvider";
 
 interface Props {
   userService: UserService;
-  sendPopupMessage: (message: string) => void;
 }
 
-function Login({ userService, sendPopupMessage }: Props) {
+function Login({ userService }: Props) {
   const {
     register,
     handleSubmit,
@@ -24,6 +24,8 @@ function Login({ userService, sendPopupMessage }: Props) {
 
   const navigate = useNavigate();
 
+  const { displayPopup } = usePopup();
+
   const onLoginAttempt = (formData: UserWithoutFullName) => {
     const userCredentials: UserWithoutFullName = {
       username: formData.username.trim(),
@@ -35,7 +37,7 @@ function Login({ userService, sendPopupMessage }: Props) {
         navigate("/dashboard");
       })
       .catch((error) => {
-        sendPopupMessage(error.response.data);
+        displayPopup(error.response.data, PopupType.ERROR);
       });
   };
 
