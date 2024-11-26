@@ -23,13 +23,10 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
   const [tabValue, setTabTabValue] = React.useState<number>(0);
   const [shelterExists, setShelterExists] = React.useState<boolean>(true);
 
-  const shouldCheckShelter = useRef(true);
-
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) =>
     setTabTabValue(newValue);
 
   useEffect(() => {
-    if (!shouldCheckShelter.current) return;
     shelterService
       .checkShelter()
       .then((result) => {
@@ -38,7 +35,6 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
       .catch((err) => {
         console.log(err);
       });
-    shouldCheckShelter.current = false;
   }, []);
 
   return (

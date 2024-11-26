@@ -78,7 +78,7 @@ export function ShelterRegistration({
   };
 
   useEffect(() => {
-    if (!shouldLoad.current) return;
+    console.log("sheltr reg start");
     shelterService
       .checkShelter()
       .then((result) => {
@@ -95,7 +95,7 @@ export function ShelterRegistration({
       .catch((err) => {
         displayPopup(err.response.data, PopupType.ERROR);
       });
-    shouldLoad.current = false;
+    console.log("sheltr reg end");
   }, []);
 
   const handleNext = () => {

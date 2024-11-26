@@ -15,7 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { UsersQuestionResponse } from "../models/questionnaire.ts";
 import { Suggestions } from "../models/questionnaire.ts";
 import { Questionnaire } from "../models/questionnaire.ts";
@@ -39,8 +39,6 @@ export function PetSuggestionLandingPage({
 
   const { displayPopup } = usePopup();
 
-  const shouldLoad = useRef(true);
-
   const handleReset = () => {
     window.location.reload();
   };
@@ -50,7 +48,6 @@ export function PetSuggestionLandingPage({
   };
 
   const handleNextQuestion = () => {
-    console.log(activeStep);
     if (activeStep == 0) {
       sessionStorage.setItem(
         "userId",
@@ -89,16 +86,14 @@ export function PetSuggestionLandingPage({
   };
 
   useEffect(() => {
-    if (!shouldLoad.current) return;
     suggestionService
       .getQuestions()
       .then((questionnaire) => {
         setQuestions(questionnaire);
       })
       .catch((err) => {
-        displayPopup(err.response.data, PopupType.ERROR);
+        console.log("Error while loading questions.", err);
       });
-    shouldLoad.current = false;
   }, []);
 
   return (
@@ -173,6 +168,7 @@ export function PetSuggestionLandingPage({
                             md: 6,
                             lg: 2,
                           }}
+                          key={suggestion.pet}
                         >
                           <Avatar
                             alt={suggestion.pet}
@@ -240,6 +236,7 @@ export function PetSuggestionLandingPage({
                                   value={answer.number}
                                   control={<Radio />}
                                   label={answer.text}
+                                  key={activeStep + "," + answer.number}
                                 />
                               );
                             }

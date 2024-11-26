@@ -26,7 +26,7 @@ export interface AnimalsForm {
 interface AnimalsInitializationProps {
   animals: AnimalWithBreed[];
   shelter: Shelter;
-  setShelter: (shelter: Shelter) => void;
+  setShelter: React.Dispatch<React.SetStateAction<Shelter>>;
   isDone: boolean;
 }
 
@@ -53,8 +53,7 @@ export function AnimalsInitialization({
   const { displayPopup } = usePopup();
 
   useEffect(() => {
-    shelter.animals = addedAnimals;
-    setShelter(shelter);
+    setShelter((prev) => ({ ...prev, animals: addedAnimals }));
   }, [isDone]);
 
   const addAnimal = (data: AnimalsForm) => {

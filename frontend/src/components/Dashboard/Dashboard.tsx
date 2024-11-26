@@ -36,10 +36,8 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
   const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
 
   const navigate = useNavigate();
-  const shouldLoad = useRef(true);
 
   useEffect(() => {
-    if (!shouldLoad.current) return;
     shelterService
       .checkShelter()
       .then((result) => {
@@ -77,8 +75,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
       .catch((err) => {
         console.log(err);
       });
-    shouldLoad.current = false;
-  }, [navigate, shelterService]);
+  }, [shelterService]);
 
   return (
     <>
