@@ -1,5 +1,5 @@
 import "./Dashboard.css";
-import { Grid } from "@mui/material";
+import { Grid2 as Grid } from "@mui/material";
 import * as React from "react";
 import { useEffect, useRef } from "react";
 import { Animal } from "../../models/animals";

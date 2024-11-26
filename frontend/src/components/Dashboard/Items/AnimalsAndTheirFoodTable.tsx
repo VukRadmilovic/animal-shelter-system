@@ -1,4 +1,4 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
 import { AnimalWithBreed } from "../../../models/animals";
@@ -96,7 +96,6 @@ export function AnimalsAndTheirFoodTable({
         <form className={"flex-row"}>
           <Grid
             container
-            spacing={2}
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -115,16 +114,17 @@ export function AnimalsAndTheirFoodTable({
                   display: "flex",
                   flexDirection: "row",
                   alignItems: "center",
+                  width: "100%",
                 }}
               >
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2}>
+                <Grid size={2}>
                   <Typography>
                     <b>{type}</b>
                   </Typography>
                 </Grid>
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                <Grid p={1} size={2}>
                   <TextField
-                    sx={{ width: "80%" }}
+                    sx={{ width: "85%" }}
                     type={"number"}
                     label="Number of animals"
                     value={
@@ -137,9 +137,9 @@ export function AnimalsAndTheirFoodTable({
                     }}
                   />
                 </Grid>
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                <Grid p={1} size={2}>
                   <TextField
-                    sx={{ width: "80%" }}
+                    sx={{ width: "85%" }}
                     type={"number"}
                     label="Available food"
                     value={shelter.foodAvailableForAnimals[type]}
@@ -148,9 +148,9 @@ export function AnimalsAndTheirFoodTable({
                     }}
                   />
                 </Grid>
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                <Grid p={1} size={2}>
                   <TextField
-                    sx={{ width: "80%" }}
+                    sx={{ width: "85%" }}
                     type={"number"}
                     label="Price Per Portion (Dinars)"
                     value={shelter.prices[type]}
@@ -159,9 +159,9 @@ export function AnimalsAndTheirFoodTable({
                     }}
                   />
                 </Grid>
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                <Grid p={1} size={2}>
                   <TextField
-                    sx={{ width: "80%" }}
+                    sx={{ width: "85%" }}
                     type={"number"}
                     label="Number of portions to buy"
                     value={portionsToBuy[type] || ""}
@@ -170,7 +170,7 @@ export function AnimalsAndTheirFoodTable({
                     }
                   />
                 </Grid>
-                <Grid item xs={2} sm={2} md={2} lg={2} xl={2} p={1}>
+                <Grid p={1} size={2}>
                   <Button
                     type="button"
                     variant="contained"

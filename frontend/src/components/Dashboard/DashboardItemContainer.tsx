@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid2 as Grid } from "@mui/material";
 import { ReactNode } from "react";
 
 interface Props {
@@ -15,13 +15,12 @@ function DashboardItemContainer({
   return (
     <Grid
       container
-      item
-      xs={xs}
       minHeight={minHeight}
       sx={{ display: "block", alignContent: "center" }}
       className="container rounded-container"
       m={2}
       overflow={"auto"}
+      size={xs}
     >
       {children}
     </Grid>
