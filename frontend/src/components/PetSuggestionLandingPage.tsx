@@ -6,7 +6,7 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  Grid,
+  Grid2 as Grid,
   Radio,
   RadioGroup,
   Step,
@@ -106,43 +106,27 @@ export function PetSuggestionLandingPage({
       <Grid container justifyContent={"center"} className={"dark-background"}>
         <Grid
           container
-          item
-          xs={12}
-          sm={12}
-          md={10}
-          lg={8}
-          xl={8}
           minHeight={"70vh"}
           padding={2}
           className="container rounded-container"
+          size={{
+            xs: 12,
+            md: 10,
+            lg: 8,
+          }}
         >
           <Grid
-            item
             container
-            xs={12}
-            sm={12}
-            md={12}
-            lg={12}
-            xl={12}
             justifyContent={"center"}
             alignSelf={"flex-start"}
             mb={3}
+            size={12}
           >
             <Typography variant="h3" textAlign={"center"} width={"100%"}>
               Find Your Ideal Pet!
             </Typography>
           </Grid>
-          <Grid
-            container
-            item
-            xs={12}
-            sm={12}
-            md={12}
-            lg={12}
-            xl={12}
-            height={"86%"}
-            sx={{ display: "flex" }}
-          >
+          <Grid container height={"86%"} sx={{ display: "flex" }} size={12}>
             <Box
               sx={{ width: "100%", display: "flex", flexDirection: "column" }}
             >
@@ -161,26 +145,12 @@ export function PetSuggestionLandingPage({
               </Stepper>
               {activeStep === questions!.questions.length ? (
                 <Grid
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  lg={12}
-                  xl={12}
                   pt={3}
                   justifyContent={"center"}
                   sx={{ display: "flex", flexGrow: 1, flexWrap: "wrap" }}
+                  size={12}
                 >
-                  <Grid
-                    item
-                    container
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    lg={12}
-                    xl={12}
-                    justifyContent={"center"}
-                    mb={2}
-                  >
+                  <Grid container justifyContent={"center"} mb={2} size={12}>
                     <Typography
                       variant="h4"
                       textAlign={"center"}
@@ -189,16 +159,7 @@ export function PetSuggestionLandingPage({
                       Your Ideal Pets Are:
                     </Typography>
                   </Grid>
-                  <Grid
-                    item
-                    container
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    lg={12}
-                    xl={12}
-                    justifyContent={"center"}
-                  >
+                  <Grid container justifyContent={"center"} size={12}>
                     {suggestions!.suggestions.map((suggestion) => {
                       return (
                         <Grid
@@ -207,11 +168,11 @@ export function PetSuggestionLandingPage({
                           alignItems={"center"}
                           justifyContent={"center"}
                           mt={2}
-                          xs={12}
-                          sm={12}
-                          md={6}
-                          lg={2}
-                          xl={2}
+                          size={{
+                            xs: 12,
+                            md: 6,
+                            lg: 2,
+                          }}
                         >
                           <Avatar
                             alt={suggestion.pet}
@@ -231,15 +192,10 @@ export function PetSuggestionLandingPage({
                     })}
                   </Grid>
                   <Grid
-                    item
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    lg={12}
-                    xl={12}
                     mt={20}
                     className={"flex-row"}
                     justifyContent={"center"}
+                    size={12}
                   >
                     <Button
                       onClick={handleReset}
@@ -253,23 +209,15 @@ export function PetSuggestionLandingPage({
                 </Grid>
               ) : (
                 <Grid
-                  xs={12}
-                  sm={12}
-                  md={12}
-                  lg={12}
-                  xl={12}
                   width={"100%"}
-                  justifyContent={"center"}
-                  sx={{ display: "flex", flexDirection: "column" }}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  }}
+                  size={12}
                 >
-                  <Grid
-                    xs={12}
-                    sm={12}
-                    md={12}
-                    lg={12}
-                    xl={12}
-                    justifyContent={"center"}
-                  >
+                  <Grid justifyContent={"center"} size={12} height={"100%"}>
                     <Typography fontSize={"large"} sx={{ mt: 3, mb: 3 }}>
                       <b>
                         {activeStep + 1}.{" "}
