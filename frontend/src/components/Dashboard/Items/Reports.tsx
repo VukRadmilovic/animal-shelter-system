@@ -18,6 +18,7 @@ import {
 import { useEffect, useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
 import { Report } from "../../../models/types";
+import { PopupType, usePopup } from "../../PopupProvider";
 
 const weeksInMonth = (year: number, month: number) => {
   const startOfMonth = dayjs(new Date(year, month, 1));
@@ -129,6 +130,8 @@ interface ReportProps {
 }
 
 export function Reports({ shelterService }: ReportProps) {
+  const { displayPopup } = usePopup();
+
   const [reportType, setReportType] = React.useState("daily");
   const [selectedDate, setSelectedDate] = React.useState<Dayjs | null>(
     dayjs("2024-06-12")
@@ -154,6 +157,7 @@ export function Reports({ shelterService }: ReportProps) {
 
   function generateReport() {
     console.log("Generating report for", reportType, selectedDate?.toDate());
+    displayPopup("Hello :)", PopupType.SUCCESS);
 
     if (reportType === "daily") {
       if (!selectedDate) {

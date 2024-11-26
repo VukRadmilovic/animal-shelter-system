@@ -7,13 +7,14 @@ import { Auth } from "./components/Auth/Auth.tsx";
 import { Dashboard } from "./components/Dashboard/Dashboard.tsx";
 import { ShelterService } from "./services/ShelterService.ts";
 import { ShelterRegistration } from "./components/ShelterRegistration/ShelterRegistration.tsx";
+import { PopupProvider } from "./components/PopupProvider.tsx";
 
 function App() {
   const userServiceSingleton = new UserService();
   const suggestionServiceSingleton = new PetSuggestionsService();
   const shelterServiceSingleton = new ShelterService();
   return (
-    <>
+    <PopupProvider>
       <BrowserRouter>
         <Routes>
           <Route
@@ -45,7 +46,7 @@ function App() {
           />
         </Routes>
       </BrowserRouter>
-    </>
+    </PopupProvider>
   );
 }
 
