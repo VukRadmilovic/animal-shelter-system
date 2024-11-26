@@ -11,11 +11,11 @@ import { ShelterService } from "../../services/ShelterService.ts";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { AnimalWithBreed } from "../../models/animals.ts";
-import { PopupMessage } from "../PopupMessage.tsx";
 import { AnimalsInitialization } from "./AnimalsInitialization.tsx";
 import { FoodAndPricesInitialization } from "./FoodAndPricesInitialization.tsx";
 import { Shelter } from "../../models/types.ts";
 import { useNavigate } from "react-router-dom";
+import { PopupType, usePopup } from "../PopupProvider.tsx";
 
 interface ShelterRegistrationProps {
   shelterService: ShelterService;
@@ -47,14 +47,14 @@ export function ShelterRegistration({
     },
     mode: "onChange",
   });
+
+  const { displayPopup } = usePopup();
+
   const shouldLoad = useRef(true);
   const navigate = useNavigate();
   const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<
     AnimalWithBreed[]
   >([]);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
   const [isDoneAnimals, setIsDoneAnimals] = React.useState(false);
   const [isDoneFood, setIsDoneFood] = React.useState(false);
   const [shelter, setShelter] = React.useState<Shelter>({
@@ -67,10 +67,6 @@ export function ShelterRegistration({
     prices: [],
   });
   const [isFinished, setIsFinished] = React.useState(false);
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
 
   const onSubmit = (data: GeneralInfoForm) => {
     shelter.name = data.name.trim();
@@ -97,9 +93,7 @@ export function ShelterRegistration({
         setAnimalsWithBreeds(animals.animals);
       })
       .catch((err) => {
-        setErrorMessage(err.response.data);
-        setIsSuccess(false);
-        setErrorPopupOpen(true);
+        displayPopup(err.response.data, PopupType.ERROR);
       });
     shouldLoad.current = false;
   }, []);
@@ -437,12 +431,6 @@ export function ShelterRegistration({
           )}
         </Grid>
       </Grid>
-      <PopupMessage
-        message={errorMessage}
-        isSuccess={isSuccess}
-        handleClose={handleErrorPopupClose}
-        open={errorPopupOpen}
-      />
     </>
   );
 }

@@ -13,10 +13,10 @@ import {
 import { useForm } from "react-hook-form";
 import { AnimalWithBreed } from "../../models/animals.ts";
 import { Animal } from "../../models/animals.ts";
-import React, { useEffect, useState } from "react";
-import { PopupMessage } from "../PopupMessage.tsx";
+import { useEffect, useState } from "react";
 import { Shelter } from "../../models/types.ts";
 import { fixAnimalBreedName } from "../../utils.ts";
+import { PopupType, usePopup } from "../PopupProvider.tsx";
 
 export interface AnimalsForm {
   name: string;
@@ -49,13 +49,8 @@ export function AnimalsInitialization({
   });
   const onSubmit = (data: AnimalsForm) => addAnimal(data);
   const [addedAnimals, setAddedAnimals] = useState<Animal[]>([]);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
+
+  const { displayPopup } = usePopup();
 
   useEffect(() => {
     shelter.animals = addedAnimals;
@@ -68,11 +63,10 @@ export function AnimalsInitialization({
         (chip) => chip.name == data.name && chip.animalBreed == data.breed
       ).length > 0
     ) {
-      setErrorMessage(
-        "Animal with the specified name and breed already exists!"
+      displayPopup(
+        "Animal with the specified name and breed already exists!",
+        PopupType.ERROR
       );
-      setIsSuccess(false);
-      setErrorPopupOpen(true);
       return;
     }
     const animalWithBreed = animals.filter(
@@ -197,12 +191,6 @@ export function AnimalsInitialization({
           );
         })}
       </Grid>
-      <PopupMessage
-        message={errorMessage}
-        isSuccess={isSuccess}
-        handleClose={handleErrorPopupClose}
-        open={errorPopupOpen}
-      />
     </>
   );
 }

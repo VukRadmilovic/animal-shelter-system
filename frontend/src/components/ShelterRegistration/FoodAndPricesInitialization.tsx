@@ -2,11 +2,11 @@ import { AnimalWithBreed } from "../../models/animals.ts";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { Shelter } from "../../models/types.ts";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { FoodAvailableForAnimal } from "../../models/types.ts";
 import { Price } from "../../models/types.ts";
 import { ShelterService } from "../../services/ShelterService.ts";
-import { PopupMessage } from "../PopupMessage.tsx";
+import { PopupType, usePopup } from "../PopupProvider.tsx";
 
 interface FoodAndPricesInitializationProps {
   animals: AnimalWithBreed[];
@@ -40,13 +40,8 @@ export function FoodAndPricesInitialization({
   } = useForm<FoodAndPricesForm[]>({
     mode: "onChange",
   });
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
+
+  const { displayPopup } = usePopup();
 
   const validateAndFinish = async () => {
     const isValid = await trigger();
@@ -73,15 +68,11 @@ export function FoodAndPricesInitialization({
       shelterService
         .registerShelter(shelter)
         .then((msg) => {
-          setErrorMessage(msg);
-          setIsSuccess(true);
-          setErrorPopupOpen(true);
+          displayPopup(msg, PopupType.SUCCESS);
           setFinished(true);
         })
         .catch((err) => {
-          setErrorMessage(err.response.data);
-          setIsSuccess(false);
-          setErrorPopupOpen(true);
+          displayPopup(err.response.data, PopupType.ERROR);
         });
     }
   };
@@ -167,12 +158,6 @@ export function FoodAndPricesInitialization({
           </Grid>
         </Grid>
       </form>
-      <PopupMessage
-        message={errorMessage}
-        isSuccess={isSuccess}
-        handleClose={handleErrorPopupClose}
-        open={errorPopupOpen}
-      />
     </>
   );
 }

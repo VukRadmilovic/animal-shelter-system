@@ -17,9 +17,9 @@ import {
 } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import { UsersQuestionResponse } from "../models/questionnaire.ts";
-import { PopupMessage } from "./PopupMessage.tsx";
 import { Suggestions } from "../models/questionnaire.ts";
 import { Questionnaire } from "../models/questionnaire.ts";
+import { PopupType, usePopup } from "./PopupProvider.tsx";
 
 interface PetSuggestionLandingPageProps {
   suggestionService: PetSuggestionsService;
@@ -29,20 +29,17 @@ export function PetSuggestionLandingPage({
 }: PetSuggestionLandingPageProps) {
   const [activeStep, setActiveStep] = React.useState(0);
   const [value, setValue] = React.useState<number>(-1);
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
+
   const [suggestions, setSuggestions] = React.useState<Suggestions | null>({
     suggestions: [],
   });
   const [questions, setQuestions] = React.useState<Questionnaire | null>({
     questions: [],
   });
+
+  const { displayPopup } = usePopup();
+
   const shouldLoad = useRef(true);
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
 
   const handleReset = () => {
     window.location.reload();
@@ -71,9 +68,7 @@ export function PetSuggestionLandingPage({
         setValue(-1);
       })
       .catch((err) => {
-        setErrorMessage(err.response.data);
-        setIsSuccess(false);
-        setErrorPopupOpen(true);
+        displayPopup(err.response.data, PopupType.ERROR);
       });
     if (activeStep == questions!.questions.length - 1) {
       suggestionService
@@ -86,9 +81,7 @@ export function PetSuggestionLandingPage({
           sessionStorage.removeItem("userId");
         })
         .catch((err) => {
-          setErrorMessage(err.response.data);
-          setIsSuccess(false);
-          setErrorPopupOpen(true);
+          displayPopup(err.response.data, PopupType.ERROR);
         });
     } else {
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -103,9 +96,7 @@ export function PetSuggestionLandingPage({
         setQuestions(questionnaire);
       })
       .catch((err) => {
-        setErrorMessage(err.response.data);
-        setIsSuccess(false);
-        setErrorPopupOpen(true);
+        displayPopup(err.response.data, PopupType.ERROR);
       });
     shouldLoad.current = false;
   }, []);
@@ -336,12 +327,6 @@ export function PetSuggestionLandingPage({
           </Grid>
         </Grid>
       </Grid>
-      <PopupMessage
-        message={errorMessage}
-        isSuccess={isSuccess}
-        handleClose={handleErrorPopupClose}
-        open={errorPopupOpen}
-      />
     </>
   );
 }

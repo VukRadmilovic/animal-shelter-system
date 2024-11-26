@@ -63,27 +63,34 @@ function ShelteredAnimalsDisplay({
         m={2}
         mr={-5}
       >
-        {animals.map((data) => {
-          return (
-            <ListItem
-              key={data.name + " " + data.animalBreed}
-              sx={{
-                width: "fit-content",
-                padding: "5px 10px !important",
-                cursor: "pointer",
-                backgroundColor:
-                  selectedAnimal === data ? "lightgray" : "transparent",
-              }}
-              onClick={() => handleSelectAnimal(data)}
-            >
-              <Chip
-                label={
-                  data.name + " (" + fixAnimalBreedName(data.animalBreed) + ")"
-                }
-              />
-            </ListItem>
-          );
-        })}
+        {animals ? (
+          animals.map((data) => {
+            return (
+              <ListItem
+                key={data.name + " " + data.animalBreed}
+                sx={{
+                  width: "fit-content",
+                  padding: "5px 10px !important",
+                  cursor: "pointer",
+                  backgroundColor:
+                    selectedAnimal === data ? "lightgray" : "transparent",
+                }}
+                onClick={() => handleSelectAnimal(data)}
+              >
+                <Chip
+                  label={
+                    data.name +
+                    " (" +
+                    fixAnimalBreedName(data.animalBreed) +
+                    ")"
+                  }
+                />
+              </ListItem>
+            );
+          })
+        ) : (
+          <p>No animals sheltered yet...</p>
+        )}
       </Grid>
 
       <Button
