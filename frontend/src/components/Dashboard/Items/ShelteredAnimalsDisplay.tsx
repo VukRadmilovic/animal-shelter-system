@@ -1,4 +1,4 @@
-import { Grid, ListItem, Chip, Button } from "@mui/material";
+import { Grid2 as Grid, ListItem, Chip, Button } from "@mui/material";
 import { Animal } from "../../../models/animals";
 import { useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
@@ -47,9 +47,8 @@ function ShelteredAnimalsDisplay({
   return (
     <>
       <Grid
-        item
         container
-        xs={12}
+        size={12}
         sx={{
           border: "1px solid gray",
           borderRadius: "1em",

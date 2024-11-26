@@ -1,5 +1,5 @@
 import {
-  Grid,
+  Grid2 as Grid,
   FormControl,
   InputLabel,
   Select,
@@ -36,7 +36,7 @@ function ShelterAnimalForm({
     register: registerAnimalsForm,
     handleSubmit: handleSubmitAnimalsForm,
     formState: { errors: animalsFormErrors },
-    reset: resetAnimalsForm,
+    // reset: resetAnimalsForm,
     watch,
   } = useForm<AnimalsForm>({
     defaultValues: {
@@ -72,7 +72,7 @@ function ShelterAnimalForm({
       .then(() => {
         displayPopup("Animal sheltered successfully", PopupType.SUCCESS);
         setShelteredAnimals((prev) => [...prev, animal]);
-        resetAnimalsForm();
+        // resetAnimalsForm();
       })
       .catch((error) => {
         console.error("Error sheltering animal:", error);
@@ -82,16 +82,15 @@ function ShelterAnimalForm({
   return (
     <form className={"width-100"}>
       <Grid
-        item
         container
         spacing={2}
         pt={3}
         pl={4}
         pr={4}
-        xs={12}
+        size={12}
         justifyContent={"center"}
       >
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+        <Grid size={12}>
           <FormControl fullWidth={true} error={!!animalsFormErrors.animalBreed}>
             <InputLabel id="breed">Breed</InputLabel>
             <Select
@@ -123,7 +122,7 @@ function ShelterAnimalForm({
             )}
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
+        <Grid size={12}>
           <TextField
             id="name"
             label="Name"
@@ -139,7 +138,7 @@ function ShelterAnimalForm({
             }
           />
         </Grid>
-        <Grid item xs={12} mt={5}>
+        <Grid size={12} mt={5}>
           <Button
             type="submit"
             variant="contained"

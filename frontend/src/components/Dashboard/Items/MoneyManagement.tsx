@@ -1,4 +1,4 @@
-import { Grid, TextField, FormControl, Button } from "@mui/material";
+import { Grid2 as Grid, TextField, FormControl, Button } from "@mui/material";
 import { ShelterService } from "../../../services/ShelterService";
 import { useForm } from "react-hook-form";
 import { PopupType, usePopup } from "../../PopupProvider";
@@ -48,7 +48,7 @@ function MoneyManagement({
 
   return (
     <>
-      <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+      <Grid size={12}>
         <TextField
           id="moneyAvailable"
           label="Available money"
@@ -60,7 +60,7 @@ function MoneyManagement({
         />
       </Grid>
       <FormControl>
-        <Grid item xs={12} mt={2.5}>
+        <Grid size={12} mt={2.5}>
           <TextField
             id="moneyToDeposit"
             label="Money to deposit"
@@ -76,7 +76,7 @@ function MoneyManagement({
             }
           />
         </Grid>
-        <Grid item xs={12} mt={5}>
+        <Grid size={12} mt={5}>
           <Button
             type="submit"
             variant="contained"

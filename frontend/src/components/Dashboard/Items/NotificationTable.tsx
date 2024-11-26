@@ -7,7 +7,7 @@ import {
   TableCell,
   TableBody,
   TablePagination,
-  Grid,
+  Grid2 as Grid,
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { ShelterService } from "../../../services/ShelterService";
