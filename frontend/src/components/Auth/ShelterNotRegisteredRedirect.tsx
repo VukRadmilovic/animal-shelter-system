@@ -1,4 +1,4 @@
-import { Grid, Typography, Button } from "@mui/material";
+import { Grid2 as Grid, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 function ShelterNotRegisteredRedirect() {

@@ -1,4 +1,4 @@
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, TextField, Typography } from "@mui/material";
 import { User } from "../../models/users.ts";
 import { useForm } from "react-hook-form";
 import { UserService } from "../../services/UserService.ts";
@@ -52,18 +52,24 @@ export function Registration({ userService }: RegistrationProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onRegistrationAttempt)}>
-      <Grid container item xs={12} direction={"row"} justifyContent={"center"}>
-        <Grid item xs={12} mb={3}>
+    (<form onSubmit={handleSubmit(onRegistrationAttempt)}>
+      <Grid container direction={"row"} justifyContent={"center"} size={12}>
+        <Grid mb={3} size={12}>
           <Typography variant="h2" mb={5} fontWeight={400}>
             Sign-up
           </Typography>
         </Grid>
-        <Grid item container xs={12} rowSpacing={3}>
-          <Grid item container xs={12} justifyContent={"center"}>
-            <Grid item xs={10} md={6} pl={2} pr={2}>
-              <Grid item container spacing={2} xs={12}>
-                <Grid item xs={12}>
+        <Grid container rowSpacing={3} size={12}>
+          <Grid container justifyContent={"center"} size={12}>
+            <Grid
+              pl={2}
+              pr={2}
+              size={{
+                xs: 10,
+                md: 6
+              }}>
+              <Grid container spacing={2} size={12}>
+                <Grid size={12}>
                   <TextField
                     id="name"
                     label="Full Name"
@@ -78,7 +84,7 @@ export function Registration({ userService }: RegistrationProps) {
                     fullWidth={true}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     id="username"
                     label="Username"
@@ -95,9 +101,15 @@ export function Registration({ userService }: RegistrationProps) {
                 </Grid>
               </Grid>
             </Grid>
-            <Grid item xs={10} md={6} pl={2} pr={2}>
-              <Grid item container spacing={2} xs={12}>
-                <Grid item xs={12}>
+            <Grid
+              pl={2}
+              pr={2}
+              size={{
+                xs: 10,
+                md: 6
+              }}>
+              <Grid container spacing={2} size={12}>
+                <Grid size={12}>
                   <TextField
                     id="password"
                     label="Password"
@@ -119,7 +131,7 @@ export function Registration({ userService }: RegistrationProps) {
                     fullWidth={true}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={12}>
                   <TextField
                     id="passwordConfirmation"
                     label="Confirm password"
@@ -143,12 +155,12 @@ export function Registration({ userService }: RegistrationProps) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item mt={8}>
+        <Grid mt={8}>
           <Button variant="contained" type="submit">
             Sign up
           </Button>
         </Grid>
       </Grid>
-    </form>
+    </form>)
   );
 }

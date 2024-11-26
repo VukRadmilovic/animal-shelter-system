@@ -1,4 +1,4 @@
-import { Box, Grid, Tab, Tabs } from "@mui/material";
+import { Box, Grid2 as Grid, Tab, Tabs } from "@mui/material";
 import React, { useEffect, useRef } from "react";
 import { UserService } from "../../services/UserService.ts";
 import { Registration } from "./Registration.tsx";
@@ -52,18 +52,19 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
       >
         <Grid
           container
-          item
-          xs={12}
-          md={10}
-          lg={8}
           height={"fit-content"}
           minHeight={"70vh"}
           className="container rounded-container"
+          size={{
+            xs: 12,
+            md: 10,
+            lg: 8,
+          }}
         >
           {shelterExists ? (
             <div style={{ width: "100%" }}>
-              <Grid item container xs={12}>
-                <Grid item xs={12}>
+              <Grid container size={12}>
+                <Grid size={12}>
                   <Box
                     sx={{ borderBottom: 1, borderColor: "divider" }}
                     component={"div"}
@@ -80,12 +81,12 @@ export function Auth({ userService, shelterService }: LoginRegistrationProps) {
                   </Box>
                 </Grid>
               </Grid>
-              <Grid item justifyContent={"center"} xs={12}>
+              <Grid justifyContent={"center"} size={12}>
                 <TabPanel value={tabValue} index={0}>
                   <Login userService={userService} />
                 </TabPanel>
               </Grid>
-              <Grid item justifyContent={"center"} xs={12}>
+              <Grid justifyContent={"center"} size={12}>
                 <TabPanel value={tabValue} index={1}>
                   <Registration userService={userService} />
                 </TabPanel>

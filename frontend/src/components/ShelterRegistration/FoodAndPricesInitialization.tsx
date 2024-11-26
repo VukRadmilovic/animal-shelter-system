@@ -1,6 +1,6 @@
 import { AnimalWithBreed } from "../../models/animals.ts";
 import { SubmitHandler, useForm } from "react-hook-form";
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Button, Grid2 as Grid, TextField, Typography } from "@mui/material";
 import { Shelter } from "../../models/types.ts";
 import { useEffect } from "react";
 import { FoodAvailableForAnimal } from "../../models/types.ts";
@@ -91,7 +91,6 @@ export function FoodAndPricesInitialization({
       <form onSubmit={handleSubmit(onSubmit)} className={"flex-row"}>
         <Grid
           container
-          spacing={2}
           sx={{
             display: "flex",
             flexDirection: "row",
@@ -103,6 +102,7 @@ export function FoodAndPricesInitialization({
             (type, index) => (
               <Grid
                 container
+                size={12}
                 sx={{
                   display: "flex",
                   flexDirection: "row",
@@ -110,12 +110,12 @@ export function FoodAndPricesInitialization({
                 }}
                 key={index}
               >
-                <Grid item xs={2}>
+                <Grid size={2}>
                   <Typography>
                     <b>{type}</b>
                   </Typography>
                 </Grid>
-                <Grid item xs={5} p={1}>
+                <Grid p={1} size={5}>
                   <TextField
                     sx={{ width: "80%" }}
                     type={"number"}
@@ -129,7 +129,7 @@ export function FoodAndPricesInitialization({
                     helperText={errors?.[index]?.food?.message}
                   />
                 </Grid>
-                <Grid item xs={5} p={1}>
+                <Grid p={1} size={5}>
                   <TextField
                     sx={{ width: "80%" }}
                     type={"number"}
@@ -146,7 +146,7 @@ export function FoodAndPricesInitialization({
               </Grid>
             )
           )}
-          <Grid item xs={12}>
+          <Grid size={12}>
             <Button
               type="submit"
               variant="contained"

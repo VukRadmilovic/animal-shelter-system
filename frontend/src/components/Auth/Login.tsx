@@ -1,4 +1,4 @@
-import { Grid, Typography, TextField, Button } from "@mui/material";
+import { Grid2 as Grid, Typography, TextField, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { UserWithoutFullName } from "../../models/users";
@@ -42,15 +42,15 @@ function Login({ userService }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit(onLoginAttempt)}>
-      <Grid container item direction={"row"} xs={12} justifyContent={"center"}>
-        <Grid item mb={3} xs={12}>
+    (<form onSubmit={handleSubmit(onLoginAttempt)}>
+      <Grid container direction={"row"} justifyContent={"center"} size={12}>
+        <Grid mb={3} size={12}>
           <Typography variant="h2" mb={5} fontWeight={400}>
             Login
           </Typography>
         </Grid>
-        <Grid item container rowSpacing={3} xs={8}>
-          <Grid item xs={12}>
+        <Grid container rowSpacing={3} size={8}>
+          <Grid size={12}>
             <TextField
               id="username"
               label="Username"
@@ -64,7 +64,7 @@ function Login({ userService }: Props) {
               fullWidth={true}
             />
           </Grid>
-          <Grid item xs={12}>
+          <Grid size={12}>
             <TextField
               id="password"
               label="Password"
@@ -80,13 +80,13 @@ function Login({ userService }: Props) {
             />
           </Grid>
         </Grid>
-        <Grid item xs={12} mt={5}>
+        <Grid mt={5} size={12}>
           <Button variant="contained" type="submit">
             Login
           </Button>
         </Grid>
       </Grid>
-    </form>
+    </form>)
   );
 }
 

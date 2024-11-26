@@ -3,7 +3,7 @@ import {
   Chip,
   FormControl,
   FormHelperText,
-  Grid,
+  Grid2 as Grid,
   InputLabel,
   ListItem,
   MenuItem,
@@ -87,19 +87,24 @@ export function AnimalsInitialization({
 
   return (
     <>
-      <Grid item container xs={10} sm={10} md={6} lg={6} xl={6}>
+      <Grid
+        container
+        size={{
+          xs: 12,
+          md: 6,
+        }}
+      >
         <form className={"width-100"} onSubmit={handleSubmit(onSubmit)}>
           <Grid
-            item
             container
             spacing={2}
             pt={3}
             pl={4}
             pr={4}
-            xs={12}
             justifyContent={"center"}
+            size={12}
           >
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+            <Grid size={12}>
               <FormControl fullWidth={true} error={!!errors.breed}>
                 <InputLabel id="breed">Breed</InputLabel>
                 <Select
@@ -132,7 +137,7 @@ export function AnimalsInitialization({
                 )}
               </FormControl>
             </Grid>
-            <Grid item xs={12}>
+            <Grid size={12}>
               <TextField
                 id="name"
                 label="Name"
@@ -144,7 +149,7 @@ export function AnimalsInitialization({
                 helperText={errors.name ? errors.name?.message : "Required"}
               />
             </Grid>
-            <Grid item xs={12} mt={5}>
+            <Grid mt={5} size={12}>
               <Button type="submit" variant="contained" color="primary">
                 Add Animal
               </Button>
@@ -153,13 +158,7 @@ export function AnimalsInitialization({
         </form>
       </Grid>
       <Grid
-        item
         container
-        xs={10}
-        sm={10}
-        md={6}
-        lg={6}
-        xl={6}
         pr={4}
         sx={{
           border: "1px solid gray",
@@ -174,6 +173,11 @@ export function AnimalsInitialization({
           overflowX: "hidden",
           listStyle: "none",
         }}
+        size={{
+          xs: 12,
+          md: 6,
+        }}
+        width={"100%"}
       >
         {addedAnimals.map((data) => {
           return (

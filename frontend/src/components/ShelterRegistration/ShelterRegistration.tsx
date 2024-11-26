@@ -1,6 +1,6 @@
 import {
   Button,
-  Grid,
+  Grid2 as Grid,
   Step,
   StepLabel,
   Stepper,
@@ -112,16 +112,15 @@ export function ShelterRegistration({
       >
         <Grid
           container
-          item
-          xs={12}
-          sm={12}
-          md={10}
-          lg={8}
-          xl={8}
           minHeight={"70vh"}
           sx={{ display: "block", alignContent: "center" }}
           className="container rounded-container"
           p={2}
+          size={{
+            xs: 12,
+            md: 10,
+            lg: 8,
+          }}
         >
           {isFinished ? (
             <Grid textAlign={"center"} sx={{ alignSelf: "center" }} p={2}>
@@ -141,32 +140,17 @@ export function ShelterRegistration({
           ) : (
             <div>
               <Grid
-                item
                 container
-                xs={12}
-                sm={12}
-                md={12}
-                lg={12}
-                xl={12}
                 mb={2}
                 justifyContent={"center"}
                 height={"fit-content"}
+                size={12}
               >
                 <Typography variant="h3" textAlign={"center"} width={"100%"}>
                   Register Shelter
                 </Typography>
               </Grid>
-              <Grid
-                item
-                container
-                xs={12}
-                sm={12}
-                md={12}
-                lg={12}
-                xl={12}
-                mb={3}
-                justifyContent={"center"}
-              >
+              <Grid container mb={3} justifyContent={"center"} size={12}>
                 <Stepper activeStep={activeStep} sx={{ width: "100%" }}>
                   {steps.map((label) => {
                     const stepProps: { completed?: boolean } = {};
@@ -181,16 +165,7 @@ export function ShelterRegistration({
                   })}
                 </Stepper>
               </Grid>
-              <Grid
-                item
-                container
-                xs={12}
-                sm={12}
-                md={12}
-                lg={12}
-                xl={12}
-                justifyContent={"center"}
-              >
+              <Grid container justifyContent={"center"} size={12}>
                 {activeStep == 0 ? (
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <Grid
@@ -201,34 +176,22 @@ export function ShelterRegistration({
                     >
                       <Grid
                         container
-                        item
-                        xs={12}
-                        sm={12}
-                        md={12}
-                        lg={12}
-                        xl={12}
                         direction={"row"}
                         justifyContent={"center"}
+                        size={12}
                       >
                         <Grid
-                          item
                           container
                           rowSpacing={1.5}
-                          xs={10}
-                          sm={10}
-                          md={6}
-                          lg={6}
-                          xl={6}
                           pl={2}
                           pr={2}
+                          size={{
+                            xs: 10,
+                            md: 6,
+                          }}
                         >
-                          <Grid
-                            item
-                            container
-                            xs={12}
-                            justifyContent={"center"}
-                          >
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                          <Grid container justifyContent={"center"} size={12}>
+                            <Grid size={12}>
                               <TextField
                                 id="name"
                                 label="Name"
@@ -245,17 +208,8 @@ export function ShelterRegistration({
                               />
                             </Grid>
                           </Grid>
-                          <Grid
-                            item
-                            container
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            lg={12}
-                            xl={12}
-                            justifyContent={"center"}
-                          >
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                          <Grid container justifyContent={"center"} size={12}>
+                            <Grid size={12}>
                               <TextField
                                 id="address"
                                 label="Address"
@@ -274,28 +228,17 @@ export function ShelterRegistration({
                           </Grid>
                         </Grid>
                         <Grid
-                          item
                           container
                           rowSpacing={1.5}
-                          xs={10}
-                          sm={10}
-                          md={6}
-                          lg={6}
-                          xl={6}
                           pl={2}
                           pr={2}
+                          size={{
+                            xs: 10,
+                            md: 6,
+                          }}
                         >
-                          <Grid
-                            item
-                            container
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            lg={12}
-                            xl={12}
-                            justifyContent={"center"}
-                          >
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                          <Grid container justifyContent={"center"} size={12}>
+                            <Grid size={12}>
                               <TextField
                                 id="capacity"
                                 label="Capacity"
@@ -315,17 +258,8 @@ export function ShelterRegistration({
                               />
                             </Grid>
                           </Grid>
-                          <Grid
-                            item
-                            container
-                            xs={12}
-                            sm={12}
-                            md={12}
-                            lg={12}
-                            xl={12}
-                            justifyContent={"center"}
-                          >
-                            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                          <Grid container justifyContent={"center"} size={12}>
+                            <Grid size={12}>
                               <TextField
                                 id="money"
                                 label="Available Money (Dinars)"
@@ -349,15 +283,10 @@ export function ShelterRegistration({
                           </Grid>
                         </Grid>
                         <Grid
-                          item
-                          xs={12}
-                          sm={12}
-                          md={12}
-                          lg={12}
-                          xl={12}
                           mt={9}
                           justifyContent={"right"}
                           sx={{ display: "flex" }}
+                          size={12}
                         >
                           <Button variant="contained" type="submit">
                             Next
@@ -367,24 +296,14 @@ export function ShelterRegistration({
                     </Grid>
                   </form>
                 ) : activeStep == 1 ? (
-                  <Grid container>
+                  <Grid container size={11}>
                     <AnimalsInitialization
                       animals={animalsWithBreeds}
                       shelter={shelter}
                       setShelter={setShelter}
                       isDone={isDoneAnimals}
                     />
-                    <Grid
-                      container
-                      item
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      lg={12}
-                      xl={12}
-                      mt={1}
-                      justifyContent={"right"}
-                    >
+                    <Grid container mt={1} justifyContent={"right"} size={12}>
                       <Button
                         variant="contained"
                         onClick={() => {
@@ -397,7 +316,7 @@ export function ShelterRegistration({
                     </Grid>
                   </Grid>
                 ) : (
-                  <Grid container>
+                  <Grid container size={12}>
                     <FoodAndPricesInitialization
                       animals={animalsWithBreeds}
                       shelter={shelter}
@@ -406,17 +325,7 @@ export function ShelterRegistration({
                       isDone={isDoneFood}
                       setFinished={setIsFinished}
                     />
-                    <Grid
-                      container
-                      item
-                      xs={12}
-                      sm={12}
-                      md={12}
-                      lg={12}
-                      xl={12}
-                      mt={1}
-                      justifyContent={"right"}
-                    >
+                    <Grid container mt={1} justifyContent={"right"} size={12}>
                       <Button
                         variant="contained"
                         onClick={() => setIsDoneFood(true)}
