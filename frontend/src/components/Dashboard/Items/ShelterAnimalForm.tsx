@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { Animal } from "../../../models/animals";
 import { AnimalWithBreed } from "../../../models/animals";
 import { ShelterService } from "../../../services/ShelterService";
+import { PopupType, usePopup } from "../../PopupProvider";
 
 interface AnimalsForm {
   name: string;
@@ -21,23 +22,22 @@ interface AnimalsForm {
 
 interface Props {
   animalsWithBreeds: AnimalWithBreed[];
-  sendSuccessMessage: (msg: string) => void;
-  sendErrorMessage: (msg: string) => void;
   shelterService: ShelterService;
   setShelteredAnimals: React.Dispatch<React.SetStateAction<Animal[]>>;
 }
 function ShelterAnimalForm({
   animalsWithBreeds,
-  sendSuccessMessage,
-  sendErrorMessage,
   shelterService,
   setShelteredAnimals,
 }: Props) {
+  const { displayPopup } = usePopup();
+
   const {
     register: registerAnimalsForm,
     handleSubmit: handleSubmitAnimalsForm,
     formState: { errors: animalsFormErrors },
     reset: resetAnimalsForm,
+    watch,
   } = useForm<AnimalsForm>({
     defaultValues: {
       name: "",
@@ -45,6 +45,8 @@ function ShelterAnimalForm({
     },
     mode: "onChange",
   });
+
+  const animalBreedValue = watch("animalBreed");
 
   const onSubmitAnimalsForm = (data: AnimalsForm) => {
     const foundAnimalWithNeededBreed = animalsWithBreeds.find(
@@ -55,7 +57,7 @@ function ShelterAnimalForm({
       console.log(
         "Unexpected error, haven't found animal with needed breed. It's likely that the animal list didn't load yet."
       );
-      sendErrorMessage("Please try again.");
+      displayPopup("Please try again.", PopupType.ERROR);
       return;
     }
 
@@ -68,7 +70,7 @@ function ShelterAnimalForm({
     shelterService
       .shelterAnimal(animal)
       .then(() => {
-        sendSuccessMessage("Animal sheltered successfully");
+        displayPopup("Animal sheltered successfully", PopupType.SUCCESS);
         setShelteredAnimals((prev) => [...prev, animal]);
         resetAnimalsForm();
       })
@@ -95,11 +97,12 @@ function ShelterAnimalForm({
             <Select
               labelId="breed"
               defaultValue=""
+              value={animalBreedValue}
               {...registerAnimalsForm("animalBreed", {
                 required: "Breed is a required field!",
               })}
             >
-              <MenuItem value="">
+              <MenuItem key={-1} value="">
                 <em>None</em>
               </MenuItem>
               {animalsWithBreeds.map((animal, index) => {

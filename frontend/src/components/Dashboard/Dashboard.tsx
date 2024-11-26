@@ -127,8 +127,6 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
           <ShelterAnimalForm
             {...{
               animalsWithBreeds,
-              sendErrorMessage,
-              sendSuccessMessage,
               shelterService,
               setShelteredAnimals,
             }}
