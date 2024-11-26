@@ -44,8 +44,8 @@ const weeksInMonth = (year: number, month: number) => {
 interface WeekPickerProps {
   setWeekSelected: React.Dispatch<
     React.SetStateAction<{
-      start: dayjs.Dayjs;
-      end: dayjs.Dayjs;
+      start: dayjs.Dayjs | undefined;
+      end: dayjs.Dayjs | undefined;
     }>
   >;
   monthYear: Dayjs | null;
@@ -63,12 +63,11 @@ function WeekPicker({
       end: dayjs("7.1.2000."),
     },
   ]);
-  // const [monthYear, setMonthYear] = React.useState<Dayjs | null>(dayjs('2023-06-12'))
+
   const [selectedDate, setSelectedDate] = React.useState({
     start: dayjs(),
     end: dayjs(),
   });
-  // const [weekSelected, setWeekSelected] = React.useState({ start: dayjs(), end: dayjs() });
 
   useEffect(() => {
     const date = monthYear;
@@ -104,13 +103,15 @@ function WeekPicker({
         labelId="week-label"
         id="week-select"
         label="Pick week for report"
-        value={weeks
-          .findIndex(
+        value={(() => {
+          const index = weeks.findIndex(
             (week) =>
               week.start.isSame(selectedDate.start) &&
               week.end.isSame(selectedDate.end)
-          )
-          .toString()}
+          );
+          if (index >= 0) return index.toString();
+          return "";
+        })()}
         onChange={handleWeekChange}
       >
         {weeks.map((week, index) => (
@@ -137,9 +138,12 @@ export function Reports({ shelterService }: ReportProps) {
     dayjs("2024-06-12")
   );
 
-  const [weekSelected, setWeekSelected] = React.useState({
-    start: dayjs(),
-    end: dayjs(),
+  const [weekSelected, setWeekSelected] = React.useState<{
+    start: dayjs.Dayjs | undefined;
+    end: dayjs.Dayjs | undefined;
+  }>({
+    start: undefined,
+    end: undefined,
   });
 
   const [monthYear, setMonthYear] = React.useState<Dayjs | null>(
@@ -157,11 +161,10 @@ export function Reports({ shelterService }: ReportProps) {
 
   function generateReport() {
     console.log("Generating report for", reportType, selectedDate?.toDate());
-    displayPopup("Hello :)", PopupType.SUCCESS);
 
     if (reportType === "daily") {
       if (!selectedDate) {
-        console.log("You must select a date!");
+        displayPopup("You must select a date!", PopupType.ERROR);
         return;
       }
 
@@ -177,10 +180,14 @@ export function Reports({ shelterService }: ReportProps) {
           console.error(error);
         });
     } else if (reportType === "weekly") {
+      if (!weekSelected.start || !weekSelected.end) {
+        displayPopup("You must select a week!", PopupType.ERROR);
+        return;
+      }
       const data =
-        weekSelected?.start.format("D.M.YYYY.") +
+        weekSelected.start.format("D.M.YYYY.") +
         " - " +
-        weekSelected?.end.format("D.M.YYYY.");
+        weekSelected.end.format("D.M.YYYY.");
       console.log("Week selected", data);
       shelterService
         .getWeeklyReport(data)
@@ -193,7 +200,7 @@ export function Reports({ shelterService }: ReportProps) {
         });
     } else if (reportType === "monthly") {
       if (!selectedDate) {
-        console.log("You must select a month!");
+        displayPopup("You must select a month!", PopupType.ERROR);
         return;
       }
 
