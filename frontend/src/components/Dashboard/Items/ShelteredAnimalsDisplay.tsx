@@ -3,23 +3,22 @@ import { Animal } from "../../../models/animals";
 import { useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
 import { fixAnimalBreedName } from "../../../utils";
+import { PopupType, usePopup } from "../../PopupProvider";
 
 interface Props {
   animals: Animal[];
   setAnimals: React.Dispatch<React.SetStateAction<Animal[]>>;
   shelterService: ShelterService;
-  sendSuccessMessage: (msg: string) => void;
-  sendErrorMessage: (msg: string) => void;
 }
 
 function ShelteredAnimalsDisplay({
   animals,
   setAnimals,
   shelterService,
-  sendSuccessMessage,
-  sendErrorMessage,
 }: Props) {
   const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+
+  const { displayPopup } = usePopup();
 
   const handleSelectAnimal = (animal: Animal) => {
     if (animal != selectedAnimal) {
@@ -31,13 +30,13 @@ function ShelteredAnimalsDisplay({
 
   const handleAdopt = () => {
     if (!selectedAnimal) {
-      sendErrorMessage("You need to select an animal first.");
+      displayPopup("You need to select an animal first.", PopupType.ERROR);
       return;
     }
     shelterService
       .adoptAnimal(selectedAnimal)
       .then(() => {
-        sendSuccessMessage("Animal adopted successfully");
+        displayPopup("Animal adopted successfully", PopupType.SUCCESS);
         setAnimals((prev) => prev.filter((animal) => animal != selectedAnimal));
         setSelectedAnimal(null);
       })

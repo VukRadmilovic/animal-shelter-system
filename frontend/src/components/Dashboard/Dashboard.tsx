@@ -9,7 +9,6 @@ import { ShelterService } from "../../services/ShelterService";
 import { useNavigate } from "react-router-dom";
 import { Reports } from "./Items/Reports";
 import { PetRecommendationCounter } from "../../models/types";
-import { PopupMessage } from "../PopupMessage";
 import { ShelterWithMaps } from "../../models/types";
 import RecommendationsTable from "./Items/RecommendationsTable";
 import NotificationTable from "./Items/NotificationTable";
@@ -36,28 +35,8 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
 
   const [moneyAvailable, setMoneyAvailable] = React.useState<number>(0);
 
-  const sendSuccessMessage = (message: string) => {
-    setErrorMessage(message);
-    setIsSuccess(true);
-    setErrorPopupOpen(true);
-  };
-
-  const sendErrorMessage = (message: string) => {
-    setErrorMessage(message);
-    setIsSuccess(false);
-    setErrorPopupOpen(true);
-  };
-
   const navigate = useNavigate();
   const shouldLoad = useRef(true);
-
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
 
   useEffect(() => {
     if (!shouldLoad.current) return;
@@ -118,8 +97,6 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
             animals={shelteredAnimals}
             setAnimals={setShelteredAnimals}
             shelterService={shelterService}
-            sendSuccessMessage={sendSuccessMessage}
-            sendErrorMessage={sendErrorMessage}
           />
         </DashboardItemContainer>
 
@@ -143,7 +120,6 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
               shelterService,
               moneyAvailable,
               setMoneyAvailable,
-              sendSuccessMessage,
             }}
           />
         </DashboardItemContainer>
@@ -158,13 +134,6 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
             setMoneyAvailable={setMoneyAvailable}
           />
         </DashboardItemContainer>
-
-        <PopupMessage
-          message={errorMessage}
-          isSuccess={isSuccess}
-          handleClose={handleErrorPopupClose}
-          open={errorPopupOpen}
-        />
       </Grid>
     </>
   );

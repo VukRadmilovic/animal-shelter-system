@@ -1,19 +1,18 @@
 import { Grid, TextField, FormControl, Button } from "@mui/material";
 import { ShelterService } from "../../../services/ShelterService";
 import { useForm } from "react-hook-form";
+import { PopupType, usePopup } from "../../PopupProvider";
 
 interface Props {
   shelterService: ShelterService;
   moneyAvailable: number;
   setMoneyAvailable: React.Dispatch<React.SetStateAction<number>>;
-  sendSuccessMessage: (msg: string) => void;
 }
 
 function MoneyManagement({
   shelterService,
   moneyAvailable,
   setMoneyAvailable,
-  sendSuccessMessage,
 }: Props) {
   interface MoneyDepositForm {
     moneyToDeposit: number;
@@ -31,15 +30,18 @@ function MoneyManagement({
     mode: "onChange",
   });
 
+  const { displayPopup } = usePopup();
+
   const onDepositMoneySubmit = (data: MoneyDepositForm) => {
     shelterService
       .depositMoney(data.moneyToDeposit)
       .then(() => {
-        sendSuccessMessage("Money deposited successfully");
+        displayPopup("Money deposited successfully", PopupType.SUCCESS);
         setMoneyAvailable((prev) => prev + Number(data.moneyToDeposit));
         resetMoneyForm();
       })
       .catch((error) => {
+        displayPopup("Please try again soon.", PopupType.ERROR);
         console.error("Error depositing money:", error);
       });
   };

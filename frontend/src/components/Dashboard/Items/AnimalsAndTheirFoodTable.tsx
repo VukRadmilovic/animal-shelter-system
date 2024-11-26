@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
 import { AnimalWithBreed } from "../../../models/animals";
 import { ShelterWithMaps } from "../../../models/types";
-import { PopupMessage } from "../../PopupMessage";
+import { PopupType, usePopup } from "../../PopupProvider";
 
 interface FoodStuffProps {
   animals: AnimalWithBreed[];
@@ -22,20 +22,14 @@ export function AnimalsAndTheirFoodTable({
   moneyAvailable,
   setMoneyAvailable,
 }: FoodStuffProps) {
+  const { displayPopup } = usePopup();
+
   if (!Array.isArray(animals)) {
     return <p>Oopsie</p>;
   }
   const [portionsToBuy, setPortionsToBuy] = useState<{ [key: string]: number }>(
     {}
   );
-  const [errorMessage, setErrorMessage] = React.useState<string>("");
-  const [errorPopupOpen, setErrorPopupOpen] = React.useState<boolean>(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
-
-  const handleErrorPopupClose = (reason?: string) => {
-    if (reason === "clickaway") return;
-    setErrorPopupOpen(false);
-  };
 
   const handlePortionChange = (animalType: string, quantity: number) => {
     setPortionsToBuy((prevState) => ({
@@ -53,9 +47,10 @@ export function AnimalsAndTheirFoodTable({
     const totalPrice = portions * priceForPortion;
 
     if (moneyAvailable < totalPrice) {
-      setErrorMessage("There is a lack of funds for this transaction.");
-      setIsSuccess(false);
-      setErrorPopupOpen(true);
+      displayPopup(
+        "There is a lack of funds for this transaction.",
+        PopupType.ERROR
+      );
       return;
     }
 
@@ -63,9 +58,7 @@ export function AnimalsAndTheirFoodTable({
       shelterService
         .purchaseFood(animalType, portions)
         .then((_) => {
-          setErrorMessage("Food bought successfully");
-          setIsSuccess(true);
-          setErrorPopupOpen(true);
+          displayPopup("Food bought successfully", PopupType.SUCCESS);
           setShelter((prev) => {
             if (!prev) return prev;
             return {
@@ -89,9 +82,10 @@ export function AnimalsAndTheirFoodTable({
           console.error(error);
         });
     } else {
-      setErrorMessage("Please enter a valid number of portions to buy.");
-      setIsSuccess(false);
-      setErrorPopupOpen(true);
+      displayPopup(
+        "Please enter a valid number of portions to buy.",
+        PopupType.ERROR
+      );
     }
   };
 
@@ -188,12 +182,6 @@ export function AnimalsAndTheirFoodTable({
                 </Grid>
               </Grid>
             ))}
-            <PopupMessage
-              message={errorMessage}
-              isSuccess={isSuccess}
-              handleClose={handleErrorPopupClose}
-              open={errorPopupOpen}
-            />
           </Grid>
         </form>
       )}
