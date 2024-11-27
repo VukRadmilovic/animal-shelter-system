@@ -14,7 +14,7 @@ interface FoodStuffProps {
   setMoneyAvailable: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export function AnimalsAndTheirFoodTable({
+export function AnimalFoodTable({
   animals,
   shelter,
   shelterService,
@@ -25,8 +25,9 @@ export function AnimalsAndTheirFoodTable({
   const { displayPopup } = usePopup();
 
   if (!Array.isArray(animals)) {
-    return <p>Oopsie</p>;
+    return <p>Loading...</p>;
   }
+
   const [portionsToBuy, setPortionsToBuy] = useState<{ [key: string]: number }>(
     {}
   );
@@ -42,6 +43,7 @@ export function AnimalsAndTheirFoodTable({
     if (!shelter) {
       return;
     }
+
     const portions = portionsToBuy[animalType];
     const priceForPortion = shelter.prices[animalType];
     const totalPrice = portions * priceForPortion;
@@ -54,39 +56,40 @@ export function AnimalsAndTheirFoodTable({
       return;
     }
 
-    if (portions > 0) {
-      shelterService
-        .purchaseFood(animalType, portions)
-        .then((_) => {
-          displayPopup("Food bought successfully", PopupType.SUCCESS);
-          setShelter((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              foodAvailableForAnimals: {
-                ...prev.foodAvailableForAnimals,
-                [animalType]:
-                  (prev.foodAvailableForAnimals[animalType] || 0) + portions,
-              },
-            };
-          });
-          setPortionsToBuy((prev) => {
-            prev[animalType] = 0;
-            return prev;
-          });
-          setMoneyAvailable(
-            (prev) => prev - shelter.prices[animalType] * portions
-          );
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
+    if (portions <= 0) {
       displayPopup(
         "Please enter a valid number of portions to buy.",
         PopupType.ERROR
       );
+      return;
     }
+
+    shelterService
+      .purchaseFood(animalType, portions)
+      .then((_) => {
+        displayPopup("Food purchased!", PopupType.SUCCESS);
+        setShelter((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            foodAvailableForAnimals: {
+              ...prev.foodAvailableForAnimals,
+              [animalType]:
+                (prev.foodAvailableForAnimals[animalType] || 0) + portions,
+            },
+          };
+        });
+        setPortionsToBuy((prev) => {
+          prev[animalType] = 0;
+          return prev;
+        });
+        setMoneyAvailable(
+          (prev) => prev - shelter.prices[animalType] * portions
+        );
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   };
 
   return (

@@ -50,7 +50,6 @@ export function ShelterRegistration({
 
   const { displayPopup } = usePopup();
 
-  const shouldLoad = useRef(true);
   const navigate = useNavigate();
   const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<
     AnimalWithBreed[]
@@ -299,7 +298,6 @@ export function ShelterRegistration({
                   <Grid container size={11}>
                     <AnimalsInitialization
                       animals={animalsWithBreeds}
-                      shelter={shelter}
                       setShelter={setShelter}
                       isDone={isDoneAnimals}
                     />

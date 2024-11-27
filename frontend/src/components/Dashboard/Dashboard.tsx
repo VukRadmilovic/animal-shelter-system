@@ -4,7 +4,7 @@ import * as React from "react";
 import { useEffect, useRef } from "react";
 import { Animal } from "../../models/animals";
 import { AnimalWithBreed } from "../../models/animals";
-import { AnimalsAndTheirFoodTable } from "./Items/AnimalsAndTheirFoodTable";
+import { AnimalFoodTable } from "./Items/AnimalFoodTable";
 import { ShelterService } from "../../services/ShelterService";
 import { useNavigate } from "react-router-dom";
 import { Reports } from "./Items/Reports";
@@ -122,7 +122,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
         </DashboardItemContainer>
 
         <DashboardItemContainer xs={12} minHeight={"50vh"}>
-          <AnimalsAndTheirFoodTable
+          <AnimalFoodTable
             shelterService={shelterService}
             shelter={shelter}
             animals={animalsWithBreeds}

@@ -25,14 +25,12 @@ export interface AnimalsForm {
 
 interface AnimalsInitializationProps {
   animals: AnimalWithBreed[];
-  shelter: Shelter;
   setShelter: React.Dispatch<React.SetStateAction<Shelter>>;
   isDone: boolean;
 }
 
 export function AnimalsInitialization({
   animals,
-  shelter,
   setShelter,
   isDone,
 }: AnimalsInitializationProps) {
