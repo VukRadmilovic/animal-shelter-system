@@ -46,6 +46,9 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
       .catch((err) => {
         console.log(err);
       });
+  }, [shelterService, navigate]);
+
+  useEffect(() => {
     shelterService
       .getAnimalsWithBreeds()
       .then((animals) => {
@@ -54,20 +57,23 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
       .catch((err) => {
         console.log(err);
       });
+  }, [shelterService]);
+
+  useEffect(() => {
     shelterService
       .getGlobalChart()
       .then((chartData) => {
-        console.log(chartData);
         setGlobalChart(chartData.top5);
       })
       .catch((err) => {
-        console.log("FAILED TO GET GLOBAL CHART");
         console.log(err);
       });
+  }, [shelterService]);
+
+  useEffect(() => {
     shelterService
       .getShelter()
       .then((shelter) => {
-        console.log(shelter);
         setShelter(shelter);
         setMoneyAvailable(shelter.moneyAvailable);
         setShelteredAnimals(shelter.animals);
