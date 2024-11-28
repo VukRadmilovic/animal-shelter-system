@@ -2,8 +2,7 @@ import "./Dashboard.css";
 import { Grid2 as Grid } from "@mui/material";
 import * as React from "react";
 import { useEffect } from "react";
-import { Animal } from "../../models/animals";
-import { AnimalWithBreed } from "../../models/animals";
+import { Animal, NamelessAnimal } from "../../models/animals";
 import { AnimalFoodTable } from "./Items/AnimalFoodTable";
 import { ShelterService } from "../../services/ShelterService";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +22,7 @@ interface ShelterMainProps {
 
 export function Dashboard({ shelterService }: ShelterMainProps) {
   const [allAnimalBreedsWithTheirTypes, setAllAnimalBreedsWithTheirTypes] =
-    React.useState<AnimalWithBreed[]>([]);
+    React.useState<NamelessAnimal[]>([]);
 
   const [petRecommendationCounter, setPetRecommendationCounter] =
     React.useState<PetRecommendationCounter[]>([]);
