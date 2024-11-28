@@ -7,7 +7,7 @@ import { AnimalWithBreed } from "../../models/animals";
 import { AnimalFoodTable } from "./Items/AnimalFoodTable";
 import { ShelterService } from "../../services/ShelterService";
 import { useNavigate } from "react-router-dom";
-import { Reports } from "./Items/Reports";
+import { Reports } from "./Items/Reports/Reports";
 import { PetRecommendationCounter } from "../../models/types";
 import { ShelterWithMaps } from "../../models/types";
 import RecommendationsTable from "./Items/RecommendationsTable";
