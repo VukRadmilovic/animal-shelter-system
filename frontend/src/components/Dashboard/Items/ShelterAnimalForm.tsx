@@ -11,7 +11,7 @@ import {
 import { fixAnimalBreedName } from "../../../utils";
 import { useForm } from "react-hook-form";
 import { Animal } from "../../../models/animals";
-import { AnimalWithBreed } from "../../../models/animals";
+import { NamelessAnimal } from "../../../models/animals";
 import { ShelterService } from "../../../services/ShelterService";
 import { PopupType, usePopup } from "../../PopupProvider";
 
@@ -21,7 +21,7 @@ interface AnimalsForm {
 }
 
 interface Props {
-  animalsWithBreeds: AnimalWithBreed[];
+  animalsWithBreeds: NamelessAnimal[];
   shelterService: ShelterService;
   setShelteredAnimals: React.Dispatch<React.SetStateAction<Animal[]>>;
 }

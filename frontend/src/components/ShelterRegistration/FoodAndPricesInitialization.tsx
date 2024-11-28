@@ -1,4 +1,4 @@
-import { AnimalWithBreed } from "../../models/animals.ts";
+import { NamelessAnimal } from "../../models/animals.ts";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Button, Grid2 as Grid, TextField, Typography } from "@mui/material";
 import { Shelter } from "../../models/types.ts";
@@ -9,7 +9,7 @@ import { ShelterService } from "../../services/ShelterService.ts";
 import { PopupType, usePopup } from "../PopupProvider.tsx";
 
 interface FoodAndPricesInitializationProps {
-  animals: AnimalWithBreed[];
+  animals: NamelessAnimal[];
   shelter: Shelter;
   setShelter: (shelter: Shelter) => void;
   isDone: boolean;

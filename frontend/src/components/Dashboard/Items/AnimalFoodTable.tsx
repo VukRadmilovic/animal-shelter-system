@@ -1,12 +1,12 @@
 import { Button, Grid2 as Grid, TextField, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { ShelterService } from "../../../services/ShelterService";
-import { AnimalWithBreed } from "../../../models/animals";
 import { ShelterWithMaps } from "../../../models/types";
 import { PopupType, usePopup } from "../../PopupProvider";
+import { NamelessAnimal } from "../../../models/animals";
 
 interface FoodStuffProps {
-  animals: AnimalWithBreed[];
+  animals: NamelessAnimal[];
   shelter?: ShelterWithMaps;
   shelterService: ShelterService;
   setShelter: React.Dispatch<React.SetStateAction<ShelterWithMaps | undefined>>;

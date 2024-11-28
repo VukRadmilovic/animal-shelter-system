@@ -3,7 +3,7 @@ export interface Animal {
   animalType: string;
   name: string;
 }
-export interface AnimalWithBreed {
+export interface NamelessAnimal {
   animalType: string;
   animalBreed: string;
 }

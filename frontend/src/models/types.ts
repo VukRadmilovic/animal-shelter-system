@@ -25,6 +25,7 @@ export interface ShelterWithMaps {
   foodAvailableForAnimals: { [key: string]: number };
   prices: { [key: string]: number };
 }
+
 export interface Shelter {
   name: string;
   address: string;

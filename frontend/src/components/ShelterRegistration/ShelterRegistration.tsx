@@ -10,7 +10,7 @@ import {
 import { ShelterService } from "../../services/ShelterService.ts";
 import React, { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
-import { AnimalWithBreed } from "../../models/animals.ts";
+import { NamelessAnimal } from "../../models/animals.ts";
 import { AnimalsInitialization } from "./AnimalsInitialization.tsx";
 import { FoodAndPricesInitialization } from "./FoodAndPricesInitialization.tsx";
 import { Shelter } from "../../models/types.ts";
@@ -52,7 +52,7 @@ export function ShelterRegistration({
 
   const navigate = useNavigate();
   const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<
-    AnimalWithBreed[]
+    NamelessAnimal[]
   >([]);
   const [isDoneAnimals, setIsDoneAnimals] = React.useState(false);
   const [isDoneFood, setIsDoneFood] = React.useState(false);

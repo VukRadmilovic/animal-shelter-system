@@ -5,10 +5,10 @@ import { Animal } from "../models/animals.ts";
 import { Report } from "../models/types.ts";
 import { ShelterWithMaps } from "../models/types.ts";
 import { Notification } from "../models/types.ts";
-import { AnimalWithBreed } from "../models/animals.ts";
+import { NamelessAnimal } from "../models/animals.ts";
 
 interface AnimalsWithBreeds {
-  animals: AnimalWithBreed[];
+  animals: NamelessAnimal[];
 }
 
 export class ShelterService {

@@ -1,7 +1,7 @@
 import "./Dashboard.css";
 import { Grid2 as Grid } from "@mui/material";
 import * as React from "react";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { Animal } from "../../models/animals";
 import { AnimalWithBreed } from "../../models/animals";
 import { AnimalFoodTable } from "./Items/AnimalFoodTable";
@@ -22,12 +22,11 @@ interface ShelterMainProps {
 }
 
 export function Dashboard({ shelterService }: ShelterMainProps) {
-  const [animalsWithBreeds, setAnimalsWithBreeds] = React.useState<
-    AnimalWithBreed[]
-  >([]);
-  const [globalChart, setGlobalChart] = React.useState<
-    PetRecommendationCounter[]
-  >([]);
+  const [allAnimalBreedsWithTheirTypes, setAllAnimalBreedsWithTheirTypes] =
+    React.useState<AnimalWithBreed[]>([]);
+
+  const [petRecommendationCounter, setPetRecommendationCounter] =
+    React.useState<PetRecommendationCounter[]>([]);
 
   const [shelter, setShelter] = React.useState<ShelterWithMaps | undefined>();
 
@@ -52,7 +51,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
     shelterService
       .getAnimalsWithBreeds()
       .then((animals) => {
-        setAnimalsWithBreeds(animals.animals);
+        setAllAnimalBreedsWithTheirTypes(animals.animals);
       })
       .catch((err) => {
         console.log(err);
@@ -63,7 +62,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
     shelterService
       .getGlobalChart()
       .then((chartData) => {
-        setGlobalChart(chartData.top5);
+        setPetRecommendationCounter(chartData.top5);
       })
       .catch((err) => {
         console.log(err);
@@ -88,7 +87,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
       <h1> {sessionStorage.getItem("full_name")}'s shelter dashboard </h1>
       <Grid container className={"dark-background"}>
         <DashboardItemContainer>
-          <RecommendationsTable recommendations={globalChart} />
+          <RecommendationsTable recommendations={petRecommendationCounter} />
         </DashboardItemContainer>
 
         <DashboardItemContainer>
@@ -106,7 +105,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
         <DashboardItemContainer>
           <ShelterAnimalForm
             {...{
-              animalsWithBreeds,
+              animalsWithBreeds: allAnimalBreedsWithTheirTypes,
               shelterService,
               setShelteredAnimals,
             }}
@@ -131,7 +130,7 @@ export function Dashboard({ shelterService }: ShelterMainProps) {
           <AnimalFoodTable
             shelterService={shelterService}
             shelter={shelter}
-            animals={animalsWithBreeds}
+            animals={allAnimalBreedsWithTheirTypes}
             setShelter={setShelter}
             moneyAvailable={moneyAvailable}
             setMoneyAvailable={setMoneyAvailable}

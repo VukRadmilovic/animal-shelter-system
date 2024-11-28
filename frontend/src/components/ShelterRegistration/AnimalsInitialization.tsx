@@ -11,7 +11,7 @@ import {
   TextField,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
-import { AnimalWithBreed } from "../../models/animals.ts";
+import { NamelessAnimal } from "../../models/animals.ts";
 import { Animal } from "../../models/animals.ts";
 import { useEffect, useState } from "react";
 import { Shelter } from "../../models/types.ts";
@@ -24,7 +24,7 @@ export interface AnimalsForm {
 }
 
 interface AnimalsInitializationProps {
-  animals: AnimalWithBreed[];
+  animals: NamelessAnimal[];
   setShelter: React.Dispatch<React.SetStateAction<Shelter>>;
   isDone: boolean;
 }
